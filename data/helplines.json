@@ -1,0 +1,61 @@
+{
+    "_WARNING": "ALL numbers below are PLACEHOLDERS and have NOT been verified as active. Do NOT deploy this file to real users until every number has been personally called and confirmed by the project team. See CLAUDE.md note on helplines.",
+
+    "national": {
+        "crisis": [
+            {
+                "name": "Emergency Services (Nigeria)",
+                "number": "112",
+                "description": "National emergency number — police, ambulance, fire. Works on all Nigerian networks.",
+                "hours": "24/7",
+                "verified": false,
+                "note": "112 is the national standard emergency number but response quality varies by state — verify coverage in target deployment area."
+            },
+            {
+                "name": "Suicide Research and Prevention Initiative (SURPIN)",
+                "number": "PLACEHOLDER_NOT_VERIFIED",
+                "description": "Suicide prevention and mental health crisis support.",
+                "hours": "UNKNOWN — verify before deploying",
+                "verified": false
+            },
+            {
+                "name": "Mentally Aware Nigeria Initiative (MANI)",
+                "number": "PLACEHOLDER_NOT_VERIFIED",
+                "description": "Mental health support and suicide prevention.",
+                "hours": "UNKNOWN — verify before deploying",
+                "verified": false
+            }
+        ],
+
+        "sexual_abuse": [
+            {
+                "name": "NAPTIP Toll-Free Hotline",
+                "number": "PLACEHOLDER_NOT_VERIFIED",
+                "description": "National Agency for the Prohibition of Trafficking in Persons. Handles trafficking, sexual exploitation, and gender-based violence.",
+                "hours": "UNKNOWN — verify before deploying",
+                "verified": false
+            },
+            {
+                "name": "WARIF Rape Crisis Helpline",
+                "number": "PLACEHOLDER_NOT_VERIFIED",
+                "description": "Women at Risk International Foundation — rape crisis, sexual violence, emergency support.",
+                "hours": "UNKNOWN — verify before deploying",
+                "verified": false
+            }
+        ],
+
+        "general_health": [
+            {
+                "name": "Federal Ministry of Health Helpline",
+                "number": "PLACEHOLDER_NOT_VERIFIED",
+                "description": "General health enquiries and referrals to nearby facilities.",
+                "hours": "UNKNOWN — verify before deploying",
+                "verified": false
+            }
+        ]
+    },
+
+    "states": {
+        "_NOTE": "State-level helplines are added here once numbers have been personally verified. Structure mirrors national — each state key contains crisis, sexual_abuse, and general_health arrays. When a user's state is known, state-level numbers are preferred over national ones."
+    }
+}

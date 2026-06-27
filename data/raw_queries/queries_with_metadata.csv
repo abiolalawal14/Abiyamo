@@ -1,0 +1,108 @@
+id,text,participant_id,age_range,gender,language
+SRH001,Questions on menstruation and maintaining good SRH,P001,15–19,Female,English
+SRH002,Would I die using postinor 2,P002,15–19,Female,English
+SRH003,Any question bothering me,P003,20–24,Female,Yoruba
+SRH004,"Sex, period and female hormones",P004,20–24,Female,Yoruba
+SRH005,Till then,P005,15–19,Female,English
+SRH006,What causes Menstrual Pain,P006,20–24,Female,English
+SRH007,How to prevent Stains or leaks during a period,P006,20–24,Female,English
+SRH008,Pads suggestions for different types of flows,P006,20–24,Female,English
+SRH009,How to prevent pregnancy,P006,20–24,Female,English
+SRH010,What causes STIs and UTIs,P006,20–24,Female,English
+SRH011,How do I know how my reproductive system operates?,P008,20–24,Female,English
+SRH012,How can one know her safe period,P008,20–24,Female,English
+SRH013,How can one avoid STDs,P008,20–24,Female,English
+SRH014,How can I tell if I am ovulating?,P009,15–19,Female,English
+SRH015,What is the most effective contraceptive method for preventing pregnancy and STIs?,P009,15–19,Female,English
+SRH016,Can I get pregnant if I have unprotected sex during or shortly after my period?,P009,15–19,Female,English
+SRH017,"What does consent look like in a healthy relationship, and how can I communicate my boundaries effectively?",P010,20–24,Female,English
+SRH018,Why do my vjay itch me atimes /why dose it smell and I wash it every day /how do I clear bumps on my private part and I try my best to get rid of armpit odor,P011,15–19,Female,English
+SRH019,Is masturbation healthy?,P015,20–24,Male,Yoruba
+SRH020,What are the downsides to it?,P015,20–24,Male,Yoruba
+SRH021,Does it cause not being able to reproduce?,P015,20–24,Male,Yoruba
+SRH022,How do men reproduce,P019,20–24,Female,English
+SRH023,Sex,P022,20–24,Male,English
+SRH024,Pregnancy,P022,20–24,Male,English
+SRH025,Female reproductive health,P022,20–24,Male,English
+SRH026,Inflation pregnancy and sex,P023,20–24,Male,Yoruba
+SRH027,1.How can I know if my discharge is normal or a sign of an STI,P025,20–24,Female,Other
+SRH028,2.Is it safe to have sex during my period and what are the risks,P025,20–24,Female,Other
+SRH029,3.How do I talk to my partner about using condom without starting a fight,P025,20–24,Female,Other
+SRH030,Why did a person become sex addict,P026,20–24,Male,English
+SRH031,How to actually bring up this conversation with a partner,P028,20–24,Female,English
+SRH032,How to ensure one partner is not carrying STIs,P028,20–24,Female,English
+SRH033,Things that causes missed menstruation,P028,20–24,Female,English
+SRH034,time my mestraul cycle,P029,20–24,Female,English
+SRH035,How can i manage a hormonal imbalance?,P030,20–24,Female,English
+SRH036,What are the fruits and food i should avoid as someone with a hormonal imbalance?,P030,20–24,Female,English
+SRH037,Where is the nearest clinic near me,P030,20–24,Female,English
+SRH038,"STI,pregnancy,conception",P031,20–24,Female,English
+SRH039,Recommend healthy sex styles,P032,20–24,Female,English
+SRH040,Recommend healthy habits to adopt after sex,P032,20–24,Female,English
+SRH041,Recommend good condom products,P032,20–24,Female,English
+SRH042,Sexual safety,P033,20–24,Male,English
+SRH043,How do one contact HIV,P034,20–24,Female,English
+SRH044,How does a child grow in the human reproductive system,P034,20–24,Female,English
+SRH045,What the cure to AIDS,P034,20–24,Female,English
+SRH046,How to reduce menstrual cramps .,P036,20–24,Female,English
+SRH047,Drugs for curing STI.,P036,20–24,Female,English
+SRH048,What’s the first thing to do after Rape?,P037,20–24,Female,English
+SRH049,Give more important reasons to avoid unprotected sex,P037,20–24,Female,English
+SRH050,STI are mostly common amongst which gender?,P038,20–24,Female,Igbo
+SRH051,Well being related questions,P039,20–24,Female,English
+SRH052,How does the clitoris give pleasure?,P040,20–24,Female,English
+SRH053,How do you know if you were circumcised?,P040,20–24,Female,English
+SRH054,What is oral sex?,P040,20–24,Female,English
+SRH055,Reproductive health,P041,20–24,Female,English
+SRH056,Menstrual cycle,P041,20–24,Female,English
+SRH057,STD,P041,20–24,Female,English
+SRH058,How does the reproductive system work?,P043,20–24,Female,English
+SRH059,How do you identify a rape victim ?,P043,20–24,Female,English
+SRH060,How does a Virginia cleanse it self ?,P043,20–24,Female,English
+SRH061,Best way to maintain hygiene?,P044,20–24,Female,English
+SRH062,Symptoms of STIs,P044,20–24,Female,English
+SRH063,"How can I protect myself from sexually transmitted infections (STIs), and when should I get tested?",P045,20–24,Female,Yoruba
+SRH064,"How can I track my menstrual cycle, and what is considered a normal period?",P045,20–24,Female,Yoruba
+SRH065,"How do I know if the changes happening to my body are normal, or if I should see a healthcare provider?",P045,20–24,Female,Yoruba
+SRH066,Dangers of abort8ns,P046,20–24,Female,English
+SRH067,What's the cause of erectile dysfunction?,P048,20–24,Male,English
+SRH068,Why can't some men semen fertilize a female egg even though they've been living w healthy life?,P048,20–24,Male,English
+SRH069,How to know  if your semen is in good condition or not as a man,P048,20–24,Male,English
+SRH070,How to perform more on bed,P049,20–24,Female,English
+SRH071,Can Uterine fibroids affect fertility or make it harder to get pregnancy.,P051,20–24,Female,Yoruba
+SRH072,What is the best way to prevent STI  and protect reproductive health.,P051,20–24,Female,Yoruba
+SRH073,"How can I naturally 
+Maintain hormonal balance and improve menstruation and reproductive health.",P051,20–24,Female,Yoruba
+SRH074,How to reduce menstrual pain,P052,20–24,Female,English
+SRH075,Why have menstruation twice a month,P052,20–24,Female,English
+SRH076,"About delayed cycles,",P053,20–24,Female,English
+SRH077,Can Contraptives cause birth defects,P053,20–24,Female,English
+SRH078,Can contraceptive lead to pregnancy difficulties,P053,20–24,Female,English
+SRH079,Does a man go through mesopause?,P055,20–24,Female,English
+SRH080,Does an IUD insertion hurts or results to bleeding?,P055,20–24,Female,English
+SRH081,Cintraceptives,P056,20–24,Male,English
+SRH082,Sexual wellness,P056,20–24,Male,English
+SRH083,Sexually transmitted diseases,P056,20–24,Male,English
+SRH084,How does baby grow,P057,20–24,Female,English
+SRH085,How STI can be contacted,P057,20–24,Female,English
+SRH086,The cure and danger in STI,P057,20–24,Female,English
+SRH087,How to abstain from sexual activity.,P058,20–24,Male,English
+SRH088,When it's ok to start having sexual engagement,P058,20–24,Male,English
+SRH089,Who to be involve with,P058,20–24,Male,English
+SRH090,What is PMOS and how can someone with it live better to work against it effects?,P059,20–24,Female,English
+SRH091,What is the negativity regarding Cesarean section and how can we work against educating people on it and making them understand that it doesn’t make anyone less for going through with the procedure?,P059,20–24,Female,English
+SRH092,"How does the male lifestyle/sperm and female lifestyle affect the period of pregnancy on a woman which includes her body internally, physical features and risks in child bearing.",P059,20–24,Female,English
+SRH093,About AVN,P062,,Male,English
+SRH094,"Does a patner's consent mandatory before sex?
+2.How can one prevent sexual transmitted disease when the other person refuses treatment.",P063,20–24,Female,English
+SRH095,Is it valid to ask for a divorce it couples are not sexualy compatible.,P063,20–24,Female,English
+SRH096,What is reproductive health,P064,20–24,Female,Igbo
+SRH097,How can one know a healthy body,P064,20–24,Female,Igbo
+SRH098,Prevention of health disease,P064,20–24,Female,Igbo
+SRH099,What are the safest and most effective methods of preventing pregnancy?,P065,20–24,Female,Yoruba
+SRH100,"Is it true that if someone doesn't have sex for a long period of time, the person will develop some health issues?",P065,20–24,Female,Yoruba
+SRH101,How to know ur safe zone when menstruation,P066,20–24,Female,English
+SRH102,What is ovarian cyst?,P067,20–24,Female,English
+SRH103,What can one do to heal from ovarian cyst?,P067,20–24,Female,English
+SRH104,How can females prevent ovarian cyst,P067,20–24,Female,English
+SRH105,How to prevent pregnancy after giving birth to first child while having sex,P068,20–24,Female,English

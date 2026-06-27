@@ -1,0 +1,140 @@
+Timestamp,Age Range ,Gender ,Religion,What is your preferred Language ,"Where do you usually get information about sexual and reproductive health?
+(Select all that apply) ",Have you ever felt uncomfortable asking someone a sexual or reproductive health question? ,"If yes, why?",Do you think a private chatbot could help young people access SRH information safely? ,What sexual and reproductive health topics do you need information about?,What SRH topics do you personally want more information about?,"What questions do you commonly ask about 
+Sex, relationships, pregnancy, menstruation, contraception, sexually transmitted infections, or consent?",query_text,What kinds of responses would make you trust a health chatbot?,"If a chatbot detects that a user may be in danger or emotional distress, should it recommend contacting a helpline or healthcare provider? "
+5/29/2026 15:31:02,15–19,Female,,English,Teachers,Yes,Embarrassment,Yes,Hygiene ,"Menstruation, infections and hygiene ","How to calculate menses cycle, whether it's ok to have a sexual partner if safety measures are practiced or if it's ok to have a close friend of the opposite gender ",Questions on menstruation and maintaining good SRH,"Responses that are based on factual evidence, having a sense of understanding and a specific level of sympathy, giving closure. Basically as human as necessary ",Yes
+5/31/2026 18:24:39,15–19,Female,,English,"Social media, Parents/Guardians, Teachers, Internet search, Religious organizations",Yes,Privacy concerns,Yes,Sex education ,Sex education ,Would I get pregnant if I engage in unprotected sex,Would I die using postinor 2,Nice and honest opinion ,Yes
+5/31/2026 18:49:49,20–24,Female,,Yoruba,Social media,Yes,Privacy concerns,Maybe,Sex education ,Virginal health concern ,Healthy sexual life,Any question bothering me ,Confidential reply ,Yes
+5/31/2026 20:20:54,20–24,Female,,Yoruba,"Social media, Friends/Peers, Health workers, Internet search",Yes,Embarrassment,Yes,"Sex Education, period phases and hormonal health ",Period phases and sex Education I ,I think all though,"Sex, period and female hormones ","A comforting, understanding and personalized answer",Yes
+5/31/2026 22:21:27,15–19,Female,,English,"Social media, Friends/Peers, Parents/Guardians, Teachers, Internet search",Yes,Privacy concerns,Yes,Hygiene ,Menstruation and pregnancy in females ,"Well,I actually don't like asking questions on all those but generally young people ask questions like why is mentruation painful, why do females have to be the one to give birth , why is childbirth a whole ride .....",Till then ,Reliable and non-judgemental responses ,Yes
+6/2/2026 14:59:41,20–24,Female,,English,"Parents/Guardians, Internet search, Other",No,,Yes,"Pregnancy, Contraception,Sexual health",Contraception,"all of the above
+","What causes Menstrual Pain 
+How to prevent Stains or leaks during a period
+Pads suggestions for different types of flows
+How to prevent pregnancy
+What causes STIs and UTIs",Empathetic and sincere evidence-based responses  ,Yes
+6/3/2026 0:48:04,20–24,Female,Christianity,English,"Social media, Parents/Guardians, Health workers, Internet search",No,,Yes,Female reproductive system ,Breast cancer ,Pregnancy and sexually transmitted infection ,,A genuine and helpful response,Yes
+6/3/2026 1:10:39,20–24,Female,Christianity,English,Social media,Yes,Fear of judgment,Yes,Women Reproductive System ,Nil,How do I count my menstrual cycle,"How do I know how my reproductive system operates?
+How can one know her safe period 
+How can one avoid STDs",Simple response with I felt explanation,Yes
+6/3/2026 16:06:39,15–19,Female,Christianity,English,"Social media, Friends/Peers, Teachers",No,,Yes,Menstrual health and irregular periods,How can I tell when I'm ovulating ,What causes irregular periods?,"How can I tell if I am ovulating?
+What is the most effective contraceptive method for preventing pregnancy and STIs?
+Can I get pregnant if I have unprotected sex during or shortly after my period?",Transparency and data privacy ,Yes
+6/4/2026 9:42:36,20–24,Female,Christianity,English,"Health workers, Internet search",No,,Maybe,"I would like to ask more information on family planning, STI prevention, reproductive health, consent, and access to sexual and reproductive healthcare services.""","Fertility and reproductive health, family planning, contraceptive options, and STI prevention, AIDS, and Cancer","Safe sex, contraception, menstrual health, STI prevention, pregnancy, healthy relationships, and consent Cancer cell formation","What does consent look like in a healthy relationship, and how can I communicate my boundaries effectively?","I would trust a health chatbot if it provides accurate, evidence-based information, cites reliable medical sources, explains information clearly, protects my privacy, acknowledges when it is uncertain, and encourages users to consult healthcare professionals for serious concerns.",Yes
+6/4/2026 17:06:42,15–19,Female,Christianity,English,"Social media, Internet search",No,,Yes,Infections ,Why do one have bumps on the private part ,How is yeast infection formed ,Why do my vjay itch me atimes /why dose it smell and I wash it every day /how do I clear bumps on my private part and I try my best to get rid of armpit odor ,Sincerely and calm ,Yes
+6/8/2026 10:25:55,15–19,Female,Christianity,English,,Yes,Privacy concerns,Maybe,Personal health ,,Relationship ,,How the person presents his/her response ,Yes
+6/8/2026 10:44:55,15–19,Female,Christianity,English,"Social media, Friends/Peers, Parents/Guardians, Teachers, Internet search",Yes,Lack of trusted person,Yes,All,Breast related.,.,,,
+6/8/2026 10:59:55,20–24,Female,Christianity,Yoruba,"Social media, Friends/Peers, Parents/Guardians, Teachers, Health workers, Internet search, Religious organizations",Yes,Privacy concerns,Yes,,,,,,Yes
+6/8/2026 10:59:58,20–24,Male,Islam,Yoruba,Social media,Yes,Privacy concerns,Yes,Masturbation addiction,Masturbation addiction,Sex,"1. Is masturbation healthy?
+2. What are the downsides to it?
+3. Does it cause not being able to reproduce?",Responses that go inline with my questions,Not Sure
+6/8/2026 12:42:04,20–24,,Islam,Hausa,Social media,Yes,Privacy concerns,Maybe,,,,,,Not Sure
+6/8/2026 14:22:48,20–24,Female,Christianity,Yoruba,"Social media, Friends/Peers, Teachers, Health workers, Internet search, NGOs",Yes,Privacy concerns,Maybe,,,,,,Yes
+6/13/2026 11:13:18,15–19,Male,Islam,English,Social media,Yes,Fear of judgment,Yes,,,,,,
+6/13/2026 11:16:40,20–24,Female,Islam,English,Internet search,Yes,Fear of judgment,Yes,Pregnancy ,Female reproductive ,Pregnancy ,How do men reproduce ,,Yes
+6/13/2026 11:17:45,15–19,Male,Islam,English,Social media,Yes,Embarrassment,Yes,,,,,,Not Sure
+6/13/2026 11:24:18,20–24,Male,Christianity,English,"Social media, Parents/Guardians",Yes,Embarrassment,Yes,,,,,,Yes
+6/13/2026 11:29:57,20–24,Male,Islam,English,"Social media, Friends/Peers, Internet search, Religious organizations, NGOs",No,,Yes,Male reproduction health ,Make reproductive health ,"Sexually transmitted infections, sex","Sex 
+Pregnancy 
+Female reproductive health ",Reproductive health ,Yes
+6/13/2026 11:39:32,20–24,Male,Islam,Yoruba,Social media,No,,Yes,Hygiene in female body ,Pregnancy ,Infection and pregnancy ,Inflation pregnancy and sex ,,Not Sure
+6/13/2026 11:50:10,20–24,Female,Islam,Yoruba,Social media,No,,Yes,Reproductive system ,Lungs,All of the above ,Nothing ,,Yes
+6/13/2026 12:10:48,20–24,Female,Islam,Other,Parents/Guardians,Maybe,Privacy concerns,Yes,"Contraception opinions and side effect, understanding consent in relationships, menstrual health issues like irregular periods ",How effective is withdrawal vs condoms?,Is it normal to have painful period and when should I see a doctor?,"1.How can I know if my discharge is normal or a sign of an STI 
+2.Is it safe to have sex during my period and what are the risks
+3.How do I talk to my partner about using condom without starting a fight ",Privacy assurance ,Yes
+6/13/2026 12:58:57,20–24,Male,Islam,English,Social media,Yes,Cultural/religious reasons,Yes,Pregnancy test ,Pregnancy signs,Signs of pregnancy ,Why did a person become sex addict,Everything will be fine,Yes
+6/13/2026 18:10:34,20–24,Female,Islam,English,"Social media, Parents/Guardians, NGOs",Yes,,Yes,,Infection and STIs,Sexually transmitted diseases ,,,Yes
+6/14/2026 8:12:33,20–24,Female,Christianity,English,Internet search,Yes,Embarrassment,Maybe,The way sex and Reproduction affect the woman body,Safe sex ,"How to actually bring up this conversation with a partner
+How to ensure one partner is not carrying STIs
+Things that causes missed menstruation ","How to actually bring up this conversation with a partner
+How to ensure one partner is not carrying STIs
+Things that causes missed menstruation ",Non judgemental and not overly fawning or AIish answers ,Yes
+6/16/2026 12:51:57,20–24,Female,Christianity,English,Social media,No,Privacy concerns,Yes,all,mestraul health,,"time my mestraul cycle
+",humanly answer,Yes
+6/16/2026 12:55:55,20–24,Female,Islam,English,"Social media, Friends/Peers, Parents/Guardians, Teachers, Health workers, Internet search, NGOs",Yes,Privacy concerns,Yes,Hormonal Health,"PMOS, Endometriosis, Adenomyosis",,How can i manage a hormonal imbalance? What are the fruits and food i should avoid as someone with a hormonal imbalance? Where is the nearest clinic near me,,Yes
+6/19/2026 8:34:49,20–24,Female,Christianity,English,"Social media, Friends/Peers, Health workers",Yes,Other,Yes,STI,STI,Pregnancy ,"STI,pregnancy,conception ",Answer to all questions asked ,Yes
+6/19/2026 8:38:16,20–24,Female,Christianity,English,"Social media, Friends/Peers, Parents/Guardians, Internet search",No,,Yes,Sex,Contraception ,Consent,"Recommend healthy sex styles 
+Recommend healthy habits to adopt after sex
+Recommend good condom products ",,Yes
+6/19/2026 16:26:57,20–24,Male,Christianity,English,"Social media, Health workers",Yes,Privacy concerns,Yes,High libido ,Reproduction ,,Sexual safety ,,Yes
+6/22/2026 10:19:20,20–24,Female,Christianity,English,Parents/Guardians,No,Other,Yes,STD,AIDS,How do one get infection aside from sex?,"How do one contact HIV
+How does a child grow in the human reproductive system
+What the cure to AIDS",Positive response like getting solutions on the issues being asked,Yes
+6/23/2026 17:00:54,20–24,Female,Christianity,Other,Parents/Guardians,No,,Maybe,The private part ,,Sex,,Kindness and care,Yes
+6/26/2026 8:07:35,20–24,Female,Christianity,English,"Social media, Friends/Peers, Parents/Guardians, Teachers, Internet search",Yes,Privacy concerns,Yes,Breast ,Female reproductive organ ,How to reduce menstrual cramps ,"How to reduce menstrual cramps .
+Drugs for curing STI. 
+",Ways to reduce cramps ,Yes
+6/27/2026 9:05:51,20–24,Female,Christianity,English,"Social media, Parents/Guardians, Internet search",Yes,Fear of judgment,Yes,Female sexuality everything I need to know about my body ,,"What medical tests are required of me?
+What’s the importance of supplements in woman health?
+","What’s the first thing to do after Rape?
+Give more important reasons to avoid unprotected sex",Emotional and connection feeling ,Yes
+6/27/2026 9:19:03,20–24,Female,Christianity,Igbo,"Social media, Friends/Peers, Parents/Guardians",No,,Maybe,Cervical cancer & hpv ,,,"STI are mostly common amongst which gender?
+",Not fully ,Not Sure
+6/27/2026 9:21:22,20–24,Female,Christianity,English,"Health workers, Internet search",Yes,Privacy concerns,Yes,Sexually transmitted infections ,Sexually transmitted infections ,Pregnancy,Well being related questions ,The right response ,Yes
+6/27/2026 9:23:25,20–24,Female,Christianity,English,"Social media, Friends/Peers, Parents/Guardians, Teachers, Health workers, Internet search, Religious organizations, NGOs, Other",Yes,Privacy concerns,Yes,The clitoris,,Sex and consent ,How does the clitoris give pleasure? How do you know if you were circumcised? What is oral sex? ,Direct response,Yes
+6/27/2026 9:37:20,20–24,Female,Christianity,English,Social media,Yes,Privacy concerns,Yes,Woman reproductive care,Fertility ,Pregnancy ,"Reproductive health
+Menstrual cycle 
+STD",In-depth explains with fact ,Yes
+6/27/2026 9:49:24,20–24,Female,Christianity,Igbo,"Social media, Teachers, Health workers, Religious organizations, NGOs",Yes,Privacy concerns,Yes,Womb ,Sex education ,Sex,,Genuine ,Not Sure
+6/27/2026 9:54:13,20–24,Female,Christianity,English,Friends/Peers,No,,Yes,Female reproductive system ,Reproductive health care ,How the reproductive system works?,"How does the reproductive system work? 
+How do you identify a rape victim ?
+How does a Virginia cleanse it self ?",Accurate responses ,Yes
+6/27/2026 9:58:57,20–24,Female,Islam,English,Social media,Yes,Lack of trusted person,Yes,Intimacy and risk of infections ,Cervical cancer and other STIs ,Pregnancy and STI,"Best way to maintain hygiene? 
+Symptoms of STIs
+Pregnancy ",Detailed and non judgmental ,Yes
+6/27/2026 10:05:33,20–24,Female,Christianity,Yoruba,Internet search,No,,Yes, Gender-based violence and where to get help,"information about contraception, preventing STIs, consent and healthy relationships, menstrual and reproductive health, fertility, and how to know when to see a healthcare provider.",Relationships ,"1. How can I protect myself from sexually transmitted infections (STIs), and when should I get tested?
+2.     How can I track my menstrual cycle, and what is considered a normal period?
+3. How do I know if the changes happening to my body are normal, or if I should see a healthcare provider?"," Responds without judgment, making it feel safe to ask sensitive or personal questions.",Yes
+6/27/2026 10:14:55,20–24,Female,Christianity,English,Internet search,Yes,Fear of judgment,Maybe,Can contraceptive destroy a lady's chance of getting pregnant ,Pregnancy ,Sexually transmitted infections and pregnancy ,1. Pregnancy 2. STD 3. Dangers of abort8ns,Positive responses ,Yes
+6/27/2026 10:17:40,20–24,Female,Christianity,English,"Social media, Friends/Peers, Teachers, Health workers, Internet search",Yes,Privacy concerns,Yes,Female reproductive cycle tracking and hormonal changes ,Risk of using contraceptives ,Ovulation period tracking ,,,Yes
+6/27/2026 10:24:46,20–24,Male,Islam,English,"Social media, Friends/Peers",No,Other,Yes,Reasons behind some men being unreproductive,What's the cause of erectile dysfunction in men ,Sex,"1. What's the cause of erectile dysfunction? 
+2. Why can't some men semen fertilize a female egg even though they've been living w healthy life? 
+3. How to know  if your semen is in good condition or not as a man ",Best response ,Not Sure
+6/27/2026 10:30:05,20–24,Female,Islam,English,"Social media, Friends/Peers, Health workers, Internet search, Religious organizations, NGOs",Yes,Fear of judgment,Yes,,Health,"Sex, sexually transmitted infection consent",How to perform more on bed,Accurate ,Yes
+6/27/2026 10:37:25,20–24,Male,Christianity,English,"Social media, Internet search",Yes,Embarrassment,Yes,,,,,,Yes
+6/27/2026 10:40:49,20–24,Female,Islam,Yoruba,Parents/Guardians,Yes,Privacy concerns,Yes,Uterine fibroids,"Fertility, uterine fibroids, hormonal health, menstrual health, family planning, and STI prevention.",Menstruation ,"1. Can Uterine fibroids affect fertility or make it harder to get pregnancy. 
+2. What is the best way to prevent STI  and protect reproductive health. 
+3. How can I naturally 
+Maintain hormonal balance and improve menstruation and reproductive health.","I would trust a health chatbot if it provides accurate, evidence-based information, explains things clearly in simple language, respects my privacy, avoids judgment, and advises me to see a healthcare professional when necessary. I would also trust it more if it cites reliable medical sources.",Yes
+6/27/2026 10:41:17,20–24,Female,Islam,English,"Internet search, NGOs",Yes,Embarrassment,Yes,Hormone,Hormone ,Menstruation,"How to reduce menstrual pain 
+Why have menstruation twice a month 
+",Clear response ,Yes
+6/27/2026 10:43:40,20–24,Female,Christianity,English,"Social media, Friends/Peers, Parents/Guardians, Teachers, Health workers",Yes,Fear of judgment,Yes,"Menstruation cycle, pregnancy hormones, sex urges and control,  contraception ","Menstruation cycle, pregnancy hormones, STIs, contraception ","When contraceptive can be taken after sex,
+natural contraceptives, STIs symptoms, irregular cycle
+","About delayed cycles, 
+Can Contraptives cause birth defects
+Can contraceptive lead to pregnancy difficulties 
+",A direct answer with reasons,Not Sure
+6/27/2026 10:47:31,20–24,Female,Christianity,English,"Social media, Friends/Peers",No,,Maybe,Women health ,Regulation of vaginal health,How do i balance my ph balance ,,Truthfully ,Yes
+6/27/2026 10:53:37,20–24,Female,Christianity,English,"Teachers, Health workers, Internet search",Yes,Privacy concerns,Maybe,Sexual health functions,Contraception and family planning ,What is the most effective form of contraception ,"Does a man go through mesopause? 
+Does an IUD insertion hurts or results to bleeding?",The type where am given details and facts with solutions to my problems ,Yes
+6/27/2026 10:56:14,20–24,Male,Christianity,English,"Parents/Guardians, Health workers, Internet search",Yes,Privacy concerns,Yes,Sexual wellness ,Cintraceptives,Sexually transmitted infections,"Cintraceptives 
+Sexual wellness 
+Sexually transmitted diseases ",Accurate answers,Yes
+6/27/2026 10:57:21,20–24,Female,Islam,English,"Social media, Friends/Peers",No,,Maybe,Care for private part ,Pregnancy ,How child grow in the uterus,"How does baby grow 
+How STI can be contacted 
+The cure and danger in STI ",Correct response ,Yes
+6/27/2026 10:59:36,20–24,Male,Prefer Not to Say,English,Social media,Yes,Lack of trusted person,Maybe,Premarital sex,Dangers of sexual activities ,STI,"How to abstain from sexual activity.
+When it's ok to start having sexual engagement 
+Who to be involve with",Honest response ,Yes
+6/27/2026 11:30:46,20–24,Female,Christianity,English,"Social media, Friends/Peers, Parents/Guardians, Internet search, NGOs",No,,Maybe,None,"I believe more people should educate themselves on PMOS, Cesarean section and child birth.",I ask on all sections because each and everyone is important in their own way and work together closely ,"1.What is PMOS and how can someone with it live better to work against it effects?
+2. What is the negativity regarding Cesarean section and how can we work against educating people on it and making them understand that it doesn’t make anyone less for going through with the procedure?
+3. How does the male lifestyle/sperm and female lifestyle affect the period of pregnancy on a woman which includes her body internally, physical features and risks in child bearing.",Positive answer with a lot of insights that explains the direct question first before going in depth to let you understand the answer to your question and a lot more surrounding it,Yes
+6/27/2026 11:52:53,20–24,Female,Islam,English,Teachers,No,Privacy concerns,Yes,Sexual transmitted infection ,Sex,Sexually transmitted infections ,,Sex ,Yes
+6/27/2026 12:27:37,20–24,Male,Christianity,English,Internet search,No,,No,,,,,,Not Sure
+6/27/2026 12:28:42,,Male,Islam,English,"Social media, Internet search",Yes,Lack of trusted person,Yes,Non,Avascular necrosis,Genotype,About AVN,Verifiable information ,Yes
+6/27/2026 12:51:23,20–24,Female,Islam,English,"Social media, Teachers, Health workers, Religious organizations",Yes,Privacy concerns,Maybe,Sexual compatibility ,Healthy ,Consent,"1.Does a patner's consent mandatory before sex?
+2.How can one prevent sexual transmitted disease when the other person refuses treatment. 
+3. Is it valid to ask for a divorce it couples are not sexualy compatible. ",The response that matches a known knowledge about the question. ,Yes
+6/27/2026 12:55:52,20–24,Female,Christianity,Igbo,"Social media, Friends/Peers, Health workers, Internet search, Religious organizations, NGOs",No,,Yes,Fertility ,Fertility ,"Sex, relationships, pregnancy, menstruation, contraception","What is reproductive health 
+How can one know a healthy body 
+Prevention of health disease ",Near human conversation ,Yes
+6/27/2026 13:28:24,20–24,Female,Islam,Yoruba,"Social media, Friends/Peers, Internet search",Yes,Embarrassment,Yes,"PMOS, sexual consent in marriage ",Safe sex practises ,"What's the best age bracket for pregnancy? What is difference between Female circumcision and female genital mutilation and why is it a harmful traditional practises when it is to save a girl child from being flirty? Why do some Virgins have fibroid? 
+Most people believe that you can get pregnant the first time you have sex that you must have had it severally before pregnancy occur how true is that? ","What are the safest and most effective methods of preventing pregnancy? 
+
+Is it true that if someone doesn't have sex for a long period of time, the person will develop some health issues?
+
+","If the responses I get is clear, authentic and not misleading Because I often double check any information I get to become very certain ",Yes
+6/27/2026 13:45:33,20–24,Female,Islam,English,"Social media, Parents/Guardians, Teachers, Health workers",Yes,Privacy concerns,Yes,Ovulation period ,How to know menstrual cycle ,Menstruation ,"How to know ur safe zone when menstruation 
+",Non judgmental ,Not Sure
+6/27/2026 13:46:50,20–24,Female,Christianity,English,"Social media, Friends/Peers, Health workers, Internet search",Yes,Privacy concerns,Yes,The female reproductive and sexual health topics,Hpv{humanpapolimavirus} and everything about the female reproductive and sexual health,,What is ovarian cyst? What can one do to heal from ovarian cyst? How can females prevent ovarian cyst ,A private and helpful response ,Yes
+6/27/2026 14:05:27,20–24,Female,Christianity,English,"Social media, Friends/Peers, Health workers",No,Cultural/religious reasons,Yes,Contraceptive,"Pregnancy, menstruation, contraception",All,How to prevent pregnancy after giving birth to first child while having sex,Confidentiality,Yes
