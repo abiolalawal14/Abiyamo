@@ -1,108 +1,62 @@
 id,text,participant_id,age_range,gender,language
-SRH001,Questions on menstruation and maintaining good SRH,P001,15–19,Female,English
-SRH002,Would I die using postinor 2,P002,15–19,Female,English
-SRH003,Any question bothering me,P003,20–24,Female,Yoruba
-SRH004,"Sex, period and female hormones",P004,20–24,Female,Yoruba
-SRH005,Till then,P005,15–19,Female,English
-SRH006,What causes Menstrual Pain,P006,20–24,Female,English
-SRH007,How to prevent Stains or leaks during a period,P006,20–24,Female,English
-SRH008,Pads suggestions for different types of flows,P006,20–24,Female,English
-SRH009,How to prevent pregnancy,P006,20–24,Female,English
-SRH010,What causes STIs and UTIs,P006,20–24,Female,English
-SRH011,How do I know how my reproductive system operates?,P008,20–24,Female,English
-SRH012,How can one know her safe period,P008,20–24,Female,English
-SRH013,How can one avoid STDs,P008,20–24,Female,English
-SRH014,How can I tell if I am ovulating?,P009,15–19,Female,English
-SRH015,What is the most effective contraceptive method for preventing pregnancy and STIs?,P009,15–19,Female,English
-SRH016,Can I get pregnant if I have unprotected sex during or shortly after my period?,P009,15–19,Female,English
-SRH017,"What does consent look like in a healthy relationship, and how can I communicate my boundaries effectively?",P010,20–24,Female,English
-SRH018,Why do my vjay itch me atimes /why dose it smell and I wash it every day /how do I clear bumps on my private part and I try my best to get rid of armpit odor,P011,15–19,Female,English
-SRH019,Is masturbation healthy?,P015,20–24,Male,Yoruba
-SRH020,What are the downsides to it?,P015,20–24,Male,Yoruba
-SRH021,Does it cause not being able to reproduce?,P015,20–24,Male,Yoruba
-SRH022,How do men reproduce,P019,20–24,Female,English
-SRH023,Sex,P022,20–24,Male,English
-SRH024,Pregnancy,P022,20–24,Male,English
-SRH025,Female reproductive health,P022,20–24,Male,English
-SRH026,Inflation pregnancy and sex,P023,20–24,Male,Yoruba
-SRH027,1.How can I know if my discharge is normal or a sign of an STI,P025,20–24,Female,Other
-SRH028,2.Is it safe to have sex during my period and what are the risks,P025,20–24,Female,Other
-SRH029,3.How do I talk to my partner about using condom without starting a fight,P025,20–24,Female,Other
-SRH030,Why did a person become sex addict,P026,20–24,Male,English
-SRH031,How to actually bring up this conversation with a partner,P028,20–24,Female,English
-SRH032,How to ensure one partner is not carrying STIs,P028,20–24,Female,English
-SRH033,Things that causes missed menstruation,P028,20–24,Female,English
-SRH034,time my mestraul cycle,P029,20–24,Female,English
-SRH035,How can i manage a hormonal imbalance?,P030,20–24,Female,English
-SRH036,What are the fruits and food i should avoid as someone with a hormonal imbalance?,P030,20–24,Female,English
-SRH037,Where is the nearest clinic near me,P030,20–24,Female,English
-SRH038,"STI,pregnancy,conception",P031,20–24,Female,English
-SRH039,Recommend healthy sex styles,P032,20–24,Female,English
-SRH040,Recommend healthy habits to adopt after sex,P032,20–24,Female,English
-SRH041,Recommend good condom products,P032,20–24,Female,English
-SRH042,Sexual safety,P033,20–24,Male,English
-SRH043,How do one contact HIV,P034,20–24,Female,English
-SRH044,How does a child grow in the human reproductive system,P034,20–24,Female,English
-SRH045,What the cure to AIDS,P034,20–24,Female,English
-SRH046,How to reduce menstrual cramps .,P036,20–24,Female,English
-SRH047,Drugs for curing STI.,P036,20–24,Female,English
-SRH048,What’s the first thing to do after Rape?,P037,20–24,Female,English
-SRH049,Give more important reasons to avoid unprotected sex,P037,20–24,Female,English
-SRH050,STI are mostly common amongst which gender?,P038,20–24,Female,Igbo
-SRH051,Well being related questions,P039,20–24,Female,English
-SRH052,How does the clitoris give pleasure?,P040,20–24,Female,English
-SRH053,How do you know if you were circumcised?,P040,20–24,Female,English
-SRH054,What is oral sex?,P040,20–24,Female,English
-SRH055,Reproductive health,P041,20–24,Female,English
-SRH056,Menstrual cycle,P041,20–24,Female,English
-SRH057,STD,P041,20–24,Female,English
-SRH058,How does the reproductive system work?,P043,20–24,Female,English
-SRH059,How do you identify a rape victim ?,P043,20–24,Female,English
-SRH060,How does a Virginia cleanse it self ?,P043,20–24,Female,English
-SRH061,Best way to maintain hygiene?,P044,20–24,Female,English
-SRH062,Symptoms of STIs,P044,20–24,Female,English
-SRH063,"How can I protect myself from sexually transmitted infections (STIs), and when should I get tested?",P045,20–24,Female,Yoruba
-SRH064,"How can I track my menstrual cycle, and what is considered a normal period?",P045,20–24,Female,Yoruba
-SRH065,"How do I know if the changes happening to my body are normal, or if I should see a healthcare provider?",P045,20–24,Female,Yoruba
-SRH066,Dangers of abort8ns,P046,20–24,Female,English
-SRH067,What's the cause of erectile dysfunction?,P048,20–24,Male,English
-SRH068,Why can't some men semen fertilize a female egg even though they've been living w healthy life?,P048,20–24,Male,English
-SRH069,How to know  if your semen is in good condition or not as a man,P048,20–24,Male,English
-SRH070,How to perform more on bed,P049,20–24,Female,English
-SRH071,Can Uterine fibroids affect fertility or make it harder to get pregnancy.,P051,20–24,Female,Yoruba
-SRH072,What is the best way to prevent STI  and protect reproductive health.,P051,20–24,Female,Yoruba
-SRH073,"How can I naturally 
-Maintain hormonal balance and improve menstruation and reproductive health.",P051,20–24,Female,Yoruba
-SRH074,How to reduce menstrual pain,P052,20–24,Female,English
-SRH075,Why have menstruation twice a month,P052,20–24,Female,English
-SRH076,"About delayed cycles,",P053,20–24,Female,English
-SRH077,Can Contraptives cause birth defects,P053,20–24,Female,English
-SRH078,Can contraceptive lead to pregnancy difficulties,P053,20–24,Female,English
-SRH079,Does a man go through mesopause?,P055,20–24,Female,English
-SRH080,Does an IUD insertion hurts or results to bleeding?,P055,20–24,Female,English
-SRH081,Cintraceptives,P056,20–24,Male,English
-SRH082,Sexual wellness,P056,20–24,Male,English
-SRH083,Sexually transmitted diseases,P056,20–24,Male,English
-SRH084,How does baby grow,P057,20–24,Female,English
-SRH085,How STI can be contacted,P057,20–24,Female,English
-SRH086,The cure and danger in STI,P057,20–24,Female,English
-SRH087,How to abstain from sexual activity.,P058,20–24,Male,English
-SRH088,When it's ok to start having sexual engagement,P058,20–24,Male,English
-SRH089,Who to be involve with,P058,20–24,Male,English
-SRH090,What is PMOS and how can someone with it live better to work against it effects?,P059,20–24,Female,English
-SRH091,What is the negativity regarding Cesarean section and how can we work against educating people on it and making them understand that it doesn’t make anyone less for going through with the procedure?,P059,20–24,Female,English
-SRH092,"How does the male lifestyle/sperm and female lifestyle affect the period of pregnancy on a woman which includes her body internally, physical features and risks in child bearing.",P059,20–24,Female,English
-SRH093,About AVN,P062,,Male,English
-SRH094,"Does a patner's consent mandatory before sex?
-2.How can one prevent sexual transmitted disease when the other person refuses treatment.",P063,20–24,Female,English
-SRH095,Is it valid to ask for a divorce it couples are not sexualy compatible.,P063,20–24,Female,English
-SRH096,What is reproductive health,P064,20–24,Female,Igbo
-SRH097,How can one know a healthy body,P064,20–24,Female,Igbo
-SRH098,Prevention of health disease,P064,20–24,Female,Igbo
-SRH099,What are the safest and most effective methods of preventing pregnancy?,P065,20–24,Female,Yoruba
-SRH100,"Is it true that if someone doesn't have sex for a long period of time, the person will develop some health issues?",P065,20–24,Female,Yoruba
-SRH101,How to know ur safe zone when menstruation,P066,20–24,Female,English
-SRH102,What is ovarian cyst?,P067,20–24,Female,English
-SRH103,What can one do to heal from ovarian cyst?,P067,20–24,Female,English
-SRH104,How can females prevent ovarian cyst,P067,20–24,Female,English
-SRH105,How to prevent pregnancy after giving birth to first child while having sex,P068,20–24,Female,English
+SRH124,What does consent look like in a healthy relationship,P010,20–24,Female,English
+SRH125,and how can I communicate my boundaries effectively?,P010,20–24,Female,English
+SRH126,Why do my vjay itch me atimes,P011,15–19,Female,English
+SRH127,why dose it smell and I wash it every day,P011,15–19,Female,English
+SRH128,how do I clear bumps on my private part and I try my best to get rid of armpit odor,P011,15–19,Female,English
+SRH129,menstruation,P076,20–24,Female,English
+SRH130,how to take care of my skin,P076,20–24,Female,English
+SRH131,"I have been having this yellowish discharge for almost two weeks now and it has a strange smell, is something wrong with me?",SYNTHETIC,,,
+SRH132,"My period has not come for almost two months and I am not pregnant, what could be happening to my body?",SYNTHETIC,,,
+SRH133,"I feel a sharp burning sensation every time I urinate and it started after I was with someone, should I be worried?",SYNTHETIC,,,
+SRH134,"There is a small painful lump near my private area and I do not know what it is, what should I do?",SYNTHETIC,,,
+SRH135,"I have been having stomach cramps that are not related to my period and they come and go, what could be causing this?",SYNTHETIC,,,
+SRH136,"My boyfriend told me he has an infection and I am scared I might have caught something from him, how do I know if I have it too?",SYNTHETIC,,,
+SRH137,"I noticed some small bumps around my private parts that were not there before, I am too embarrassed to go to a clinic, what are they?",SYNTHETIC,,,
+SRH138,"I had unprotected sex three weeks ago and now I have a rash on my body, could this be related?",SYNTHETIC,,,
+SRH139,"My period comes every two weeks instead of every month and the bleeding is very heavy, is this normal for someone my age?",SYNTHETIC,,,
+SRH140,I have been feeling pain during sex and I do not know if it is normal or if something is wrong with me inside?,SYNTHETIC,,,
+SRH141,"I took the morning after pill but my period is now two weeks late and I am very anxious, what is happening?",SYNTHETIC,,,
+SRH142,"There is itching and redness around my private area that has been there for about a week, what could be causing it?",SYNTHETIC,,,
+SRH143,"I have never been tested for anything before and I am worried because I have had more than one partner, how do I know if I am clean?",SYNTHETIC,,,
+SRH144,"I had sex for the first time last month and since then I have been having pain in my lower abdomen, is this connected?",SYNTHETIC,,,
+SRH145,"My breasts have been very tender and sore for the past two weeks and I do not know why, should I be concerned?",SYNTHETIC,,,
+SRH146,"I noticed my discharge has changed colour and consistency recently, I do not know if I should see a doctor or if it is normal?",SYNTHETIC,,,
+SRH147,I think I may have gotten something from someone but I am too scared to go to the hospital because my parents might find out?,SYNTHETIC,,,
+SRH148,"I have been having headaches and dizziness since I started taking a contraceptive pill my friend gave me, is this dangerous?",SYNTHETIC,,,
+SRH149,"After my last relationship ended I noticed some sores appeared down there, could this be an STI and how long does it take for symptoms to show?",SYNTHETIC,,,
+SRH150,"I am 19 and my periods have been very irregular since I started having sex, my friend said this is normal but I am not sure?",SYNTHETIC,,,
+SRH151,Something happened to me at a party last week that I did not agree to and I do not know who to talk to or what to do about it?,SYNTHETIC,,,
+SRH152,"I am pregnant and I am only 17, my boyfriend has disappeared and my parents are very strict, I am scared and I do not know what to do?",SYNTHETIC,,,
+SRH153,My uncle has been touching me in ways that make me uncomfortable and I am scared to tell anyone because no one will believe me?,SYNTHETIC,,,
+SRH154,I was forced to have sex by someone I trusted and I have been keeping it to myself for months because I am ashamed?,SYNTHETIC,,,
+SRH155,"I think I might be pregnant and if my family finds out they will throw me out of the house, I am panicking and do not know where to turn?",SYNTHETIC,,,
+SRH156,"Someone sent my private pictures to other people without my permission and now I am being threatened, I do not know what to do?",SYNTHETIC,,,
+SRH157,I feel like I cannot tell anyone about what happened to me because in my community this kind of thing is seen as the girl's fault?,SYNTHETIC,,,
+SRH158,"A man at my workplace has been forcing himself on me and threatening my job if I tell anyone, I am scared and need help?",SYNTHETIC,,,
+SRH159,"I have been in a relationship where my partner forces me to have sex even when I say no, I did not know this was wrong until recently?",SYNTHETIC,,,
+SRH160,"I am 16 and an older man has been giving me money and now he is pressuring me to do things I am not comfortable with, I feel trapped?",SYNTHETIC,,,
+SRH161,What happened to me last month was not my fault right? I said no but he did not stop and now I am afraid to talk about it with anyone?,SYNTHETIC,,,
+SRH162,"I think someone put something in my drink at a party and I woke up not knowing what happened, I am very confused and scared?",SYNTHETIC,,,
+SRH163,"I am three months pregnant and the person responsible is denying everything, my family does not know and I feel completely alone?",SYNTHETIC,,,
+SRH164,"My boyfriend beats me sometimes and also forces me to have sex with him, I am scared to leave because he says he will hurt me?",SYNTHETIC,,,
+SRH165,"I feel like my life is over since what happened to me, I have not been able to sleep or eat properly and I do not want to talk to anyone?",SYNTHETIC,,,
+SRH166,Someone in my family has been abusing me for a long time and I am finally ready to tell someone but I do not know how or where to start?,SYNTHETIC,,,
+SRH167,"I am a young girl and a teacher at my school has been making sexual advances towards me and touching me inappropriately, what do I do?",SYNTHETIC,,,
+SRH168,"I feel so ashamed about what happened that I have been thinking about hurting myself, I do not know who to talk to?",SYNTHETIC,,,
+SRH169,I was assaulted by a group of boys I know and I am too terrified to go to the police because they said they will do worse if I report?,SYNTHETIC,,,
+SRH170,I found out I am pregnant from an assault and I do not know what my options are or who can help me without judging me?,SYNTHETIC,,,
+SRH171,What exactly happens to a girl's body during puberty and is it normal for it to happen at different ages for different people?,SYNTHETIC,,,
+SRH172,Can a girl get pregnant the very first time she has sex or does it take multiple times before pregnancy can happen?,SYNTHETIC,,,
+SRH173,What is the difference between an STI and an STD and are they the same thing?,SYNTHETIC,,,
+SRH174,How effective is the contraceptive injection compared to the pill and which one is better for someone my age?,SYNTHETIC,,,
+SRH175,If a condom breaks during sex what are the steps I should take immediately afterwards?,SYNTHETIC,,,
+SRH176,What does it mean when people say someone is HIV positive and can a person look healthy and still have HIV?,SYNTHETIC,,,
+SRH177,Is it true that you cannot get pregnant during your period or is that just a myth?,SYNTHETIC,,,
+SRH178,How long after unprotected sex can you still take the morning after pill and does it always work?,SYNTHETIC,,,
+SRH179,What are the signs that someone might have a sexually transmitted infection even if they feel completely fine?,SYNTHETIC,,,
+SRH180,Can STIs be cured completely or do some of them stay with you forever once you have them?,SYNTHETIC,,,
+SRH181,What is consent and how do you know if you have properly given consent to something?,SYNTHETIC,,,
+SRH182,Is it normal to feel pain during your first time having sex and how long does that usually last?,SYNTHETIC,,,
+SRH183,What is the safest form of contraception for a young person who has never used contraception before?,SYNTHETIC,,,
+SRH184,Can a person get an STI from oral sex or only from penetrative sex?,SYNTHETIC,,,

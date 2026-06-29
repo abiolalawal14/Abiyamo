@@ -46,6 +46,16 @@ LANGUAGE_CODES: dict[str, str] = {
     "ig": "ibo_Latn",
 }
 
+# Plain-name → NLLB code mapping. Exposed so webhook.py and other
+# entry points can validate a user's stated language preference
+# without duplicating this list.
+SUPPORTED_LANGUAGES: dict[str, str] = {
+    "english": "eng_Latn",
+    "hausa":   "hau_Latn",
+    "yoruba":  "yor_Latn",
+    "igbo":    "ibo_Latn",
+}
+
 # NLLB-200 distilled 600M. The full model (3.3B) would give marginally
 # better quality but cannot run on CPU at acceptable latency for a pilot.
 MODEL_NAME = "facebook/nllb-200-distilled-600M"
@@ -134,7 +144,7 @@ def _translate(text: str, source_lang: str, target_lang: str) -> str:
         return translated
 
     except Exception as e:
-        print(f"[translator] Translation failed ({source_lang} → {target_lang}): {e}")
+        print(f"[translator] Translation failed ({source_lang} -> {target_lang}): {e}")
         return text
 
 
@@ -201,6 +211,11 @@ def from_english(text: str, target_lang: str = "en") -> str:
     return _translate(text, source_lang=LANGUAGE_CODES["en"], target_lang=nllb_target)
 
 
+def get_supported_languages() -> list[str]:
+    """Returns the plain-name list of languages this module can translate."""
+    return list(SUPPORTED_LANGUAGES.keys())
+
+
 # ---------------------------------------------------------------------------
 # Quick manual test — runs only when this file is executed directly.
 # First call loads the model (~30-60s on CPU). Requires internet access
@@ -208,13 +223,13 @@ def from_english(text: str, target_lang: str = "en") -> str:
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    print("=== TEST 1: Hausa → English ===")
+    print("=== TEST 1: Hausa -> English ===")
     hausa_q = "Kisa ake nufi da hana haihuwa?"
     result = to_english(hausa_q, source_lang="ha")
     print(f"Input  (ha): {hausa_q}")
     print(f"Output (en): {result}")
 
-    print("\n=== TEST 2: English → Hausa ===")
+    print("\n=== TEST 2: English -> Hausa ===")
     english_a = "Family planning means choosing when and how many children to have."
     result = from_english(english_a, target_lang="ha")
     print(f"Input  (en): {english_a}")
@@ -227,13 +242,13 @@ if __name__ == "__main__":
     print(f"Output (en): {result}")
     print(f"Unchanged  : {original == result}")
 
-    print("\n=== TEST 4: Yoruba → English ===")
-    yoruba_q = "Kini itumọ idena oyun?"
+    print("\n=== TEST 4: Yoruba -> English ===")
+    yoruba_q = "Kini itumo idena oyun?"
     result = to_english(yoruba_q, source_lang="yo")
     print(f"Input  (yo): {yoruba_q}")
     print(f"Output (en): {result}")
 
-    print("\n=== TEST 5: English → Igbo ===")
+    print("\n=== TEST 5: English -> Igbo ===")
     english_a = "You can prevent HIV by using condoms consistently."
     result = from_english(english_a, target_lang="ig")
     print(f"Input  (en): {english_a}")

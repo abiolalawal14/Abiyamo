@@ -47,6 +47,7 @@ OUTPUT_DIR          = os.path.join("data", "raw_queries")
 OUTPUT_LABEL_STUDIO = os.path.join(OUTPUT_DIR, "label_studio_import.csv")
 OUTPUT_WITH_METADATA = os.path.join(OUTPUT_DIR, "queries_with_metadata.csv")
 OUTPUT_PARTICIPANT_SUMMARY = os.path.join(OUTPUT_DIR, "participant_summary.csv")
+SYNTHETIC_QUERIES_PATH = os.path.join(OUTPUT_DIR, "synthetic_queries.csv")
 
 TIMESTAMP_COL  = "Timestamp"
 QUERY_COL      = "query_text"
@@ -107,21 +108,55 @@ DIAGNOSTIC_KEYWORDS = [
 
 _NUMBERED_SPLIT_RE = re.compile(r'(?<!\d)(?=\d+[\.\)]\s)')
 
+# Question-start words used to guard comma splitting from destroying sentences.
+_QUESTION_START_WORDS = {
+    "what", "how", "when", "why", "where", "can", "is", "are",
+    "do", "does", "will", "should", "could", "would", "which",
+}
 
-def _split_cell(cell: str) -> list[str]:
+
+def _starts_with_question_word(fragment: str) -> bool:
+    words = fragment.strip().split()
+    return bool(words) and words[0].lower().rstrip("?,") in _QUESTION_START_WORDS
+
+
+def _split_cell(cell: str) -> tuple[list[str], str]:
+    """Returns (fragments, split_method) where split_method names the pass that fired."""
     text = cell.strip()
     if not text:
-        return []
+        return [], "none"
 
+    # Pass 1: numbered list patterns (1. 2. 3. or 1) 2) 3))
     parts = [p.strip() for p in _NUMBERED_SPLIT_RE.split(text) if p.strip()]
     if len(parts) > 1:
         cleaned = [re.sub(r'^\d+[\.\)]\s*', '', p).strip() for p in parts]
-        return [c for c in cleaned if c]
+        return [c for c in cleaned if c], "numbered"
 
+    # Pass 2: newline splitting
     parts = [p.strip() for p in re.split(r'\r?\n', text) if p.strip()]
     if len(parts) > 1:
-        return parts
+        return parts, "newline"
 
+    # Pass 2b: slash splitting — split on " / " or "/" surrounded by spaces.
+    # Short fragments (<=15 chars) after a slash are more likely inline
+    # constructs (HIV/AIDS, yes/no) than standalone questions.
+    parts = [p.strip() for p in re.split(r'\s*/\s*', text) if p.strip()]
+    if len(parts) > 1 and all(len(p) > 15 for p in parts):
+        return parts, "slash"
+
+    # Pass 2c: comma splitting.
+    # Naive comma splitting destroys normal sentences — "I am 20, and I want
+    # to know about contraception" has a comma that is NOT a question boundary.
+    # Guards require each fragment to be long (>8 chars) AND at least one must
+    # look like a question (ends with "?" or starts with a question word).
+    # This filters out list-inside-sentence patterns and pure declarative clauses.
+    parts = [p.strip() for p in text.split(",") if p.strip()]
+    if (len(parts) >= 2
+            and all(len(p) > 8 for p in parts)
+            and any(p.endswith("?") or _starts_with_question_word(p) for p in parts)):
+        return parts, "comma"
+
+    # Pass 3: question mark splitting
     parts = text.split("?")
     reassembled = []
     for i, p in enumerate(parts):
@@ -132,15 +167,16 @@ def _split_cell(cell: str) -> list[str]:
             p = p + "?"
         reassembled.append(p)
     if len(reassembled) > 1:
-        return reassembled
+        return reassembled, "question_mark"
 
+    # Pass 4: long sentence splitting (over 100 chars, split on ". ")
     if len(text) > 100:
         parts = [p.strip() for p in text.split(". ") if p.strip()]
         if len(parts) > 1:
             parts = [p + ("." if not p.endswith(".") else "") for p in parts[:-1]] + [parts[-1]]
-            return parts
+            return parts, "sentence"
 
-    return [text]
+    return [text], "none"
 
 
 def _should_drop(fragment: str, seen_lower: set) -> tuple[bool, str]:
@@ -301,7 +337,8 @@ def main():
     # cross-run duplicates are caught the same way as within-run ones.
     seen_lower: set[str] = set(existing_query_texts)
 
-    drop_counts   = {"empty": 0, "filler": 0, "duplicate": 0}
+    drop_counts         = {"empty": 0, "filler": 0, "duplicate": 0}
+    split_method_counts: Counter = Counter()
     query_counter = max_query_number  # continues from last run
 
     new_label_studio_rows: list[dict] = []
@@ -338,7 +375,10 @@ def main():
         participant_query_count = 0
 
         if not (pd.isna(raw_cell) or not str(raw_cell).strip()):
-            for fragment in _split_cell(str(raw_cell)):
+            split_frags, split_method = _split_cell(str(raw_cell))
+            if len(split_frags) > 1:
+                split_method_counts[split_method] += 1
+            for fragment in split_frags:
                 drop, reason = _should_drop(fragment, seen_lower)
                 if drop:
                     drop_counts[reason] += 1
@@ -457,6 +497,13 @@ def main():
     print(f"    Educational : {category_counts['educational']}")
     print(f"    Diagnostic  : {category_counts['diagnostic']}")
     print(f"    Crisis      : {category_counts['crisis']}")
+    print()
+    print("  Split method breakdown (cells that produced >1 fragment this run):")
+    if split_method_counts:
+        for method, count in split_method_counts.most_common():
+            print(f"    {method:<20}: {count} cell(s)")
+    else:
+        print("    (no multi-fragment cells this run)")
 
     # --- Demographic statistics (based on full participant_summary.csv) ---
     print()
@@ -493,6 +540,48 @@ def main():
             print(f"    {pid}")
         print()
 
+    # --- Synthetic query ingestion ---
+    # Count CSV total before ingesting so the summary can show skipped count.
+    syn_total_in_csv = 0
+    if os.path.exists(SYNTHETIC_QUERIES_PATH):
+        try:
+            _syn = pd.read_csv(SYNTHETIC_QUERIES_PATH, dtype=str)
+            if "text" in _syn.columns:
+                syn_total_in_csv = int(_syn["text"].notna().sum())
+        except Exception:
+            pass
+
+    newly_added = ingest_synthetic_queries()
+    syn_skipped = max(0, syn_total_in_csv - newly_added)
+
+    # Count totals from the files as they now stand after ingestion.
+    # label_studio_import.csv is the canonical query list; metadata may be
+    # incomplete if output files were ever partially reset between runs.
+    syn_total_in_dataset = 0
+    total_queries_combined = 0
+    try:
+        _meta_full = pd.read_csv(OUTPUT_WITH_METADATA, dtype=str)
+        if "participant_id" in _meta_full.columns:
+            syn_total_in_dataset = int((_meta_full["participant_id"] == "SYNTHETIC").sum())
+    except Exception:
+        pass
+    try:
+        _ls_full = pd.read_csv(OUTPUT_LABEL_STUDIO, dtype=str)
+        total_queries_combined = len(_ls_full)
+    except Exception:
+        pass
+
+    print("-" * W)
+    print("  SYNTHETIC QUERY INGESTION")
+    print("-" * W)
+    print(f"  Synthetic queries in CSV        : {syn_total_in_csv}")
+    print(f"  Already present (skipped)       : {syn_skipped}")
+    print(f"  Newly added this run            : {newly_added}")
+    print(f"  Total synthetic in dataset      : {syn_total_in_dataset}")
+    print(f"  Total queries (real + synthetic): {total_queries_combined}")
+    print("-" * W)
+    print()
+
     print("=" * W)
     print()
 
@@ -510,6 +599,96 @@ def _append_csv(path: str, new_rows: list[dict], columns: list[str]):
         new_df.to_csv(path, mode="a", header=False, index=False)
     else:
         new_df.to_csv(path, index=False)
+
+
+# ---------------------------------------------------------------------------
+# Synthetic query ingestion
+# ---------------------------------------------------------------------------
+
+def ingest_synthetic_queries(
+    synthetic_csv_path: str = SYNTHETIC_QUERIES_PATH,
+    label_studio_path: str = OUTPUT_LABEL_STUDIO,
+    metadata_path: str = OUTPUT_WITH_METADATA,
+) -> int:
+    """
+    Reads approved synthetic queries from synthetic_queries.csv and appends
+    them to label_studio_import.csv and queries_with_metadata.csv.
+
+    Returns the number of new synthetic queries added this run.
+
+    Synthetic queries are tagged with participant_id="SYNTHETIC" in the
+    metadata file so the dissertation can report the real-vs-augmented split
+    honestly. Rows with participant_id="SYNTHETIC" are researcher-authored,
+    not from study participants.
+
+    Deduplication applies — any text already present in label_studio_import.csv
+    (case-insensitive match) is skipped. ID numbering continues from the
+    highest SRH### already assigned, so real and synthetic queries share a
+    single sequence and IDs are never reused.
+    """
+    if not os.path.exists(synthetic_csv_path):
+        print(f"  [synthetic] WARNING: {synthetic_csv_path} not found — skipping.")
+        return 0
+
+    try:
+        syn_df = pd.read_csv(synthetic_csv_path, dtype=str)
+    except Exception as e:
+        print(f"  [synthetic] WARNING: Could not read synthetic CSV ({e}) — skipping.")
+        return 0
+
+    if "text" not in syn_df.columns:
+        print("  [synthetic] WARNING: synthetic_queries.csv has no 'text' column — skipping.")
+        return 0
+
+    # Load existing texts for dedup and the current max ID for continuation.
+    existing_texts: set[str] = set()
+    max_qnum = 0
+    if os.path.exists(label_studio_path):
+        try:
+            ls = pd.read_csv(label_studio_path, dtype=str)
+            if "text" in ls.columns:
+                existing_texts = set(ls["text"].dropna().str.strip().str.lower())
+            if "id" in ls.columns:
+                for qid in ls["id"].dropna():
+                    m = re.match(r'[A-Z]+(\d+)$', qid.strip())
+                    if m:
+                        max_qnum = max(max_qnum, int(m.group(1)))
+        except Exception:
+            pass
+
+    new_ls_rows: list[dict] = []
+    new_meta_rows: list[dict] = []
+    skipped = 0
+
+    for _, row in syn_df.iterrows():
+        text = str(row.get("text", "")).strip()
+        if not text:
+            continue
+        if text.lower() in existing_texts:
+            skipped += 1
+            continue
+
+        max_qnum += 1
+        query_id = f"{QUERY_ID_PREFIX}{max_qnum:03d}"
+
+        new_ls_rows.append({"id": query_id, "text": text})
+        # participant_id="SYNTHETIC" is the marker for augmented data — keeps the
+        # schema identical to real rows while making the source unambiguous.
+        new_meta_rows.append({
+            "id":             query_id,
+            "text":           text,
+            "participant_id": "SYNTHETIC",
+            "age_range":      "",
+            "gender":         "",
+            "language":       "",
+        })
+        existing_texts.add(text.lower())
+
+    _append_csv(label_studio_path, new_ls_rows, ["id", "text"])
+    _append_csv(metadata_path, new_meta_rows,
+                ["id", "text", "participant_id", "age_range", "gender", "language"])
+
+    return len(new_ls_rows)
 
 
 # ---------------------------------------------------------------------------
