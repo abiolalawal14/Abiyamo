@@ -126,9 +126,41 @@ CRISIS_PHRASES = [
     "sexual abuse",
     "sexually abused",
     "sexual assault",
+    "sexually assaulted",
     "forced me to have sex",
     "forced sex",
     "he forced me",
+    # assault disclosures — "assaulted" alone was missing; the passive form
+    # "i was assaulted" is the most common way survivors first disclose
+    "i was assaulted",
+    "assaulted by",
+    "assaulted me",
+    # vague disclosures — survivors often can't name what happened directly;
+    # "something happened to me" is a recognised first-disclosure pattern
+    "something happened to me",
+    "what happened to me",
+    # non-consensual touch — covers grooming and inappropriate contact
+    "he touched me",
+    "they touched me",
+    "someone touched me",
+    "touching me inappropriately",
+    "touching me in ways",
+    # coercion and non-consent
+    "i said no but",
+    "forcing himself",
+    "without my consent",
+    "i did not agree to",
+    "i didn't agree to",
+    "pressuring me to",
+    # physical abuse in intimate relationships
+    "he beats me",
+    "he hit me",
+    "he hits me",
+    # self-harm — "hurting myself" is distinct from "hurt myself" (verb form)
+    "hurting myself",
+    "thinking about ending",
+    # drink spiking
+    "something in my drink",
     # trafficking / exploitation
     "being trafficked",
     "they won't let me leave",
