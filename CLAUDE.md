@@ -44,12 +44,35 @@ ChromaDB collection: "Abiyamo"
 - Every get_collection() call across ALL files must include this metadata
 
 #### Track B (Annotation) — src/annotation/
+- preprocess_queries.py ✅ — cleans Google Form CSV export, splits multi-question
+  cells, deduplicates, outputs three CSVs for Label Studio and Chapter 4 analysis
+  - Splitting order: numbered → newline → slash (Pass 2b) → comma (Pass 2c) →
+    question mark → long sentence
+  - Pass 2b guard: slash fragments must each be >15 chars (filters HIV/AIDS, yes/no)
+  - Pass 2c guard: comma fragments must be >8 chars AND ≥1 must start with a
+    question word or end with "?" — prevents destroying normal sentences
+  - ingest_synthetic_queries() appends approved synthetic queries from
+    data/raw_queries/synthetic_queries.csv into the Label Studio pipeline;
+    synthetic rows tagged participant_id="SYNTHETIC" in metadata
+  - SYNTHETIC_QUERIES_PATH = "data/raw_queries/synthetic_queries.csv"
+  - Terminal summary shows split method breakdown and synthetic ingestion stats
+  - Safe to rerun — appends only new participants/queries, never duplicates
+- data/raw_queries/synthetic_queries.csv ✅ — 54 approved synthetic queries
+  (20 diagnostic, 20 crisis, 14 educational) written by researcher to address
+  class imbalance in real participant data
 - merge_annotations.py ✅ — merges 2 annotators' Label Studio CSV exports,
   includes JMP long-format export for Cohen's Kappa (3 separate scores,
   one per category: educational/diagnostic/crisis)
 - calculate_kappa.py — EXISTS but DEFERRED (Kappa calculated in JMP instead)
 - STATUS: BLOCKED — waiting on annotators to finish labeling in Label Studio
 - Multi-label design: a query CAN be educational AND diagnostic AND/OR crisis simultaneously
+
+**Current dataset state (as of last run):**
+- 81 real participants, 138 real queries
+- 54 synthetic queries (participant_id="SYNTHETIC")
+- **192 total queries** in label_studio_import.csv
+- Output files: data/raw_queries/label_studio_import.csv,
+  queries_with_metadata.csv, participant_summary.csv
 
 ---
 
@@ -64,12 +87,19 @@ ChromaDB collection: "Abiyamo"
 ### Phase 3 — LARGELY COMPLETE
 
 #### src/safety/ ✅
-- escalation.py ✅ BUILT
-  - Keyword-based crisis/diagnostic detection (13/13 test cases pass)
+- escalation.py ✅ BUILT + PATCHED
+  - Phrase-based crisis/diagnostic detection (13/13 test cases pass)
   - BYPASSES LLM entirely — returns scripted text + helpline numbers only
   - _detect_type() is the ONLY function to replace when Phase 2 DistilBERT
     classifier is ready; public interface (should_escalate,
     get_escalation_response) stays UNCHANGED
+  - CRISIS_PHRASES patched (session 2): added 20 new phrases covering
+    assault disclosures ("i was assaulted", "assaulted by", "sexually assaulted"),
+    vague disclosures ("something happened to me"), non-consensual touch
+    ("he touched me", "touching me inappropriately"), coercion ("i said no but",
+    "forcing himself", "without my consent"), physical abuse ("he beats me"),
+    self-harm extension ("hurting myself"), drink spiking ("something in my drink")
+  - All 5 previously failing crisis patterns now correctly escalate (LLM bypassed)
 - data/helplines.json ✅ BUILT
   - Placeholder structure: national crisis, sexual_abuse, general_health categories
   - All numbers marked PLACEHOLDER_NOT_VERIFIED except 112 (Nigeria emergency)
@@ -83,6 +113,8 @@ ChromaDB collection: "Abiyamo"
   - NLLB-200 distilled 600M, bidirectional (English <-> Hausa/Yoruba/Igbo)
   - Language codes: eng_Latn, hau_Latn, yor_Latn, ibo_Latn
   - Public interface: to_english(text, source_lang) / from_english(text, target_lang)
+  - SUPPORTED_LANGUAGES dict (plain name → NLLB code) + get_supported_languages()
+    exposed so webhook/entry points can validate language without duplicating the map
   - Model cached at module level (_model_cache / _tokenizer_cache pattern)
   - Falls back to original text on error — pipeline never crashes due to
     a translation failure
@@ -152,22 +184,38 @@ ChromaDB collection: "Abiyamo"
    API rate limit errors (429). Currently returns FALLBACK_RESPONSE
    immediately on any error. Scalability concern for pilot.
 
+2. **Wire translation fully into chat_handler.py** — translator.py is built
+   and wired but the TODO stubs need completing: detect language → to_english()
+   before retrieval → from_english() after generation. translator.py is ready.
+
 3. **Phase 2 intent classifier** (Google Colab, GPU) — when Track B
    annotation is ready. Replace escalation._detect_type() ONLY.
 
-4. **Phase 4 pilot evaluation** — after translator.py is built and
+4. **Phase 4 pilot evaluation** — after translator.py is wired and
    credentials are configured.
 
 ---
 
 ## Credentials Needed Before Live Deployment
 
-- GEMINI_API_KEY — current key is quota-exhausted (free tier: 0).
-  Generate new key at Google AI Studio.
+- GEMINI_API_KEY — key in .env is ACTIVE and tested (session 2). /chat
+  endpoint responding. Monitor quota usage on free tier.
 - TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_FROM —
-  not yet set in .env. Required for WhatsApp sending.
+  values are in .env but WhatsApp webhook NOT yet tested end-to-end.
+  Required for WhatsApp sending.
 - data/helplines.json — ALL numbers are PLACEHOLDER_NOT_VERIFIED.
   Must be personally verified before any real user receives them.
+
+## Environment / Dependencies
+
+- Python 3.12.3 (Anaconda base environment)
+- NumPy 2.2.6 — scipy upgraded to 1.18.0 and scikit-learn to 1.9.0
+  to fix NumPy 2.x incompatibility (server would not start otherwise)
+- pyarrow, numexpr, bottleneck still emit NumPy 1.x warnings on import
+  but these are non-fatal — pandas and the pipeline work correctly
+- requirements.txt is now populated with pinned versions
+- Server start command: python -m uvicorn src.api.main:app --port 8000
+  (model load takes ~30-60s on CPU; check uvicorn.log for startup status)
 
 ---
 
