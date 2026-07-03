@@ -47,7 +47,12 @@ OUTPUT_DIR          = os.path.join("data", "raw_queries")
 OUTPUT_LABEL_STUDIO = os.path.join(OUTPUT_DIR, "label_studio_import.csv")
 OUTPUT_WITH_METADATA = os.path.join(OUTPUT_DIR, "queries_with_metadata.csv")
 OUTPUT_PARTICIPANT_SUMMARY = os.path.join(OUTPUT_DIR, "participant_summary.csv")
-SYNTHETIC_QUERIES_PATH = os.path.join(OUTPUT_DIR, "synthetic_queries.csv")
+SYNTHETIC_QUERIES_PATH        = os.path.join(OUTPUT_DIR, "synthetic_queries.csv")
+# Overwritten each run — always reflects only the current run's new REAL
+# participant queries. Synthetic queries (researcher-generated for class
+# balance) are excluded so the researcher can upload genuine new respondent
+# data to Label Studio without synthetic entries mixed in.
+NEW_REAL_QUERIES_OUTPUT_PATH  = os.path.join(OUTPUT_DIR, "new_participant_queries_latest_run.csv")
 
 TIMESTAMP_COL  = "Timestamp"
 QUERY_COL      = "query_text"
@@ -441,14 +446,57 @@ def main():
          "queries_extracted"],
     )
 
+    # --- Write real-only delta (overwritten each run, never appended) ---
+    # Synthetic queries are researcher-generated for class balance and were
+    # reviewed and approved separately — they don't need the same "new batch"
+    # review as genuine participant responses, so excluding them here avoids
+    # confusion about which queries are real survey data.
+    _write_csv(
+        NEW_REAL_QUERIES_OUTPUT_PATH,
+        new_label_studio_rows,
+        ["id", "text"],
+    )
+
+    # --- Ingest synthetic queries (must happen after real queries are written
+    #     so label_studio_import.csv is current for same-run deduplication) ---
+    # Count CSV total before ingesting so the summary can show skipped count.
+    syn_total_in_csv = 0
+    if os.path.exists(SYNTHETIC_QUERIES_PATH):
+        try:
+            _syn = pd.read_csv(SYNTHETIC_QUERIES_PATH, dtype=str)
+            if "text" in _syn.columns:
+                syn_total_in_csv = int(_syn["text"].notna().sum())
+        except Exception:
+            pass
+
+    newly_added = ingest_synthetic_queries()
+    syn_skipped = max(0, syn_total_in_csv - newly_added)
+
+    # Count totals from the files as they now stand after both real and
+    # synthetic ingestion. label_studio_import.csv is the canonical query list;
+    # metadata may be incomplete if output files were ever partially reset.
+    syn_total_in_dataset = 0
+    total_queries_combined = 0
+    try:
+        _meta_full = pd.read_csv(OUTPUT_WITH_METADATA, dtype=str)
+        if "participant_id" in _meta_full.columns:
+            syn_total_in_dataset = int((_meta_full["participant_id"] == "SYNTHETIC").sum())
+    except Exception:
+        pass
+    try:
+        _ls_full = pd.read_csv(OUTPUT_LABEL_STUDIO, dtype=str)
+        total_queries_combined = len(_ls_full)
+    except Exception:
+        pass
+
     # --- Load full participant summary for demographic stats ---
     full_summary = pd.read_csv(OUTPUT_PARTICIPANT_SUMMARY, dtype=str)
-    total_all_participants = len(full_summary)
-    new_participants_added = len(new_summary_rows)
-    new_queries_added      = len(new_label_studio_rows)
-    total_all_queries      = query_counter
+    total_all_participants  = len(full_summary)
+    new_participants_added  = len(new_summary_rows)
+    new_real_queries_added  = len(new_label_studio_rows)
+    total_all_queries       = query_counter
 
-    # category counts over NEW queries only (all would need re-reading LS file)
+    # category counts over NEW real queries only (all would need re-reading LS file)
     category_counts = {"educational": 0, "diagnostic": 0, "crisis": 0}
     for r in new_label_studio_rows:
         category_counts[_estimate_category(r["text"])] += 1
@@ -472,7 +520,11 @@ def main():
         print(f"  Previously processed participants    : {prev_participant_count}")
         print(f"  NEW participants added this run      : {new_participants_added}")
         print(f"  Previously processed queries         : {prev_query_count}")
-        print(f"  NEW queries added this run           : {new_queries_added}")
+        print(f"  New REAL participant queries this run : {new_real_queries_added}")
+        print(f"  New SYNTHETIC queries this run        : {newly_added}")
+        print(f"  (Combined total in label_studio_import.csv includes both,")
+        print(f"   but new_participant_queries_latest_run.csv contains ONLY")
+        print(f"   real participant queries from this run)")
         print(f"  Combined total participants          : {total_all_participants}")
         print(f"  Combined total queries               : {total_all_queries}")
     else:
@@ -481,6 +533,16 @@ def main():
         print(f"  Participants processed       : {total_participants}")
         print(f"  Raw query_text cells read    : {df[QUERY_COL].notna().sum()}")
         print(f"  Fragments extracted (total)  : {total_extracted_this_run}")
+        print(f"  New REAL participant queries this run : {new_real_queries_added}")
+        print(f"  New SYNTHETIC queries this run        : {newly_added}")
+        print(f"  (Combined total in label_studio_import.csv includes both,")
+        print(f"   but new_participant_queries_latest_run.csv contains ONLY")
+        print(f"   real participant queries from this run)")
+
+    if not new_label_studio_rows:
+        print()
+        print("  No new real participant queries this run —")
+        print("  new_participant_queries_latest_run.csv contains headers only.")
 
     print()
     print("  Dropped fragments (this run):")
@@ -529,6 +591,7 @@ def main():
     print(f"    {OUTPUT_LABEL_STUDIO}")
     print(f"    {OUTPUT_WITH_METADATA}")
     print(f"    {OUTPUT_PARTICIPANT_SUMMARY}")
+    print(f"    {NEW_REAL_QUERIES_OUTPUT_PATH}  (real participant queries this run only)")
     print()
 
     if zero_query_participants:
@@ -539,37 +602,6 @@ def main():
         for pid in zero_query_participants:
             print(f"    {pid}")
         print()
-
-    # --- Synthetic query ingestion ---
-    # Count CSV total before ingesting so the summary can show skipped count.
-    syn_total_in_csv = 0
-    if os.path.exists(SYNTHETIC_QUERIES_PATH):
-        try:
-            _syn = pd.read_csv(SYNTHETIC_QUERIES_PATH, dtype=str)
-            if "text" in _syn.columns:
-                syn_total_in_csv = int(_syn["text"].notna().sum())
-        except Exception:
-            pass
-
-    newly_added = ingest_synthetic_queries()
-    syn_skipped = max(0, syn_total_in_csv - newly_added)
-
-    # Count totals from the files as they now stand after ingestion.
-    # label_studio_import.csv is the canonical query list; metadata may be
-    # incomplete if output files were ever partially reset between runs.
-    syn_total_in_dataset = 0
-    total_queries_combined = 0
-    try:
-        _meta_full = pd.read_csv(OUTPUT_WITH_METADATA, dtype=str)
-        if "participant_id" in _meta_full.columns:
-            syn_total_in_dataset = int((_meta_full["participant_id"] == "SYNTHETIC").sum())
-    except Exception:
-        pass
-    try:
-        _ls_full = pd.read_csv(OUTPUT_LABEL_STUDIO, dtype=str)
-        total_queries_combined = len(_ls_full)
-    except Exception:
-        pass
 
     print("-" * W)
     print("  SYNTHETIC QUERY INGESTION")
@@ -599,6 +631,11 @@ def _append_csv(path: str, new_rows: list[dict], columns: list[str]):
         new_df.to_csv(path, mode="a", header=False, index=False)
     else:
         new_df.to_csv(path, index=False)
+
+
+def _write_csv(path: str, rows: list[dict], columns: list[str]):
+    """Overwrites path each run — writes header-only when rows is empty."""
+    pd.DataFrame(rows, columns=columns).to_csv(path, index=False)
 
 
 # ---------------------------------------------------------------------------
