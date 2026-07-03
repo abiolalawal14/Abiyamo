@@ -4,7 +4,7 @@ escalation.py
 Purpose:
     Detects whether an incoming message describes a crisis situation or
     a personal diagnostic/medical concern, and returns a scripted
-    response with helpline numbers instead of passing the query to the
+    response with facility referrals instead of passing the query to the
     LLM. This module enforces one of the project's core safety rules:
     diagnostic and crisis queries NEVER reach the RAG pipeline or the
     Gemini generator.
@@ -13,13 +13,13 @@ Where this fits in the pipeline (chat_handler.py):
     [message received]
         |
         v
-    should_escalate()  ← THIS MODULE
+    should_escalate()  <- THIS MODULE
         |
-    YES → get_escalation_response()  ← scripted text + helplines
+    YES -> get_escalation_response()  <- scripted text + facility referrals
         |
-    NO  → retrieve_relevant_chunks() → generate_answer()  (RAG path)
+    NO  -> retrieve_relevant_chunks() -> generate_answer()  (RAG path)
 
-Detection strategy — Phase 3 (keyword matching):
+Detection strategy - Phase 3 (keyword matching):
     The Phase 2 intent classifier (DistilBERT, 3-class: educational /
     diagnostic / crisis) will replace this once the annotation data is
     complete and the model is trained. For now, a curated keyword list
@@ -30,7 +30,7 @@ Detection strategy — Phase 3 (keyword matching):
       educational question) is far less harmful than a false negative
       (sending a crisis or diagnostic query through the LLM).
     - Crisis keywords cover direct self-harm expressions AND
-      abuse/assault disclosures — both require human support, not a
+      abuse/assault disclosures -- both require human support, not a
       chatbot response.
     - Diagnostic keywords cover personal symptom descriptions ("I have
       discharge", "I think I'm pregnant"), not general health questions
@@ -42,20 +42,20 @@ Detection strategy — Phase 3 (keyword matching):
 Replacing keyword detection with the Phase 2 classifier:
     When DistilBERT is trained and exported (Phase 2), replace the
     _detect_type() function body with a call to the classifier.
-    The public interface (should_escalate, get_escalation_response)
-    does not need to change — only _detect_type() changes internally.
+    The public interface (should_escalate, get_escalation_response,
+    get_helplines_for_state) does not need to change -- only
+    _detect_type() changes internally.
 
-Helplines:
-    Loaded from data/helplines.json. All numbers in that file are
-    PLACEHOLDERS until personally verified as active. The formatting
-    logic in this file is correct — only the JSON data needs updating.
-    See CLAUDE.md and helplines.json for the verification requirement.
+Helplines / Facilities:
+    Loaded from data/helplines.json. Run scripts/import_facilities.py
+    once to populate the "states" section with real Nigerian health
+    facilities. The 112 emergency number is the only phone number
+    confirmed active; all others remain placeholders until verified.
 
 Response format:
-    Returns a plain string — warm acknowledgement, brief guidance, and
-    formatted helpline numbers. Kept short intentionally (WhatsApp
-    users disengage with long messages). The goal is to hand off to a
-    human resource, not to counsel the user directly.
+    Returns a plain string -- warm acknowledgement, brief guidance, and
+    up to 3 named facilities in the user's state. Kept short for WhatsApp.
+    Goal is to hand off to a human resource, not counsel directly.
 """
 
 import json
@@ -67,24 +67,24 @@ from pathlib import Path
 
 _HELPLINES_PATH = Path("data/helplines.json")
 
-# Module-level cache — same pattern used throughout this project.
-# helplines.json is small and rarely changes; loading it once at first
-# call avoids repeated file I/O on every incoming message.
+# Module-level cache -- same pattern used throughout this project.
+# helplines.json is small and rarely changes; loading once at first call
+# avoids repeated file I/O on every incoming message.
 _helplines_cache = None
 
 
 def _load_helplines() -> dict:
     """
-    Loads and caches data/helplines.json. Returns an empty dict if the
-    file is missing rather than raising, so the escalation module still
-    works (with a "contact a health worker" fallback) even if the file
-    is absent.
+    Loads and caches data/helplines.json. Returns an empty dict on missing
+    file so the module still works (with a generic fallback) even without it.
     """
     global _helplines_cache
     if _helplines_cache is None:
         if not _HELPLINES_PATH.exists():
-            print(f"[escalation] Warning: {_HELPLINES_PATH} not found — "
-                  "helpline numbers will not appear in escalation responses.")
+            print(
+                f"[escalation] Warning: {_HELPLINES_PATH} not found -- "
+                "facility referrals will not appear in escalation responses."
+            )
             _helplines_cache = {}
         else:
             with open(_HELPLINES_PATH, "r", encoding="utf-8") as f:
@@ -96,7 +96,7 @@ def _load_helplines() -> dict:
 # Detection: keyword lists
 # ---------------------------------------------------------------------------
 
-# CRISIS_PHRASES — phrases that indicate the user may be in immediate
+# CRISIS_PHRASES -- phrases that indicate the user may be in immediate
 # danger or acute emotional distress. Any match escalates to "crisis".
 # Deliberately broad: false positives are acceptable; false negatives
 # (missing a real crisis) are not.
@@ -130,16 +130,14 @@ CRISIS_PHRASES = [
     "forced me to have sex",
     "forced sex",
     "he forced me",
-    # assault disclosures — "assaulted" alone was missing; the passive form
-    # "i was assaulted" is the most common way survivors first disclose
+    # assault disclosures -- "i was assaulted" is a recognised first-disclosure
     "i was assaulted",
     "assaulted by",
     "assaulted me",
-    # vague disclosures — survivors often can't name what happened directly;
-    # "something happened to me" is a recognised first-disclosure pattern
+    # vague disclosures -- survivors often can't name what happened directly
     "something happened to me",
     "what happened to me",
-    # non-consensual touch — covers grooming and inappropriate contact
+    # non-consensual touch -- covers grooming and inappropriate contact
     "he touched me",
     "they touched me",
     "someone touched me",
@@ -156,7 +154,7 @@ CRISIS_PHRASES = [
     "he beats me",
     "he hit me",
     "he hits me",
-    # self-harm — "hurting myself" is distinct from "hurt myself" (verb form)
+    # self-harm -- "hurting myself" distinct from "hurt myself" (verb form)
     "hurting myself",
     "thinking about ending",
     # drink spiking
@@ -168,7 +166,7 @@ CRISIS_PHRASES = [
     "i need help to escape",
 ]
 
-# DIAGNOSTIC_PHRASES — phrases that describe personal symptoms or
+# DIAGNOSTIC_PHRASES -- phrases that describe personal symptoms or
 # health conditions requiring clinical assessment. Any match escalates
 # to "diagnostic". These cover PERSONAL descriptions, not general
 # educational questions about symptoms.
@@ -234,12 +232,12 @@ def _detect_type(message: str) -> str | None:
     is needed.
 
     Returns:
-        "crisis"     — message contains crisis/self-harm/abuse signals
-        "diagnostic" — message contains personal symptom descriptions
-        None         — message appears to be an educational question
+        "crisis"     -- message contains crisis/self-harm/abuse signals
+        "diagnostic" -- message contains personal symptom descriptions
+        None         -- message appears to be an educational question
 
     Priority: crisis takes precedence over diagnostic. If both match,
-    "crisis" is returned — the user gets crisis resources first.
+    "crisis" is returned -- the user gets crisis resources first.
 
     TODO (Phase 2): Replace this function body with a call to the
     trained DistilBERT intent classifier once it is available. The
@@ -262,90 +260,139 @@ def _detect_type(message: str) -> str | None:
 
 
 # ---------------------------------------------------------------------------
+# State-aware facility lookup
+# ---------------------------------------------------------------------------
+
+# Variants a user or the session layer might pass for the FCT.
+# The facility dataset normalises FCT to "Fct" after title-case.
+_FCT_VARIANTS = {"fct", "abuja", "fct abuja", "federal capital territory", "abuja fct"}
+
+
+def _normalize_state_name(state: str | None) -> str | None:
+    """
+    Normalises a state name so it matches the title-cased keys in
+    helplines.json. Handles FCT/Abuja variants explicitly because "Fct"
+    is an unusual title-case result that users would never type.
+    """
+    if not state or not state.strip():
+        return None
+    if state.strip().lower() in _FCT_VARIANTS:
+        return "Fct"
+    return state.strip().title()
+
+
+def get_helplines_for_state(state: str | None) -> list:
+    """
+    Returns the list of facility dicts for the given Nigerian state from
+    data/helplines.json. Returns an empty list when the state is unknown,
+    not provided, or the file has not been populated yet.
+
+    Case-insensitive matching so callers can pass "borno" or "Borno".
+    """
+    if not state:
+        return []
+
+    data = _load_helplines()
+    normalized = _normalize_state_name(state)
+    if not normalized:
+        return []
+
+    states = data.get("states", {})
+    # Case-insensitive scan so minor spelling differences don't miss a state
+    normalized_lower = normalized.lower()
+    for key, val in states.items():
+        if key.lower() == normalized_lower:
+            return val.get("facilities", [])
+
+    return []
+
+
+# ---------------------------------------------------------------------------
 # Response builders
 # ---------------------------------------------------------------------------
 
-def _format_helplines(category: str) -> str:
+def _crisis_response(state: str | None = None) -> str:
     """
-    Formats the helplines for the given category ("crisis",
-    "sexual_abuse", or "general_health") into a short string for
-    inclusion in a WhatsApp message.
+    Scripted crisis response. When a state is known, names real local
+    facilities so the user has a concrete place to go. Always adds 112.
 
-    Returns an empty string if no verified helplines are available yet,
-    rather than listing placeholder numbers to real users.
+    Follows safe messaging: acknowledge warmth, validate, give resources,
+    encourage action. Short by design -- WhatsApp users disengage with
+    long messages.
     """
-    data = _load_helplines()
-    entries = data.get("national", {}).get(category, [])
+    facilities = get_helplines_for_state(state)
 
-    lines = []
-    for entry in entries:
-        number = entry.get("number", "")
-        name = entry.get("name", "")
-        # Only include numbers that are not placeholders. During the
-        # pilot, PLACEHOLDER numbers must never reach a real user.
-        if "PLACEHOLDER" in number or not number:
-            continue
-        lines.append(f"  {name}: {number}")
-
-    return "\n".join(lines)
-
-
-def _crisis_response() -> str:
-    """
-    Returns the scripted crisis response. Follows safe messaging
-    guidelines: acknowledge warmth, validate feelings, provide
-    resources, encourage action. Kept short for WhatsApp.
-    """
-    crisis_lines = _format_helplines("crisis")
-    abuse_lines = _format_helplines("sexual_abuse")
-
-    helpline_block = ""
-    if crisis_lines:
-        helpline_block += f"Crisis support:\n{crisis_lines}\n"
-    if abuse_lines:
-        helpline_block += f"\nSexual violence support:\n{abuse_lines}\n"
-
-    if not helpline_block:
-        helpline_block = (
-            "  Please contact a trusted adult, health worker, "
-            "or go to your nearest health facility or police station.\n"
+    if facilities:
+        state_display = _normalize_state_name(state) or state
+        lines = "\n".join(
+            f"- {f['name']} - {f['lga']} LGA"
+            for f in facilities[:3]
         )
+        return (
+            "I am really glad you reached out and I want to make sure you "
+            "get the right support right now. Please visit one of these "
+            f"health facilities in {state_display} as soon as you can - "
+            "they provide confidential support:\n\n"
+            f"{lines}\n\n"
+            "You can also call Nigeria's emergency line: 112 (available 24/7)"
+        )
+
+    # No state info or state not yet in the dataset -- fall back to
+    # generic message that still gives the user a concrete action (112).
+    data = _load_helplines()
+    fallback_entries = data.get("national_fallback", [{}])
+    fallback_note = fallback_entries[0].get(
+        "note", "Visit your nearest Primary Health Centre for confidential SRH support"
+    ) if fallback_entries else "Visit your nearest Primary Health Centre for confidential SRH support"
 
     return (
         "I hear you, and I want you to know you are not alone.\n\n"
-        "What you are going through sounds very difficult, and you "
-        "deserve real support from a person who can help — not just a "
-        "chatbot.\n\n"
-        "Please reach out to one of these resources right away:\n\n"
-        f"{helpline_block}\n"
-        "If you are in immediate danger, call 112 (Nigeria emergency).\n\n"
+        "What you are going through sounds very difficult, and you deserve "
+        "real support from a person who can help - not just a chatbot.\n\n"
+        f"{fallback_note}\n\n"
+        "You can also call Nigeria's emergency line: 112 (available 24/7)\n\n"
         "You are important, and help is available."
     )
 
 
-def _diagnostic_response() -> str:
+def _diagnostic_response(state: str | None = None) -> str:
     """
-    Returns the scripted diagnostic response. Encourages visiting a
-    health facility rather than diagnosing through a chatbot.
+    Scripted diagnostic response. Encourages visiting a named health
+    facility rather than diagnosing through a chatbot. Falls back to
+    generic PHC guidance when no state is known.
     """
-    health_lines = _format_helplines("general_health")
+    facilities = get_helplines_for_state(state)
 
-    helpline_block = ""
-    if health_lines:
-        helpline_block = f"Health helplines:\n{health_lines}\n\n"
+    if facilities:
+        state_display = _normalize_state_name(state) or state
+        lines = "\n".join(
+            f"- {f['name']} - {f['lga']} LGA"
+            for f in facilities[:3]
+        )
+        return (
+            "Thank you for sharing this with me. This sounds like something "
+            "a qualified health professional should look at directly. Here "
+            f"are verified health facilities in {state_display} where you "
+            "can get confidential support:\n\n"
+            f"{lines}\n\n"
+            "Please visit any of these facilities and ask for the SRH or "
+            "reproductive health unit."
+        )
+
+    data = _load_helplines()
+    fallback_entries = data.get("national_fallback", [{}])
+    fallback_note = fallback_entries[0].get(
+        "note", "Visit your nearest Primary Health Centre for confidential SRH support"
+    ) if fallback_entries else "Visit your nearest Primary Health Centre for confidential SRH support"
 
     return (
-        "It sounds like you may have a personal health concern that "
-        "needs attention from a trained health worker.\n\n"
-        "I can share general information about sexual and reproductive "
-        "health, but I am not able to assess symptoms or give you a "
-        "diagnosis — only a health professional can do that safely.\n\n"
-        "Please visit your nearest:\n"
-        "  - Primary Health Care (PHC) centre\n"
-        "  - General hospital\n"
-        "  - Family planning clinic\n\n"
-        f"{helpline_block}"
-        "Your health matters. Please don't wait if something feels wrong."
+        "It sounds like you may have a personal health concern that needs "
+        "attention from a trained health worker.\n\n"
+        "I can share general information about sexual and reproductive health, "
+        "but I am not able to assess symptoms or give you a diagnosis - only "
+        "a health professional can do that safely.\n\n"
+        f"{fallback_note}\n\n"
+        "Your health matters. Please do not wait if something feels wrong."
     )
 
 
@@ -364,28 +411,37 @@ def should_escalate(message: str) -> bool:
     return _detect_type(message) is not None
 
 
-def get_escalation_response(message: str) -> str:
+def get_escalation_response(message: str, state: str | None = None) -> str:
     """
     Returns the appropriate scripted response for an escalated message.
     Should only be called after should_escalate() has returned True.
 
-    Returns the crisis response for crisis-type messages, and the
-    diagnostic response for diagnostic-type messages.
+    Parameters:
+        message : the user's message text (used to detect escalation type),
+                  OR one of "crisis" / "diagnostic" as a test shorthand.
+        state   : optional Nigerian state name (e.g. "Borno", "Lagos").
+                  When provided, the response includes named local facilities.
+                  When None, falls back to generic national guidance.
+
+    Backward compatible: callers that pass only message (no state) continue
+    to work -- they receive the national-fallback response.
     """
-    escalation_type = _detect_type(message)
+    # Allow passing the type directly for testing ("crisis", "diagnostic")
+    # without needing a real message that triggers keyword detection.
+    if message in ("crisis", "diagnostic"):
+        escalation_type = message
+    else:
+        escalation_type = _detect_type(message)
 
     if escalation_type == "crisis":
-        return _crisis_response()
-    elif escalation_type == "diagnostic":
-        return _diagnostic_response()
+        return _crisis_response(state)
     else:
-        # Fallback — should not be reached if called correctly (after
-        # should_escalate() returned True), but handled defensively.
-        return _diagnostic_response()
+        # Covers both "diagnostic" and the defensive fallback for None
+        return _diagnostic_response(state)
 
 
 # ---------------------------------------------------------------------------
-# Quick manual test — runs only when this file is executed directly
+# Quick manual test -- runs only when this file is executed directly
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
@@ -424,13 +480,21 @@ if __name__ == "__main__":
     print(f"  Diagnostic:  {should_escalate('I think I am pregnant')} (expected True)")
     print(f"  Crisis:      {should_escalate('I want to kill myself')} (expected True)")
 
-    print("\n=== TEST 3: Crisis response ===\n")
+    print("\n=== TEST 3: Crisis response (no state) ===\n")
     print(get_escalation_response("I want to kill myself"))
 
-    print("\n=== TEST 4: Diagnostic response ===\n")
+    print("\n=== TEST 4: Diagnostic response (no state) ===\n")
     print(get_escalation_response("I think I might be pregnant"))
 
-    print("\n=== TEST 5: Helplines file loaded ===")
+    print("\n=== TEST 5: State-aware responses ===")
+    borno = get_helplines_for_state("Borno")
+    print(f"  Borno facilities loaded: {len(borno)}")
+    if borno:
+        print(f"  First: {borno[0]['name']} - {borno[0]['lga']} LGA")
+    print()
+    print(get_escalation_response("diagnostic", "Borno"))
+
+    print("\n=== TEST 6: Helplines file keys ===")
     data = _load_helplines()
     print(f"  Keys: {list(data.keys())}")
-    print(f"  National categories: {list(data.get('national', {}).keys())}")
+    print(f"  States in file: {len(data.get('states', {}))}")
