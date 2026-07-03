@@ -12,6 +12,9 @@ env/
 # Raw PDFs — large, source documents not for version control
 data/raw_pdfs/
 
+# Allow annotation CSV files needed for Colab training
+!data/raw_queries/*.csv
+
 # Python cache
 __pycache__/
 *.py[cod]
