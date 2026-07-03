@@ -19,13 +19,20 @@ Where this fits in the pipeline (chat_handler.py):
         |
     NO  -> retrieve_relevant_chunks() -> generate_answer()  (RAG path)
 
-Detection strategy - Phase 3 (keyword matching):
-    The Phase 2 intent classifier (DistilBERT, 3-class: educational /
-    diagnostic / crisis) will replace this once the annotation data is
-    complete and the model is trained. For now, a curated keyword list
-    is the safest available option.
+Detection strategy - Phase 2 (DistilBERT classifier, active):
+    _detect_type() now runs the trained DistilBERT intent classifier
+    (models/intent_classifier/) instead of keyword matching. The crisis
+    label uses a lowered 0.35 threshold (vs 0.5 for the others) -- missing
+    a crisis query is worse than a false positive, so crisis recall is
+    favoured over precision. Thresholds and label names come from
+    models/intent_classifier/classifier_config.json, not hardcoded here.
 
-    Design decisions for the keyword lists:
+    CRISIS_PHRASES / DIAGNOSTIC_PHRASES (below) are kept and still used:
+    they are the fallback path when the trained model is not present
+    locally (e.g. it was trained on Colab and never copied down) or
+    fails to load. See _load_classifier() / _detect_type_keywords().
+
+    Design decisions for the keyword lists (fallback path):
     - Err on the side of escalation: a false positive (escalating an
       educational question) is far less harmful than a false negative
       (sending a crisis or diagnostic query through the LLM).
@@ -39,12 +46,12 @@ Detection strategy - Phase 3 (keyword matching):
       translation happens BEFORE escalation, so the escalation check
       always sees English text.
 
-Replacing keyword detection with the Phase 2 classifier:
-    When DistilBERT is trained and exported (Phase 2), replace the
-    _detect_type() function body with a call to the classifier.
-    The public interface (should_escalate, get_escalation_response,
-    get_helplines_for_state) does not need to change -- only
-    _detect_type() changes internally.
+_detect_type() return contract (classifier and keyword fallback alike):
+    The classifier is multi-label internally (a query can score above
+    threshold on more than one class), but _detect_type() still returns
+    a single str | None -- "crisis" > "diagnostic" > None priority --
+    so should_escalate() and get_escalation_response() did not need to
+    change at all when the classifier replaced keyword matching.
 
 Helplines / Facilities:
     Loaded from data/helplines.json. Run scripts/import_facilities.py
@@ -60,6 +67,9 @@ Response format:
 
 import json
 from pathlib import Path
+
+from transformers import AutoTokenizer, DistilBertForSequenceClassification
+import torch
 
 # ---------------------------------------------------------------------------
 # Helplines data
@@ -226,25 +236,52 @@ DIAGNOSTIC_PHRASES = [
 ]
 
 
-def _detect_type(message: str) -> str | None:
+CLASSIFIER_DIR = "models/intent_classifier"
+_clf_config = None
+_clf_tokenizer = None
+_clf_model = None
+_clf_load_failed = False  # set once loading fails so we don't retry every message
+
+
+def _load_classifier() -> bool:
     """
-    Returns the escalation type for a message, or None if no escalation
-    is needed.
+    Lazily loads the trained DistilBERT classifier. Returns True if it is
+    ready to use, False if it should not be used -- missing directory,
+    missing classifier_config.json, or corrupt artifacts all fall back
+    to keyword detection rather than crashing should_escalate().
+    """
+    global _clf_config, _clf_tokenizer, _clf_model, _clf_load_failed
+    if _clf_model is not None:
+        return True
+    if _clf_load_failed:
+        return False
 
-    Returns:
-        "crisis"     -- message contains crisis/self-harm/abuse signals
-        "diagnostic" -- message contains personal symptom descriptions
-        None         -- message appears to be an educational question
+    config_path = Path(CLASSIFIER_DIR) / "classifier_config.json"
+    if not config_path.exists():
+        _clf_load_failed = True
+        return False
 
-    Priority: crisis takes precedence over diagnostic. If both match,
-    "crisis" is returned -- the user gets crisis resources first.
+    try:
+        with open(config_path) as f:
+            _clf_config = json.load(f)
+        _clf_tokenizer = AutoTokenizer.from_pretrained(CLASSIFIER_DIR)
+        _clf_model = DistilBertForSequenceClassification.from_pretrained(CLASSIFIER_DIR)
+        _clf_model.eval()
+        return True
+    except Exception as e:
+        print(
+            f"[escalation] Warning: failed to load DistilBERT classifier "
+            f"({e}). Falling back to keyword-based detection."
+        )
+        _clf_model = None
+        _clf_load_failed = True
+        return False
 
-    TODO (Phase 2): Replace this function body with a call to the
-    trained DistilBERT intent classifier once it is available. The
-    classifier will handle multi-label cases, short ambiguous messages,
-    and non-literal phrasing that keyword matching misses. The return
-    values and None-for-educational convention must stay the same so
-    the callers don't need to change.
+
+def _detect_type_keywords(message: str) -> str | None:
+    """
+    Original Phase 3 keyword matching. Used as the fallback when the
+    trained DistilBERT classifier is not available (see _load_classifier).
     """
     lower = message.lower().strip()
 
@@ -256,6 +293,53 @@ def _detect_type(message: str) -> str | None:
         if phrase in lower:
             return "diagnostic"
 
+    return None
+
+
+def _detect_type(message: str) -> str | None:
+    """
+    Returns the escalation type for a message, or None if no escalation
+    is needed.
+
+    Returns:
+        "crisis"     -- message scores >= crisis_threshold on "crisis"
+        "diagnostic" -- message scores >= 0.5 on "diagnostic"
+        None         -- message appears to be an educational question
+
+    Priority: crisis takes precedence over diagnostic. If both match,
+    "crisis" is returned -- the user gets crisis resources first. This
+    matches the previous keyword-based contract exactly, so
+    should_escalate() and get_escalation_response() need no changes.
+
+    Runs the trained DistilBERT classifier when available (see
+    _load_classifier); falls back to _detect_type_keywords() otherwise.
+    """
+    if not _load_classifier():
+        return _detect_type_keywords(message)
+
+    inputs = _clf_tokenizer(
+        message,
+        return_tensors="pt",
+        truncation=True,
+        max_length=_clf_config["max_length"],
+        padding=True,
+    )
+    with torch.no_grad():
+        logits = _clf_model(**inputs).logits[0]
+    probs = torch.sigmoid(logits).numpy()
+
+    labels = _clf_config["labels"]
+    crisis_threshold = _clf_config["crisis_threshold"]
+    detected = set()
+    for i, label in enumerate(labels):
+        thresh = crisis_threshold if label == "crisis" else 0.5
+        if probs[i] >= thresh:
+            detected.add(label)
+
+    if "crisis" in detected:
+        return "crisis"
+    if "diagnostic" in detected:
+        return "diagnostic"
     return None
 
 
