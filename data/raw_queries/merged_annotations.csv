@@ -1,0 +1,200 @@
+query_id,text,annotator_1_labels,annotator_2_labels,agreement,needs_review,missing_annotator
+SRH001,Questions on menstruation and maintaining good SRH,educational,educational,True,False,False
+SRH002,Would I die using postinor 2,"crisis,educational","crisis,diagnostic,educational",False,True,False
+SRH003,Any question bothering me,educational,educational,True,False,False
+SRH004,"Sex, period and female hormones","diagnostic,educational","diagnostic,educational",True,False,False
+SRH005,Till then,diagnostic,,False,True,True
+SRH006,What causes Menstrual Pain,diagnostic,educational,False,True,False
+SRH007,How to prevent Stains or leaks during a period,educational,educational,True,False,False
+SRH008,Pads suggestions for different types of flows,educational,educational,True,False,False
+SRH009,How to prevent pregnancy,educational,educational,True,False,False
+SRH010,What causes STIs and UTIs,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH011,How do I know how my reproductive system operates?,educational,educational,True,False,False
+SRH012,How can one know her safe period,educational,educational,True,False,False
+SRH013,How can one avoid STDs,educational,educational,True,False,False
+SRH014,How can I tell if I am ovulating?,educational,educational,True,False,False
+SRH015,What is the most effective contraceptive method for preventing pregnancy and STIs?,educational,educational,True,False,False
+SRH016,Can I get pregnant if I have unprotected sex during or shortly after my period?,educational,educational,True,False,False
+SRH017,"What does consent look like in a healthy relationship, and how can I communicate my boundaries effectively?",educational,educational,True,False,False
+SRH018,Why do my vjay itch me atimes /why dose it smell and I wash it every day /how do I clear bumps on my private part and I try my best to get rid of armpit odor,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH019,Is masturbation healthy?,educational,educational,True,False,False
+SRH020,What are the downsides to it?,educational,educational,True,False,False
+SRH021,Does it cause not being able to reproduce?,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH022,How do men reproduce,educational,educational,True,False,False
+SRH023,Sex,educational,educational,True,False,False
+SRH024,Pregnancy,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH025,Female reproductive health,educational,educational,True,False,False
+SRH026,Inflation pregnancy and sex,"crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH027,1.How can I know if my discharge is normal or a sign of an STI,diagnostic,educational,False,True,False
+SRH028,2.Is it safe to have sex during my period and what are the risks,educational,educational,True,False,False
+SRH029,3.How do I talk to my partner about using condom without starting a fight,educational,educational,True,False,False
+SRH030,Why did a person become sex addict,educational,educational,True,False,False
+SRH031,How to actually bring up this conversation with a partner,educational,educational,True,False,False
+SRH032,How to ensure one partner is not carrying STIs,"diagnostic,educational",educational,False,True,False
+SRH033,Things that causes missed menstruation,educational,educational,True,False,False
+SRH034,time my mestraul cycle,educational,educational,True,False,False
+SRH035,How can i manage a hormonal imbalance?,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH036,What are the fruits and food i should avoid as someone with a hormonal imbalance?,educational,educational,True,False,False
+SRH037,Where is the nearest clinic near me,"crisis,diagnostic,educational","crisis,diagnostic,educational",True,False,False
+SRH038,"STI,pregnancy,conception","diagnostic,educational","diagnostic,educational",True,False,False
+SRH039,Recommend healthy sex styles,educational,educational,True,False,False
+SRH040,Recommend healthy habits to adopt after sex,educational,educational,True,False,False
+SRH041,Recommend good condom products,educational,educational,True,False,False
+SRH042,Sexual safety,educational,educational,True,False,False
+SRH043,How do one contact HIV,"crisis,diagnostic,educational","crisis,diagnostic,educational",True,False,False
+SRH044,How does a child grow in the human reproductive system,educational,educational,True,False,False
+SRH045,What the cure to AIDS,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH046,How to reduce menstrual cramps .,educational,"diagnostic,educational",False,True,False
+SRH047,Drugs for curing STI.,"crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH048,What’s the first thing to do after Rape?,"crisis,diagnostic",crisis,False,True,False
+SRH049,Give more important reasons to avoid unprotected sex,"diagnostic,educational",educational,False,True,False
+SRH050,STI are mostly common amongst which gender?,diagnostic,educational,False,True,False
+SRH051,Well being related questions,"diagnostic,educational",educational,False,True,False
+SRH052,How does the clitoris give pleasure?,educational,educational,True,False,False
+SRH053,How do you know if you were circumcised?,educational,educational,True,False,False
+SRH054,What is oral sex?,educational,educational,True,False,False
+SRH055,Reproductive health,"crisis,diagnostic,educational",educational,False,True,False
+SRH056,Menstrual cycle,"diagnostic,educational",educational,False,True,False
+SRH057,STD,"crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH058,How does the reproductive system work?,"diagnostic,educational",educational,False,True,False
+SRH059,How do you identify a rape victim ?,"crisis,diagnostic,educational","crisis,educational",False,True,False
+SRH060,How does a Virginia cleanse it self ?,"diagnostic,educational",educational,False,True,False
+SRH061,Best way to maintain hygiene?,"diagnostic,educational",educational,False,True,False
+SRH062,Symptoms of STIs,"crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH063,"How can I protect myself from sexually transmitted infections (STIs), and when should I get tested?",educational,educational,True,False,False
+SRH064,"How can I track my menstrual cycle, and what is considered a normal period?",educational,educational,True,False,False
+SRH065,"How do I know if the changes happening to my body are normal, or if I should see a healthcare provider?",educational,"diagnostic,educational",False,True,False
+SRH066,Dangers of abort8ns,educational,educational,True,False,False
+SRH067,What's the cause of erectile dysfunction?,"crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH068,Why can't some men semen fertilize a female egg even though they've been living w healthy life?,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH069,How to know  if your semen is in good condition or not as a man,"diagnostic,educational",educational,False,True,False
+SRH070,How to perform more on bed,"diagnostic,educational",educational,False,True,False
+SRH071,Can Uterine fibroids affect fertility or make it harder to get pregnancy.,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH072,What is the best way to prevent STI  and protect reproductive health.,"diagnostic,educational",educational,False,True,False
+SRH073,"How can I naturally 
+Maintain hormonal balance and improve menstruation and reproductive health.","diagnostic,educational",educational,False,True,False
+SRH074,How to reduce menstrual pain,"diagnostic,educational",educational,False,True,False
+SRH075,Why have menstruation twice a month,educational,educational,True,False,False
+SRH076,"About delayed cycles,","diagnostic,educational",educational,False,True,False
+SRH077,Can Contraptives cause birth defects,educational,educational,True,False,False
+SRH078,Can contraceptive lead to pregnancy difficulties,educational,educational,True,False,False
+SRH079,Does a man go through mesopause?,educational,educational,True,False,False
+SRH080,Does an IUD insertion hurts or results to bleeding?,educational,educational,True,False,False
+SRH081,Cintraceptives,educational,educational,True,False,False
+SRH082,Sexual wellness,educational,educational,True,False,False
+SRH083,Sexually transmitted diseases,"diagnostic,educational",educational,False,True,False
+SRH084,How does baby grow,"diagnostic,educational",educational,False,True,False
+SRH085,How STI can be contacted,educational,educational,True,False,False
+SRH086,The cure and danger in STI,"crisis,diagnostic,educational",educational,False,True,False
+SRH087,How to abstain from sexual activity.,educational,educational,True,False,False
+SRH088,When it's ok to start having sexual engagement,educational,educational,True,False,False
+SRH089,Who to be involve with,educational,educational,True,False,False
+SRH090,What is PMOS and how can someone with it live better to work against it effects?,educational,educational,True,False,False
+SRH091,What is the negativity regarding Cesarean section and how can we work against educating people on it and making them understand that it doesn’t make anyone less for going through with the procedure?,educational,educational,True,False,False
+SRH092,"How does the male lifestyle/sperm and female lifestyle affect the period of pregnancy on a woman which includes her body internally, physical features and risks in child bearing.",educational,educational,True,False,False
+SRH093,About AVN,"diagnostic,educational",educational,False,True,False
+SRH094,"Does a patner's consent mandatory before sex?
+2.How can one prevent sexual transmitted disease when the other person refuses treatment.",educational,educational,True,False,False
+SRH095,Is it valid to ask for a divorce it couples are not sexualy compatible.,educational,educational,True,False,False
+SRH096,What is reproductive health,educational,educational,True,False,False
+SRH097,How can one know a healthy body,"diagnostic,educational",educational,False,True,False
+SRH098,Prevention of health disease,educational,educational,True,False,False
+SRH099,What are the safest and most effective methods of preventing pregnancy?,educational,educational,True,False,False
+SRH100,"Is it true that if someone doesn't have sex for a long period of time, the person will develop some health issues?",educational,educational,True,False,False
+SRH101,How to know ur safe zone when menstruation,educational,educational,True,False,False
+SRH102,What is ovarian cyst?,"crisis,diagnostic,educational",educational,False,True,False
+SRH103,What can one do to heal from ovarian cyst?,"diagnostic,educational",educational,False,True,False
+SRH104,How can females prevent ovarian cyst,"diagnostic,educational",educational,False,True,False
+SRH105,How to prevent pregnancy after giving birth to first child while having sex,educational,educational,True,False,False
+SRH106,1.What are behaviours or habits I should begin in my 20s that could help prevent health challenges in relation to my reproductive health in my later life?,educational,,False,True,True
+SRH107,"2.There is no scientific prove that having sex at a young age is bad, but how do I explain and encourage my younger sisters without making it sound like it's all about religion, that they should abstain from it?",educational,educational,True,False,False
+SRH108,"3.How do young Muslim women navigate the intersection of religious identity and hypersexuality, and what psychological or spiritual coping mechanisms are most effective for resolving the resulting identity conflict?",educational,"crisis,educational",False,True,False
+SRH109,Why do women get ovarian cancer and how can they avoid it,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH110,How to help prevent bloating,"diagnostic,educational",educational,False,True,False
+SRH111,How to reduce pain in menstrual period,educational,educational,True,False,False
+SRH112,What increases sexually transmitted infections.,educational,educational,True,False,False
+SRH113,What causes delay in pregnancy.,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH114,What leads to unwanted pregnancy,educational,,False,True,False
+SRH115,"Infection, hormonal imbalance","diagnostic,educational",educational,False,True,False
+SRH116,How can PCOS be treated and infertility issues,"crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH117,Reproduction,"diagnostic,educational",,False,True,False
+SRH118,Fertility,"crisis,diagnostic,educational",,False,True,False
+SRH119,What are the most effective methods of preventing pregnancy and STIs?,"diagnostic,educational",educational,False,True,False
+SRH120,How do I know if changes in my menstrual cycle are normal or if I should see a healthcare provider?,"diagnostic,educational",educational,False,True,False
+SRH121,"What are the signs of a healthy relationship, and how can I recognize unhealthy or abusive behavior?",educational,"crisis,educational",False,True,False
+SRH122,"Pregnancy, menstruation, how to take care of my skin","diagnostic,educational",educational,False,True,False
+SRH123,"Question regarding contraception, sexual transmitted diseases and child birth","diagnostic,educational",educational,False,True,False
+SRH124,What does consent look like in a healthy relationship,educational,educational,True,False,False
+SRH125,and how can I communicate my boundaries effectively?,educational,educational,True,False,False
+SRH126,Why do my vjay itch me atimes,"crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH127,why dose it smell and I wash it every day,"crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH128,how do I clear bumps on my private part and I try my best to get rid of armpit odor,"crisis,diagnostic,educational",educational,False,True,False
+SRH129,menstruation,educational,educational,True,False,False
+SRH130,how to take care of my skin,"crisis,diagnostic,educational",educational,False,True,False
+SRH131,"I have been having this yellowish discharge for almost two weeks now and it has a strange smell, is something wrong with me?","crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH132,"My period has not come for almost two months and I am not pregnant, what could be happening to my body?","crisis,diagnostic","diagnostic,educational",False,True,False
+SRH133,"I feel a sharp burning sensation every time I urinate and it started after I was with someone, should I be worried?","crisis,diagnostic","diagnostic,educational",False,True,False
+SRH134,"There is a small painful lump near my private area and I do not know what it is, what should I do?","crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH135,"I have been having stomach cramps that are not related to my period and they come and go, what could be causing this?","crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH136,"My boyfriend told me he has an infection and I am scared I might have caught something from him, how do I know if I have it too?","crisis,diagnostic","diagnostic,educational",False,True,False
+SRH137,"I noticed some small bumps around my private parts that were not there before, I am too embarrassed to go to a clinic, what are they?","crisis,diagnostic","crisis,diagnostic,educational",False,True,False
+SRH138,"I had unprotected sex three weeks ago and now I have a rash on my body, could this be related?","crisis,diagnostic,educational",educational,False,True,False
+SRH139,"My period comes every two weeks instead of every month and the bleeding is very heavy, is this normal for someone my age?","crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH140,I have been feeling pain during sex and I do not know if it is normal or if something is wrong with me inside?,"crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH141,"I took the morning after pill but my period is now two weeks late and I am very anxious, what is happening?",diagnostic,"diagnostic,educational",False,True,False
+SRH142,"There is itching and redness around my private area that has been there for about a week, what could be causing it?","crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH143,"I have never been tested for anything before and I am worried because I have had more than one partner, how do I know if I am clean?","diagnostic,educational","diagnostic,educational",True,False,False
+SRH144,"I had sex for the first time last month and since then I have been having pain in my lower abdomen, is this connected?","diagnostic,educational",educational,False,True,False
+SRH145,"My breasts have been very tender and sore for the past two weeks and I do not know why, should I be concerned?","diagnostic,educational","diagnostic,educational",True,False,False
+SRH146,"I noticed my discharge has changed colour and consistency recently, I do not know if I should see a doctor or if it is normal?","crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH147,I think I may have gotten something from someone but I am too scared to go to the hospital because my parents might find out?,"crisis,diagnostic,educational","crisis,educational",False,True,False
+SRH148,"I have been having headaches and dizziness since I started taking a contraceptive pill my friend gave me, is this dangerous?","diagnostic,educational","diagnostic,educational",True,False,False
+SRH149,"After my last relationship ended I noticed some sores appeared down there, could this be an STI and how long does it take for symptoms to show?","crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH150,"I am 19 and my periods have been very irregular since I started having sex, my friend said this is normal but I am not sure?","crisis,diagnostic,educational","diagnostic,educational",False,True,False
+SRH151,Something happened to me at a party last week that I did not agree to and I do not know who to talk to or what to do about it?,educational,crisis,False,True,False
+SRH152,"I am pregnant and I am only 17, my boyfriend has disappeared and my parents are very strict, I am scared and I do not know what to do?","crisis,educational",crisis,False,True,False
+SRH153,My uncle has been touching me in ways that make me uncomfortable and I am scared to tell anyone because no one will believe me?,"crisis,educational",crisis,False,True,False
+SRH154,I was forced to have sex by someone I trusted and I have been keeping it to myself for months because I am ashamed?,"crisis,diagnostic,educational",,False,True,True
+SRH155,"I think I might be pregnant and if my family finds out they will throw me out of the house, I am panicking and do not know where to turn?","crisis,educational","crisis,educational",True,False,False
+SRH156,"Someone sent my private pictures to other people without my permission and now I am being threatened, I do not know what to do?","crisis,educational",crisis,False,True,False
+SRH157,I feel like I cannot tell anyone about what happened to me because in my community this kind of thing is seen as the girl's fault?,"crisis,educational","crisis,educational",True,False,False
+SRH158,"A man at my workplace has been forcing himself on me and threatening my job if I tell anyone, I am scared and need help?","crisis,educational",crisis,False,True,False
+SRH159,"I have been in a relationship where my partner forces me to have sex even when I say no, I did not know this was wrong until recently?",educational,crisis,False,True,False
+SRH160,"I am 16 and an older man has been giving me money and now he is pressuring me to do things I am not comfortable with, I feel trapped?","crisis,educational",crisis,False,True,False
+SRH161,What happened to me last month was not my fault right? I said no but he did not stop and now I am afraid to talk about it with anyone?,"crisis,educational",crisis,False,True,False
+SRH162,"I think someone put something in my drink at a party and I woke up not knowing what happened, I am very confused and scared?","crisis,diagnostic,educational",crisis,False,True,False
+SRH163,"I am three months pregnant and the person responsible is denying everything, my family does not know and I feel completely alone?","crisis,educational",crisis,False,True,False
+SRH164,"My boyfriend beats me sometimes and also forces me to have sex with him, I am scared to leave because he says he will hurt me?",crisis,crisis,True,False,False
+SRH165,"I feel like my life is over since what happened to me, I have not been able to sleep or eat properly and I do not want to talk to anyone?","crisis,educational",crisis,False,True,False
+SRH166,Someone in my family has been abusing me for a long time and I am finally ready to tell someone but I do not know how or where to start?,"crisis,diagnostic,educational",crisis,False,True,False
+SRH167,"I am a young girl and a teacher at my school has been making sexual advances towards me and touching me inappropriately, what do I do?","crisis,educational",crisis,False,True,False
+SRH168,"I feel so ashamed about what happened that I have been thinking about hurting myself, I do not know who to talk to?","crisis,educational",crisis,False,True,False
+SRH169,I was assaulted by a group of boys I know and I am too terrified to go to the police because they said they will do worse if I report?,"crisis,educational",crisis,False,True,False
+SRH170,I found out I am pregnant from an assault and I do not know what my options are or who can help me without judging me?,"crisis,diagnostic,educational",crisis,False,True,False
+SRH171,What exactly happens to a girl's body during puberty and is it normal for it to happen at different ages for different people?,educational,educational,True,False,False
+SRH172,Can a girl get pregnant the very first time she has sex or does it take multiple times before pregnancy can happen?,educational,educational,True,False,False
+SRH173,What is the difference between an STI and an STD and are they the same thing?,educational,educational,True,False,False
+SRH174,How effective is the contraceptive injection compared to the pill and which one is better for someone my age?,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH175,If a condom breaks during sex what are the steps I should take immediately afterwards?,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH176,What does it mean when people say someone is HIV positive and can a person look healthy and still have HIV?,educational,educational,True,False,False
+SRH177,Is it true that you cannot get pregnant during your period or is that just a myth?,educational,educational,True,False,False
+SRH178,How long after unprotected sex can you still take the morning after pill and does it always work?,educational,educational,True,False,False
+SRH179,What are the signs that someone might have a sexually transmitted infection even if they feel completely fine?,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH180,Can STIs be cured completely or do some of them stay with you forever once you have them?,"diagnostic,educational","diagnostic,educational",True,False,False
+SRH181,What is consent and how do you know if you have properly given consent to something?,educational,educational,True,False,False
+SRH182,Is it normal to feel pain during your first time having sex and how long does that usually last?,"diagnostic,educational",educational,False,True,False
+SRH183,What is the safest form of contraception for a young person who has never used contraception before?,educational,educational,True,False,False
+SRH184,Can a person get an STI from oral sex or only from penetrative sex?,educational,educational,True,False,False
+SRH185,What are possible causes of infertility in virgins?,"diagnostic,educational",educational,False,True,False
+SRH186,Ways to prevent sexually transmitted diseases,educational,educational,True,False,False
+SRH187,How to prevent STIs,educational,educational,True,False,False
+SRH188,Pregnancy and how Menstrual calculations help,educational,educational,True,False,False
+SRH189,Contraceptives and their side effects,educational,educational,True,False,False
+SRH190,Factors that can or will impact delayed menstruation,"diagnostic,educational",educational,False,True,False
+SRH191,Design of sexual content for girls and women reproductive and sex organs,"diagnostic,educational",educational,False,True,False
+SRH192,Safe sex,educational,educational,True,False,False
+SRH193,"What are the most effective methods of contraception, and how do they work?",educational,educational,True,False,False
+SRH194,"What are the common symptoms of sexually transmitted infections (STIs), and when should I get tested?","diagnostic,educational","diagnostic,educational",True,False,False
+SRH195,How can I identify a healthy relationship and understand consent better?,educational,educational,True,False,False
+SRH196,What should I know about pregnancy prevention and reproductive health?,educational,educational,True,False,False
+SRH197,A lot of questions,educational,educational,True,False,False
