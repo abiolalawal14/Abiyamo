@@ -64,7 +64,8 @@ ChromaDB collection: "Abiyamo"
   includes JMP long-format export for Cohen's Kappa (3 separate scores,
   one per category: educational/diagnostic/crisis)
 - calculate_kappa.py — EXISTS but DEFERRED (Kappa calculated in JMP instead)
-- STATUS: BLOCKED — waiting on annotators to finish labeling in Label Studio
+- STATUS: COMPLETE — both annotators finished in Label Studio; merged and
+  resolved into training_dataset.csv (see Phase 2)
 - Multi-label design: a query CAN be educational AND diagnostic AND/OR crisis simultaneously
 
 **Current dataset state (as of last run):**
@@ -73,26 +74,70 @@ ChromaDB collection: "Abiyamo"
 - **192 total queries** in label_studio_import.csv
 - Output files: data/raw_queries/label_studio_import.csv,
   queries_with_metadata.csv, participant_summary.csv
+- data/raw_queries/annotator_exports.csv — Label Studio Cloud export,
+  2 annotators, 197 tasks (194 double-annotated, 3 single-annotated)
+- merge_annotations.py output: 54.6% full agreement between annotators;
+  disagreements resolved via UNION (conservative — a category counts if
+  EITHER annotator flagged it, since missing crisis/diagnostic is worse
+  than over-including it)
+- data/raw_queries/training_dataset.csv — final training data: 251 rows
+  (197 real + 54 synthetic), columns query_id/text/educational/diagnostic/
+  crisis/source/gold_label. Used by BOTH notebooks in Phase 2.
 
 ---
 
-### Phase 2 — NOT STARTED
-- Blocked on Track B annotation completing first
-- Plan: fine-tune DistilBERT for 3-class multi-label intent classification
-- Will be run on Google Colab (GPU), not local machine
-- When ready: replace ONLY escalation._detect_type() — public interface unchanged
+### Phase 2 — COMPLETE
+- notebooks/phase2_baseline_models.ipynb ✅ — TF-IDF + Logistic Regression /
+  SVM / Random Forest baselines, run on Colab (CPU is fine, <5 min).
+  Establishes that a classical baseline is or isn't sufficient before
+  justifying DistilBERT's added complexity in Chapter 4.
+- notebooks/phase2_intent_classifier.ipynb ✅ — fine-tunes
+  distilbert-base-uncased for 3-label multi-label classification
+  (educational/diagnostic/crisis), run on Colab GPU. Saves trained model +
+  tokenizer + classifier_config.json to models/intent_classifier/.
+  - classifier_config.json: crisis_threshold=0.35 (lower than the 0.5 used
+    for the other two labels) — missing a crisis query is worse than a
+    false positive, so crisis recall is favoured over precision.
+  - Both notebooks load data/raw_queries/training_dataset.csv directly
+    (already-binary label columns) — no annotator-column parsing needed.
+  - Colab gotcha (hit and fixed twice): the clone-repo cell force-syncs
+    to origin (`git fetch` + `reset --hard`) instead of `git pull`,
+    because the artifact-saving cell commits inside the Colab clone and
+    its unauthenticated `git push` fails silently, causing "divergent
+    branches" on the next run otherwise.
+  - Colab gotcha: cell 4 installs transformers/accelerate with `-U`
+    (not pinned) — pinning transformers to an old version alone breaks
+    Trainer with `ImportError: cannot import name 'EncoderDecoderCache'`
+    because Colab's preinstalled accelerate expects a newer transformers API.
+- src/safety/escalation.py ✅ — _detect_type() now calls the trained
+  classifier, with automatic fallback to keyword matching (see Phase 3
+  below for details).
+- **IMPORTANT — local vs. deployed state**: models/intent_classifier/
+  exists in this repo checkout but is EMPTY (the model was trained on
+  Colab and its weights have not been copied down here yet). Until the
+  trained model files (config.json, model weights, tokenizer files,
+  classifier_config.json) are placed in that directory, escalation.py
+  silently runs on the Phase 3 keyword fallback, not the classifier.
 
 ---
 
 ### Phase 3 — LARGELY COMPLETE
 
 #### src/safety/ ✅
-- escalation.py ✅ BUILT + PATCHED
-  - Phrase-based crisis/diagnostic detection (13/13 test cases pass)
-  - BYPASSES LLM entirely — returns scripted text + helpline numbers only
-  - _detect_type() is the ONLY function to replace when Phase 2 DistilBERT
-    classifier is ready; public interface (should_escalate,
-    get_escalation_response) stays UNCHANGED
+- escalation.py ✅ BUILT + PATCHED + Phase 2 classifier integrated
+  - _detect_type() runs the trained DistilBERT classifier
+    (models/intent_classifier/) first via _load_classifier(); crisis
+    threshold 0.35, other labels 0.5, from classifier_config.json.
+    Multi-label internally, but still returns str | None (crisis >
+    diagnostic > None priority) so should_escalate() and
+    get_escalation_response() did not need to change.
+  - Falls back to the original phrase-based detection
+    (_detect_type_keywords(), 13/13 test cases pass) whenever the
+    classifier directory/config is missing or fails to load — see the
+    "local vs. deployed state" note under Phase 2 above; this fallback
+    is ACTIVE on this machine right now, not just a theoretical path.
+  - BYPASSES LLM entirely either way — returns scripted text + helpline
+    numbers only
   - CRISIS_PHRASES patched (session 2): added 20 new phrases covering
     assault disclosures ("i was assaulted", "assaulted by", "sexually assaulted"),
     vague disclosures ("something happened to me"), non-consensual touch
@@ -188,8 +233,10 @@ ChromaDB collection: "Abiyamo"
    and wired but the TODO stubs need completing: detect language → to_english()
    before retrieval → from_english() after generation. translator.py is ready.
 
-3. **Phase 2 intent classifier** (Google Colab, GPU) — when Track B
-   annotation is ready. Replace escalation._detect_type() ONLY.
+3. **Copy the trained DistilBERT classifier down from Colab** —
+   models/intent_classifier/ is empty on this machine; escalation.py is
+   silently running on the keyword fallback until config.json, model
+   weights, tokenizer files, and classifier_config.json are placed there.
 
 4. **Phase 4 pilot evaluation** — after translator.py is wired and
    credentials are configured.
@@ -268,12 +315,20 @@ srh-chatbot/
 │   └── pilot_logs.jsonl       (anonymised interaction logs for evaluation)
 ├── src/
 │   ├── knowledge_base/        (Phase 1 Track A — all built ✅)
-│   ├── annotation/            (Phase 1 Track B — built, blocked on data 🟡)
-│   ├── safety/                (Phase 3 — escalation.py built ✅)
+│   ├── annotation/            (Phase 1 Track B — COMPLETE ✅)
+│   ├── safety/                (Phase 3 — escalation.py built ✅, Phase 2
+│   │                           classifier integrated with fallback)
 │   ├── rag_pipeline/          (Phase 3 — all built ✅: retriever, prompt_builder,
 │   │                           generator, translator)
 │   ├── whatsapp/              (Phase 3 — sender.py, webhook.py ✅)
 │   └── api/                   (Phase 3 — main.py, chat_handler.py ✅)
+├── models/
+│   ├── baselines/             (Phase 2 — TF-IDF baseline models + vectorizer)
+│   └── intent_classifier/     (Phase 2 — EMPTY on this machine; trained on
+│                               Colab, not yet copied down — see Phase 2 note)
+├── notebooks/
+│   ├── phase2_baseline_models.ipynb     ✅
+│   └── phase2_intent_classifier.ipynb   ✅
 ├── evaluation/
 │   ├── logger.py              ✅
 │   └── pilot_report.py        ✅

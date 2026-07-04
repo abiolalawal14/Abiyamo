@@ -69,6 +69,19 @@ async def lifespan(app: FastAPI):
         # requests that hit the fallback path even if ChromaDB fails.
         print(f"[main] Warning: could not verify knowledge base at startup: {e}")
 
+    from src.knowledge_base.build_knowledge_base import (
+        add_documents_from_folder, get_collection
+    )
+
+    # Check if knowledge base is empty
+    collection = get_collection()
+    if collection.count() == 0:
+        print("[main] Knowledge base empty — rebuilding from raw_pdfs...")
+        add_documents_from_folder("data/raw_pdfs")
+        print(f"[main] Knowledge base ready — {collection.count()} chunks")
+    else:
+        print(f"[main] Knowledge base ready — {collection.count()} chunks")
+
     print("[main] API ready.")
     yield
     # Shutdown — nothing to clean up for now.

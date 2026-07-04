@@ -93,7 +93,7 @@ def process_and_reply(user_number: str, user_message: str) -> None:
 
     import time
     start = time.time()
-    result = handle_message(user_message)
+    result = handle_message(user_message, user_id=user_number)
     elapsed_ms = (time.time() - start) * 1000
 
     log_interaction(

@@ -49,6 +49,29 @@ TWILIO_MESSAGES_URL = (
 # background task indefinitely on a slow network.
 REQUEST_TIMEOUT_SECONDS = 10.0
 
+# WhatsApp/Twilio's hard limit is 1600 chars. Cutting at 1500 leaves a
+# safe buffer. Messages are truncated at the last complete sentence
+# rather than mid-word/mid-sentence, since a reply that just stops
+# partway through a word reads as broken rather than intentionally
+# shortened.
+MAX_WHATSAPP_CHARS = 1500
+_CONTINUE_PROMPT = "\n\n(Reply 'more' if you would like me to continue)"
+
+
+def _truncate_at_sentence(text: str, limit: int) -> str:
+    """
+    Truncates text to at most `limit` characters, cutting at the last
+    complete sentence (., !, or ?) found within that window rather than
+    hard-cutting mid-sentence. Falls back to a hard cut at `limit` if no
+    sentence boundary is found. Always appends _CONTINUE_PROMPT so the
+    user knows the reply was shortened, not that the bot simply stopped.
+    """
+    window = text[:limit]
+    last_boundary = max(window.rfind("."), window.rfind("!"), window.rfind("?"))
+    if last_boundary != -1:
+        window = window[: last_boundary + 1]
+    return window + _CONTINUE_PROMPT
+
 
 def _get_credentials() -> tuple:
     """
@@ -98,8 +121,9 @@ def send_whatsapp_message(to: str, body: str) -> str | None:
                (+2348012345678) or with the 'whatsapp:' prefix already
                present — both are handled correctly.
         body : The message text. Twilio's WhatsApp limit is 1600 chars;
-               messages longer than 1500 are truncated here to leave
-               a safe buffer.
+               messages longer than MAX_WHATSAPP_CHARS (1500) are
+               truncated here at the last complete sentence, with a
+               "reply 'more'" prompt appended, to leave a safe buffer.
 
     Returns:
         The Twilio message SID string on success (used for logging and
@@ -115,8 +139,8 @@ def send_whatsapp_message(to: str, body: str) -> str | None:
     from_formatted = _with_whatsapp_prefix(from_number)
 
     # Truncate to stay safely below Twilio's 1600-char hard limit.
-    if len(body) > 1500:
-        body = body[:1497] + "..."
+    if len(body) > MAX_WHATSAPP_CHARS:
+        body = _truncate_at_sentence(body, MAX_WHATSAPP_CHARS)
 
     url = TWILIO_MESSAGES_URL.format(sid=sid)
 
@@ -170,6 +194,15 @@ if __name__ == "__main__":
     for k, v in saved.items():
         if v is not None:
             _os.environ[k] = v
+
+    print("\n=== TEST 1b: Sentence-boundary truncation ===")
+    long_text = ("This is sentence one. " * 80) + "This trailing fragment has no end"
+    truncated = _truncate_at_sentence(long_text, MAX_WHATSAPP_CHARS)
+    print(f"Original length : {len(long_text)}")
+    print(f"Truncated length: {len(truncated)}")
+    print(f"Ends with continue prompt: {truncated.endswith(_CONTINUE_PROMPT)}")
+    body_before_prompt = truncated[: -len(_CONTINUE_PROMPT)]
+    print(f"Cuts at sentence boundary (ends in . ! or ?): {body_before_prompt.rstrip()[-1] in '.!?'}")
 
     print("\n=== TEST 2: whatsapp: prefix helper ===")
     print(_with_whatsapp_prefix("+2348012345678"))         # should add prefix

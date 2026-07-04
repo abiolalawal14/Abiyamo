@@ -20,17 +20,25 @@ Where this fits in the pipeline (chat_handler.py):
     NO  -> retrieve_relevant_chunks() -> generate_answer()  (RAG path)
 
 Detection strategy - Phase 2 (DistilBERT classifier, active):
-    _detect_type() now runs the trained DistilBERT intent classifier
-    (models/intent_classifier/) instead of keyword matching. The crisis
-    label uses a lowered 0.35 threshold (vs 0.5 for the others) -- missing
-    a crisis query is worse than a false positive, so crisis recall is
-    favoured over precision. Thresholds and label names come from
-    models/intent_classifier/classifier_config.json, not hardcoded here.
+    _detect_type() checks CRISIS_PHRASES / DIAGNOSTIC_PHRASES FIRST,
+    unconditionally -- not only as a fallback. Only messages that match
+    no keyword phrase fall through to the trained DistilBERT intent
+    classifier (models/intent_classifier/). This changed after live
+    testing showed the classifier's confidence on some topics (e.g.
+    abortion) sits right at the 0.5 decision boundary regardless of
+    context, giving inconsistent results for near-identical wording.
+    Explicit phrases give deterministic behaviour for known
+    personal-distress framings. The crisis label uses a lowered 0.35
+    threshold (vs 0.5 for the others) when the classifier IS consulted --
+    missing a crisis query is worse than a false positive, so crisis
+    recall is favoured over precision. Thresholds and label names come
+    from models/intent_classifier/classifier_config.json, not hardcoded
+    here.
 
-    CRISIS_PHRASES / DIAGNOSTIC_PHRASES (below) are kept and still used:
-    they are the fallback path when the trained model is not present
-    locally (e.g. it was trained on Colab and never copied down) or
-    fails to load. See _load_classifier() / _detect_type_keywords().
+    CRISIS_PHRASES / DIAGNOSTIC_PHRASES (below) also serve as the
+    fallback path when the trained model is not present locally (e.g.
+    it was trained on Colab and never copied down) or fails to load.
+    See _load_classifier() / _detect_type_keywords().
 
     Design decisions for the keyword lists (fallback path):
     - Err on the side of escalation: a false positive (escalating an
@@ -233,6 +241,25 @@ DIAGNOSTIC_PHRASES = [
     "we had unprotected sex",
     "condom broke",
     "condom burst",
+    # abortion in a personal-distress context -- NOT general topic
+    # questions like "what is abortion?" or "what about abortion?",
+    # which must stay educational and go through the RAG pipeline.
+    "i need an abortion",
+    "i had an abortion",
+    # facility-seeking -- a personal request for somewhere to go, not a
+    # general topic question. Routes to escalation so the user gets
+    # real facility names (get_helplines_for_state()) instead of a
+    # RAG-generated answer with no facility data to draw from.
+    "which phc",
+    "which primary health",
+    "nearest clinic",
+    "nearest hospital",
+    "nearest health centre",
+    "where can i go",
+    "where should i go",
+    "which hospital",
+    "find a clinic",
+    "health facility near",
 ]
 
 
@@ -311,11 +338,23 @@ def _detect_type(message: str) -> str | None:
     matches the previous keyword-based contract exactly, so
     should_escalate() and get_escalation_response() need no changes.
 
-    Runs the trained DistilBERT classifier when available (see
-    _load_classifier); falls back to _detect_type_keywords() otherwise.
+    Keyword phrases (CRISIS_PHRASES / DIAGNOSTIC_PHRASES) are checked
+    FIRST, unconditionally -- not just as a fallback when the classifier
+    is unavailable. Live testing showed the trained classifier's
+    confidence on abortion-related text sits right at the 0.5 decision
+    boundary (~0.46-0.52) regardless of context, meaning near-identical
+    wording ("what about abortion?" vs "I need an abortion help me")
+    could flip either way. Explicit phrases give deterministic behaviour
+    for known personal-distress framings while general topic questions
+    (no phrase match) still fall through to the classifier/RAG pipeline.
+    Only falls through to the classifier when no keyword phrase matches.
     """
+    keyword_result = _detect_type_keywords(message)
+    if keyword_result is not None:
+        return keyword_result
+
     if not _load_classifier():
-        return _detect_type_keywords(message)
+        return None
 
     inputs = _clf_tokenizer(
         message,
@@ -544,6 +583,15 @@ if __name__ == "__main__":
         ("I am being sexually abused",                         "crisis"),
         ("I think I have an STI",                              "diagnostic"),
         ("Condom broke last night",                            "diagnostic"),
+        # Abortion: topic questions must stay educational; personal
+        # distress framing must still escalate (found in live testing).
+        ("What is abortion?",                                  None),
+        ("What about abortion?",                                None),
+        ("I need an abortion help me",                         "diagnostic"),
+        ("I had an abortion and I am bleeding",                "diagnostic"),
+        # Facility-seeking: personal request for a nearby facility must
+        # escalate (real facility names) rather than go through RAG.
+        ("Which primary health center can I visit",            "diagnostic"),
     ]
 
     print("=== TEST 1: Detection accuracy ===\n")

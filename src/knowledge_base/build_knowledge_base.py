@@ -29,9 +29,9 @@ Folder expectation:
 import os
 import chromadb
 
-from pdf_loader import load_pdf
-from text_splitter import split_document
-from embedder import embed_chunks
+from .pdf_loader import load_pdf
+from .text_splitter import split_document
+from .embedder import embed_chunks
 
 
 # Centralized settings — change here only, nowhere else, if they ever change

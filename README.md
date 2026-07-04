@@ -1,3 +1,12 @@
+---
+title: Abiyamo SRH Chatbot
+emoji: 🤝
+colorFrom: green
+colorTo: blue
+sdk: docker
+pinned: false
+---
+
 # Abiyamo — SRH Chatbot
 
 A RAG-based multilingual chatbot providing sexual and reproductive health (SRH)
