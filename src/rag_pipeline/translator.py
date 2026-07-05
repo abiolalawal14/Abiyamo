@@ -33,6 +33,8 @@ Design notes:
       the two so callers only ever see BCP-47 codes.
 """
 
+import re
+
 import torch
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
@@ -69,6 +71,37 @@ MAX_NEW_TOKENS = 512
 # generator.py. Loading the model is expensive; it must only happen once.
 _model_cache: AutoModelForSeq2SeqLM | None = None
 _tokenizer_cache: AutoTokenizer | None = None
+
+# ---------------------------------------------------------------------------
+# Known translation gaps
+# ---------------------------------------------------------------------------
+# NLLB-200-distilled-600M (a smaller, lower-quality model than the full
+# 3.3B -- see the module docstring) mistranslates certain informal/slang
+# SRH terms into unrelated English phrases rather than failing loudly.
+# Discovered via live testing: "Kini Atosi" (Yoruba slang for
+# "masturbation") was translated to "What is the Root" -- a completely
+# unrelated phrase that then got misclassified as a diagnostic query
+# downstream (see escalation.py's SAFE_EDUCATIONAL_TERMS, which alone
+# would NOT have caught this, since the mistranslated text doesn't
+# contain the word "masturbation" at all).
+#
+# This is a targeted patch, not a general fix -- it only covers the
+# EXACT phrases below, matched case-insensitively with punctuation
+# stripped. It is NOT a substitute for a native speaker reviewing NLLB's
+# output on other informal/slang SRH terms in Hausa, Yoruba, and Igbo;
+# this dict is meant to grow as more gaps are found, not to be
+# considered complete.
+_KNOWN_TRANSLATION_OVERRIDES: dict[str, dict[str, str]] = {
+    "yo": {
+        "atosi": "masturbation",
+        "kini atosi": "what is masturbation",
+    },
+}
+
+
+def _normalize_for_override_lookup(text: str) -> str:
+    """Lowercases and strips punctuation for exact-phrase override matching."""
+    return re.sub(r"[^\w\s]", "", text.lower()).strip()
 
 
 # ---------------------------------------------------------------------------
@@ -179,6 +212,14 @@ def to_english(text: str, source_lang: str = "en") -> str:
         )
         return text
 
+    # Check known-bad phrases before ever calling NLLB — see
+    # _KNOWN_TRANSLATION_OVERRIDES above for why this exists.
+    override = _KNOWN_TRANSLATION_OVERRIDES.get(source_lang, {}).get(
+        _normalize_for_override_lookup(text)
+    )
+    if override is not None:
+        return override
+
     return _translate(text, source_lang=nllb_source, target_lang=LANGUAGE_CODES["en"])
 
 
@@ -223,6 +264,13 @@ def get_supported_languages() -> list[str]:
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    def _safe(text: str) -> str:
+        # Windows consoles are often cp1252, which can't print some
+        # Hausa/Yoruba/Igbo characters -- encode defensively so this
+        # test never crashes on display alone (terminal limitation, not
+        # a translation bug).
+        return text.encode("ascii", errors="backslashreplace").decode("ascii")
+
     print("=== TEST 1: Hausa -> English ===")
     hausa_q = "Kisa ake nufi da hana haihuwa?"
     result = to_english(hausa_q, source_lang="ha")
@@ -233,7 +281,7 @@ if __name__ == "__main__":
     english_a = "Family planning means choosing when and how many children to have."
     result = from_english(english_a, target_lang="ha")
     print(f"Input  (en): {english_a}")
-    print(f"Output (ha): {result}")
+    print(f"Output (ha): {_safe(result)}")
 
     print("\n=== TEST 3: English passthrough (no translation, no model load) ===")
     original = "What is a condom?"
@@ -252,9 +300,16 @@ if __name__ == "__main__":
     english_a = "You can prevent HIV by using condoms consistently."
     result = from_english(english_a, target_lang="ig")
     print(f"Input  (en): {english_a}")
-    print(f"Output (ig): {result}")
+    print(f"Output (ig): {_safe(result)}")
 
     print("\n=== TEST 6: Unsupported language code ===")
     result = to_english("Bonjour", source_lang="fr")
     print(f"Input  (fr): Bonjour")
     print(f"Output     : {result}  (expected: unchanged)")
+
+    print("\n=== TEST 7: Known translation override (Kini Atosi) ===")
+    result = to_english("Kini Atosi", source_lang="yo")
+    print(f"Input  (yo): Kini Atosi")
+    print(f"Output (en): {result}  (expected: 'what is masturbation')")
+    result_punctuated = to_english("Kini Atosi?", source_lang="yo")
+    print(f"With '?'   : {result_punctuated}  (expected: same override, punctuation-insensitive)")

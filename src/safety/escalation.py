@@ -263,6 +263,19 @@ DIAGNOSTIC_PHRASES = [
 ]
 
 
+# Terms that must always resolve to educational (None) UNLESS a
+# CRISIS_PHRASES/DIAGNOSTIC_PHRASES phrase also matches above (e.g. "I
+# think I have an addiction to masturbation and I want to kill myself"
+# still escalates on the crisis phrase, checked first). Added after
+# live testing with a translated Yoruba query -- see translator.py's
+# _KNOWN_TRANSLATION_OVERRIDES for the fuller story, but independent of
+# that: a bare mention of "masturbation" is a normal, common
+# educational SRH topic on its own and should never need the
+# classifier's judgment call.
+SAFE_EDUCATIONAL_TERMS = [
+    "masturbation",
+]
+
 CLASSIFIER_DIR = "models/intent_classifier"
 _clf_config = None
 _clf_tokenizer = None
@@ -347,11 +360,23 @@ def _detect_type(message: str) -> str | None:
     could flip either way. Explicit phrases give deterministic behaviour
     for known personal-distress framings while general topic questions
     (no phrase match) still fall through to the classifier/RAG pipeline.
-    Only falls through to the classifier when no keyword phrase matches.
+
+    After the keyword check, SAFE_EDUCATIONAL_TERMS is checked next --
+    also unconditionally -- for the same reason: a translated Yoruba
+    query ("Kini Atosi" -> mistranslated to "What is the Root") was
+    getting misclassified as diagnostic by the classifier on nonsense
+    input. "masturbation" is checked directly rather than trusting the
+    classifier's judgment on it.
+
+    Only falls through to the classifier when neither of the above matches.
     """
     keyword_result = _detect_type_keywords(message)
     if keyword_result is not None:
         return keyword_result
+
+    lower = message.lower()
+    if any(term in lower for term in SAFE_EDUCATIONAL_TERMS):
+        return None
 
     if not _load_classifier():
         return None
@@ -404,13 +429,22 @@ def _normalize_state_name(state: str | None) -> str | None:
     return state.strip().title()
 
 
-def get_helplines_for_state(state: str | None) -> list:
+def get_helplines_for_state(state: str | None, lga: str | None = None) -> list:
     """
     Returns the list of facility dicts for the given Nigerian state from
     data/helplines.json. Returns an empty list when the state is unknown,
     not provided, or the file has not been populated yet.
 
     Case-insensitive matching so callers can pass "borno" or "Borno".
+
+    Parameters:
+        lga : Optional LGA name captured during onboarding. When
+              provided, facilities in that LGA are moved to the front
+              of the returned list -- callers slice to the first few
+              results (see _crisis_response/_diagnostic_response), so
+              this surfaces a matching-LGA facility first without ever
+              hiding the rest of the state's facilities if the user's
+              LGA has none listed (graceful fallback, not a filter).
     """
     if not state:
         return []
@@ -423,18 +457,26 @@ def get_helplines_for_state(state: str | None) -> list:
     states = data.get("states", {})
     # Case-insensitive scan so minor spelling differences don't miss a state
     normalized_lower = normalized.lower()
+    facilities = []
     for key, val in states.items():
         if key.lower() == normalized_lower:
-            return val.get("facilities", [])
+            facilities = val.get("facilities", [])
+            break
 
-    return []
+    if not facilities or not lga:
+        return facilities
+
+    lga_lower = lga.strip().lower()
+    matching = [f for f in facilities if f.get("lga", "").lower() == lga_lower]
+    other = [f for f in facilities if f.get("lga", "").lower() != lga_lower]
+    return matching + other
 
 
 # ---------------------------------------------------------------------------
 # Response builders
 # ---------------------------------------------------------------------------
 
-def _crisis_response(state: str | None = None) -> str:
+def _crisis_response(state: str | None = None, lga: str | None = None) -> str:
     """
     Scripted crisis response. When a state is known, names real local
     facilities so the user has a concrete place to go. Always adds 112.
@@ -443,7 +485,7 @@ def _crisis_response(state: str | None = None) -> str:
     encourage action. Short by design -- WhatsApp users disengage with
     long messages.
     """
-    facilities = get_helplines_for_state(state)
+    facilities = get_helplines_for_state(state, lga)
 
     if facilities:
         state_display = _normalize_state_name(state) or state
@@ -478,13 +520,13 @@ def _crisis_response(state: str | None = None) -> str:
     )
 
 
-def _diagnostic_response(state: str | None = None) -> str:
+def _diagnostic_response(state: str | None = None, lga: str | None = None) -> str:
     """
     Scripted diagnostic response. Encourages visiting a named health
     facility rather than diagnosing through a chatbot. Falls back to
     generic PHC guidance when no state is known.
     """
-    facilities = get_helplines_for_state(state)
+    facilities = get_helplines_for_state(state, lga)
 
     if facilities:
         state_display = _normalize_state_name(state) or state
@@ -534,7 +576,7 @@ def should_escalate(message: str) -> bool:
     return _detect_type(message) is not None
 
 
-def get_escalation_response(message: str, state: str | None = None) -> str:
+def get_escalation_response(message: str, state: str | None = None, lga: str | None = None) -> str:
     """
     Returns the appropriate scripted response for an escalated message.
     Should only be called after should_escalate() has returned True.
@@ -545,9 +587,12 @@ def get_escalation_response(message: str, state: str | None = None) -> str:
         state   : optional Nigerian state name (e.g. "Borno", "Lagos").
                   When provided, the response includes named local facilities.
                   When None, falls back to generic national guidance.
+        lga     : optional LGA name captured during onboarding. When
+                  provided alongside state, facilities from that LGA
+                  are prioritised first (see get_helplines_for_state()).
 
-    Backward compatible: callers that pass only message (no state) continue
-    to work -- they receive the national-fallback response.
+    Backward compatible: callers that pass only message (no state/lga)
+    continue to work -- they receive the national-fallback response.
     """
     # Allow passing the type directly for testing ("crisis", "diagnostic")
     # without needing a real message that triggers keyword detection.
@@ -557,10 +602,10 @@ def get_escalation_response(message: str, state: str | None = None) -> str:
         escalation_type = _detect_type(message)
 
     if escalation_type == "crisis":
-        return _crisis_response(state)
+        return _crisis_response(state, lga)
     else:
         # Covers both "diagnostic" and the defensive fallback for None
-        return _diagnostic_response(state)
+        return _diagnostic_response(state, lga)
 
 
 # ---------------------------------------------------------------------------

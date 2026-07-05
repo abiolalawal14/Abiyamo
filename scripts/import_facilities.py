@@ -106,32 +106,50 @@ def _facility_type(name: str) -> str:
         return "Other"
 
 
+_PRIORITY_ORDER = {"MCH": 0, "PHCC": 1, "PHC": 2, "Other": 3}
+
+
 def select_facilities_for_state(group: pd.DataFrame) -> list:
     """
-    Picks up to MAX_FACILITIES_PER_STATE facilities from one state's rows,
-    filling the quota tier by tier: MCH -> PHCC -> PHC -> Other.
-    If the state has fewer than 5 total, all are included.
+    Picks up to MAX_FACILITIES_PER_STATE facilities from one state's
+    rows, taking AT MOST ONE facility per LGA (the highest-priority one
+    present in that LGA: MCH > PHCC > PHC > Other), visiting LGAs in
+    alphabetical order for reproducible output.
+
+    Why: the previous version filled the quota tier-by-tier with
+    `.head(needed)` across the WHOLE state, with no regard for LGA — if
+    a state's raw data happened to be sorted/grouped by LGA (it was),
+    all 5 selected facilities could come from a single LGA (e.g. every
+    Oyo facility selected was from Afijo LGA). Capping at one per LGA
+    guarantees geographic spread across the state instead.
+
+    If a state has fewer than MAX_FACILITIES_PER_STATE distinct LGAs,
+    fewer than 5 facilities are returned — there's no second pass to
+    pick a further facility from an already-used LGA, since the goal is
+    diversity, not hitting a fixed count.
     """
     selected = []
 
-    for priority in ("MCH", "PHCC", "PHC", "Other"):
+    for lga in sorted(group["LGA"].unique()):
         if len(selected) >= MAX_FACILITIES_PER_STATE:
             break
-        needed = MAX_FACILITIES_PER_STATE - len(selected)
-        tier = group[
-            group["HEALTH_FACILITY"].apply(lambda n: _facility_type(n) == priority)
-        ].head(needed)
 
-        for _, row in tier.iterrows():
-            selected.append({
-                "name": row["HEALTH_FACILITY"].title(),
-                "lga": row["LGA"],
-                "ward": row["WARD_STATE"],
-                "type": priority,
-                "verified": True,
-                "verified_date": VERIFIED_DATE,
-                "notes": "Government health facility",
-            })
+        lga_group = group[group["LGA"] == lga]
+        best_row = min(
+            (row for _, row in lga_group.iterrows()),
+            key=lambda row: _PRIORITY_ORDER[_facility_type(row["HEALTH_FACILITY"])],
+        )
+        priority = _facility_type(best_row["HEALTH_FACILITY"])
+
+        selected.append({
+            "name": best_row["HEALTH_FACILITY"].title(),
+            "lga": best_row["LGA"],
+            "ward": best_row["WARD_STATE"],
+            "type": priority,
+            "verified": True,
+            "verified_date": VERIFIED_DATE,
+            "notes": "Government health facility",
+        })
 
     return selected
 

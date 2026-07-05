@@ -106,6 +106,15 @@ _STATE_PROMPT = (
     "Rivers, Oyo, Borno etc."
 )
 
+_LGA_PROMPT = (
+    "Almost done! Which Local Government Area (LGA) "
+    "are you in? This helps me show you the nearest "
+    "health facilities.\n\n"
+    "Reply with your LGA name e.g: Ibadan North, "
+    "Surulere, Kano Municipal etc.\n\n"
+    "Or reply 'skip' if you prefer not to share this."
+)
+
 _ONBOARDED_CONFIRMATION = (
     "Thank you! You are all set. Ask me anything about sexual and "
     "reproductive health. 🌿"
@@ -173,6 +182,31 @@ _LANGUAGE_SWITCH_CONFIRMATIONS = {
     "igbo": "Asụsụ agbanwela na Igbo. 🌿",
 }
 
+# ---------------------------------------------------------------------------
+# Follow-up replies — this chatbot has NO conversation memory (each
+# message is handled independently, with no history of what was said
+# before). A short reply like "yes" or "continue" only makes sense in
+# reference to a PREVIOUS bot message we have no record of, so guessing
+# what the user wants to continue risks confidently answering the wrong
+# thing. Redirecting to a specific question is safer than guessing, and
+# mirrors how prompt_builder.py's system prompt already handles vague
+# queries the RAG pipeline can't ground an answer in.
+# ---------------------------------------------------------------------------
+
+_FOLLOW_UP_PHRASES = [
+    "yes", "ok", "okay", "continue", "go on", "more",
+    "tell me more", "please continue", "and then",
+    "what else", "keep going", "go ahead",
+]
+
+_FOLLOW_UP_REDIRECT_MESSAGE = (
+    "Could you ask me a more specific question about the topic? "
+    "For example:\n"
+    "'What are the risks of masturbation?' or\n"
+    "'Is masturbation normal for teenagers?'\n\n"
+    "I work best with specific questions. 🌿"
+)
+
 
 def _normalize_for_trigger_match(text: str) -> str:
     """
@@ -213,6 +247,21 @@ def _detect_direct_language_switch(message: str) -> str | None:
         if phrase in normalized:
             return lang
     return None
+
+
+_FOLLOW_UP_PHRASES_NORMALIZED = {_normalize_for_trigger_match(p) for p in _FOLLOW_UP_PHRASES}
+
+
+def _is_follow_up_reply(message: str) -> bool:
+    """
+    True if the WHOLE message (after normalizing) is one of the known
+    follow-up phrases. Exact match, NOT substring -- unlike the other
+    triggers in this module, these are common short words that would
+    false-positive constantly as substrings (e.g. "more" appears inside
+    "Is it normal to have more discharge before my period?", a real,
+    unrelated SRH question that must not be redirected).
+    """
+    return _normalize_for_trigger_match(message) in _FOLLOW_UP_PHRASES_NORMALIZED
 
 
 def _hash_user_id(raw_id: str) -> str:
@@ -275,15 +324,17 @@ def _handle_onboarding(
 ) -> dict | None:
     """
     Runs the onboarding state machine for a WhatsApp user: language
-    selection, then state capture (for facility lookups in
-    escalation.py), then done. Mutates `sessions` in place and persists
-    it via _save_sessions() whenever onboarding advances a step.
+    selection, then state capture, then LGA capture (both feed
+    escalation.py's facility lookup), then done. Mutates `sessions` in
+    place and persists it via _save_sessions() whenever onboarding
+    advances a step.
 
-    Three sub-states, distinguished without an extra "stage" field:
-        session is None                        -> brand new user
-        onboarded=False, language is None       -> awaiting language reply
-        onboarded=False, language is set        -> awaiting state reply
-        onboarded=True                          -> done, normal pipeline runs
+    Four sub-states, distinguished without an extra "stage" field:
+        session is None                   -> brand new user
+        onboarded=False, language is None -> awaiting language reply
+        onboarded=False, state is None    -> awaiting state reply
+        onboarded=False, state is set     -> awaiting LGA reply (or "skip")
+        onboarded=True                    -> done, normal pipeline runs
 
     Returns a complete handle_message()-shaped result dict if onboarding
     should intercept this message, or None if the user is already
@@ -293,7 +344,7 @@ def _handle_onboarding(
         # Brand-new user — record a pending session so their next
         # message is treated as a language reply, not another "new
         # user" welcome, then send the welcome message.
-        sessions[phone_hash] = {"language": None, "state": None, "onboarded": False}
+        sessions[phone_hash] = {"language": None, "state": None, "lga": None, "onboarded": False}
         _save_sessions(sessions)
         return _onboarding_reply(_WELCOME_MESSAGE, language)
 
@@ -313,16 +364,29 @@ def _handle_onboarding(
         # rather than guessing.
         return _onboarding_reply(_WELCOME_MESSAGE, language)
 
-    # Language already chosen — awaiting state reply.
-    state_name = message.strip()
-    if state_name:
-        session["state"] = state_name
-        session["onboarded"] = True
-        sessions[phone_hash] = session
-        _save_sessions(sessions)
-        return _onboarding_reply(_ONBOARDED_CONFIRMATION, language)
-    # Empty reply — re-send the state prompt rather than guessing.
-    return _onboarding_reply(_STATE_PROMPT, language)
+    if session.get("state") is None:
+        # Awaiting state reply.
+        state_name = message.strip()
+        if state_name:
+            session["state"] = state_name
+            sessions[phone_hash] = session
+            _save_sessions(sessions)
+            return _onboarding_reply(_LGA_PROMPT, language)
+        # Empty reply — re-send the state prompt rather than guessing.
+        return _onboarding_reply(_STATE_PROMPT, language)
+
+    # State already chosen — awaiting LGA reply (or "skip").
+    lga_reply = message.strip()
+    if not lga_reply:
+        # Empty reply — re-send the LGA prompt, same pattern as the
+        # state step, rather than silently completing onboarding with
+        # no LGA on record.
+        return _onboarding_reply(_LGA_PROMPT, language)
+    session["lga"] = None if lga_reply.lower() == "skip" else lga_reply
+    session["onboarded"] = True
+    sessions[phone_hash] = session
+    _save_sessions(sessions)
+    return _onboarding_reply(_ONBOARDED_CONFIRMATION, language)
 
 
 def _handle_reset(phone_hash: str, sessions: dict, language: str) -> dict:
@@ -340,7 +404,7 @@ def _handle_reset(phone_hash: str, sessions: dict, language: str) -> dict:
     "send welcome" outcome without needing to special-case it.
     """
     sessions.pop(phone_hash, None)
-    sessions[phone_hash] = {"language": None, "state": None, "onboarded": False}
+    sessions[phone_hash] = {"language": None, "state": None, "lga": None, "onboarded": False}
     if _save_sessions(sessions):
         return _onboarding_reply(_RESET_CONFIRMATION_MESSAGE, language)
     # _save_sessions() already logs the underlying OSError — this is
@@ -448,6 +512,7 @@ def handle_message(message: str, language: str = "en", user_id: str | None = Non
     # it works for onboarded AND mid-onboarding users alike, without
     # ever touching whether they're onboarded or what state they saved.
     session_state = None
+    session_lga = None
     if user_id is not None:
         phone_hash = _hash_user_id(user_id)
         sessions = _load_sessions()
@@ -474,6 +539,7 @@ def handle_message(message: str, language: str = "en", user_id: str | None = Non
         if plain_lang in _PLAIN_TO_BCP47:
             language = _PLAIN_TO_BCP47[plain_lang]
         session_state = session.get("state")
+        session_lga = session.get("lga")
 
     if not message or not message.strip():
         return {
@@ -494,11 +560,30 @@ def handle_message(message: str, language: str = "en", user_id: str | None = Non
     # RAG path, after the escalation check had already run on raw text.
     english_message = to_english(message, source_lang=language)
 
+    # Follow-up replies ("yes", "continue", "more"...) only make sense
+    # as a reference to a PREVIOUS bot message. This chatbot has no
+    # conversation history, so a bare "yes" cannot be understood as
+    # "yes, keep explaining X" -- without this check, such replies were
+    # falling through to intent classification and getting misread as
+    # diagnostic (short, context-free text gives the classifier little
+    # to go on). Redirecting to a specific question is safer than
+    # silently guessing what the user wants continued.
+    if _is_follow_up_reply(english_message):
+        answer = _FOLLOW_UP_REDIRECT_MESSAGE
+        if language != "en":
+            answer = from_english(answer, target_lang=language)
+        return {
+            "answer": answer,
+            "language": language,
+            "escalated": False,
+            "chunks_used": 0,
+        }
+
     # Escalation check — MUST run before any retrieval or generation.
     # Diagnostic and crisis queries return scripted text + helplines and
     # never reach the LLM. This is a hard safety rule, not a soft preference.
     if should_escalate(english_message):
-        answer = get_escalation_response(english_message, state=session_state)
+        answer = get_escalation_response(english_message, state=session_state, lga=session_lga)
         if language != "en":
             answer = from_english(answer, target_lang=language)
         return {
@@ -584,11 +669,16 @@ if __name__ == "__main__":
 
     result = handle_message("Lagos", user_id=test_number)
     print(f"  [reply 'Lagos']       escalated={result['escalated']}  "
+          f"lga_prompt_shown={'which local government area' in result['answer'].lower()}")
+
+    result = handle_message("Ikeja", user_id=test_number)
+    print(f"  [reply 'Ikeja']       escalated={result['escalated']}  "
           f"all_set_shown={'You are all set' in result['answer']}")
 
     sessions_after = json.loads(Path(tmp.name).read_text(encoding="utf-8"))
     saved_session = sessions_after[_hash_user_id(test_number)]
-    print(f"  Saved session         : {saved_session}  (expected: language=english, state=Lagos, onboarded=true)")
+    print(f"  Saved session         : {saved_session}  "
+          f"(expected: language=english, state=Lagos, lga=Ikeja, onboarded=true)")
 
     result = handle_message("What is the safe period method?", user_id=test_number)
     print(f"  [returning user]      escalated={result['escalated']}  "
@@ -606,7 +696,7 @@ if __name__ == "__main__":
     yoruba_number = "whatsapp:+2348022222222"
     sessions = _load_sessions()
     sessions[_hash_user_id(yoruba_number)] = {
-        "language": "yoruba", "state": "Lagos", "onboarded": True,
+        "language": "yoruba", "state": "Lagos", "lga": None, "onboarded": True,
     }
     _save_sessions(sessions)
     result = handle_message("What is pregnancy?", user_id=yoruba_number)
@@ -643,7 +733,7 @@ if __name__ == "__main__":
     yoruba_switch_number = "whatsapp:+2348055555555"
     sessions = _load_sessions()
     sessions[_hash_user_id(yoruba_switch_number)] = {
-        "language": "english", "state": "Oyo", "onboarded": True,
+        "language": "english", "state": "Oyo", "lga": None, "onboarded": True,
     }
     _save_sessions(sessions)
 
@@ -658,7 +748,7 @@ if __name__ == "__main__":
     hausa_switch_number = "whatsapp:+2348066666666"
     sessions = _load_sessions()
     sessions[_hash_user_id(hausa_switch_number)] = {
-        "language": "english", "state": "Kano", "onboarded": True,
+        "language": "english", "state": "Kano", "lga": None, "onboarded": True,
     }
     _save_sessions(sessions)
 
@@ -680,20 +770,63 @@ if __name__ == "__main__":
     print(f"  Still mid-onboarding (onboarded=False, language=english): {mid_session}")
 
     result = handle_message("Kano", user_id=mid_onboarding_number)
+    print(f"  State captured, LGA prompt shown: "
+          f"{'which local government area' in result['answer'].lower()}")
+
+    result = handle_message("Kano Municipal", user_id=mid_onboarding_number)
     print(f"  Onboarding completes with new language: "
           f"{'You are all set' in result['answer']}")
     sessions = _load_sessions()
     final_session = sessions[_hash_user_id(mid_onboarding_number)]
-    print(f"  Final session: {final_session}  (expected: language=english, state=Kano, onboarded=True)")
+    print(f"  Final session: {final_session}  "
+          f"(expected: language=english, state=Kano, lga=Kano Municipal, onboarded=True)")
 
     print("\n=== TEST 13: Full reset -> onboarding cycle saves correctly ===")
     handle_message("reset", user_id=test_number)
     handle_message("3", user_id=test_number)          # Yoruba
-    result = handle_message("Rivers", user_id=test_number)
+    handle_message("Rivers", user_id=test_number)     # state
+    result = handle_message("Port Harcourt", user_id=test_number)  # LGA
     sessions = _load_sessions()
     cycle_session = sessions[_hash_user_id(test_number)]
     print(f"  Final session after reset + full onboarding: {cycle_session}")
-    print(f"  (expected: language=yoruba, state=Rivers, onboarded=True)")
+    print(f"  (expected: language=yoruba, state=Rivers, lga=Port Harcourt, onboarded=True)")
+
+    print("\n=== TEST 14: 'skip' during LGA step works correctly ===")
+    skip_number = "whatsapp:+2348088888888"
+    handle_message("hi", user_id=skip_number)
+    handle_message("1", user_id=skip_number)          # English
+    handle_message("Abuja", user_id=skip_number)      # state
+    result = handle_message("skip", user_id=skip_number)
+    sessions = _load_sessions()
+    skip_session = sessions[_hash_user_id(skip_number)]
+    print(f"  Onboarded after skip: {'You are all set' in result['answer']}")
+    print(f"  Session: {skip_session}  (expected: state=Abuja, lga=None, onboarded=True)")
+
+    print("\n=== TEST 15: Follow-up reply ('yes') gets redirected, not escalated ===")
+    result = handle_message("yes")
+    print(f"  Escalated: {result['escalated']}  (expected: False)")
+    print(f"  Chunks used: {result['chunks_used']}  (expected: 0 -- never reached RAG or escalation)")
+    print(f"  Answer: {_safe(result['answer'])}")
+    print(f"  Is the follow-up redirect: {result['answer'] == _FOLLOW_UP_REDIRECT_MESSAGE}")
+
+    print("\n=== TEST 16: Oyo facilities span at least 3 different LGAs ===")
+    from src.safety.escalation import get_helplines_for_state
+    oyo_facilities = get_helplines_for_state("Oyo")
+    distinct_lgas = {f["lga"] for f in oyo_facilities}
+    print(f"  Facilities returned: {len(oyo_facilities)}")
+    print(f"  Distinct LGAs      : {len(distinct_lgas)}  (expected: >= 3)  {distinct_lgas}")
+
+    print("\n=== TEST 17: 'Kini Atosi' with Yoruba session -> educational, not escalation ===")
+    atosi_number = "whatsapp:+2348099999999"
+    sessions = _load_sessions()
+    sessions[_hash_user_id(atosi_number)] = {
+        "language": "yoruba", "state": "Lagos", "lga": None, "onboarded": True,
+    }
+    _save_sessions(sessions)
+    result = handle_message("Kini Atosi", user_id=atosi_number)
+    print(f"  Escalated: {result['escalated']}  (expected: False)")
+    print(f"  Language : {result['language']}  (expected: yo)")
+    print(f"  Answer   : {_safe(result['answer'][:200])}")
 
     _SESSIONS_FILE = original_sessions_file
     _os.unlink(tmp.name)

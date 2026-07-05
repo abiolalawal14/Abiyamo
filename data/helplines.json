@@ -57,15 +57,6 @@
     "Abia": {
       "facilities": [
         {
-          "name": "Mch Health Office",
-          "lga": "Aba South",
-          "ward": "Aba Town Hall",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
           "name": "Umunne-Ato Phc",
           "lga": "Aba North",
           "ward": "Ariaria",
@@ -75,27 +66,36 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Eziama Phc",
-          "lga": "Aba North",
-          "ward": "Eziama",
+          "name": "Mch Health Office",
+          "lga": "Aba South",
+          "ward": "Aba Town Hall",
+          "type": "MCH",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Health Office",
+          "lga": "Arochukwu",
+          "ward": "Arochukwu I",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Igbere Phc",
+          "lga": "Bende",
+          "ward": "Igbere 'A'",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Osusu I Phc",
-          "lga": "Aba North",
-          "ward": "Osusu I",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Umuogor Phc",
-          "lga": "Aba North",
-          "ward": "Umuogor",
+          "name": "Ngwugwo Phc",
+          "lga": "Ikwuano",
+          "ward": "Ibere Ii",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
@@ -106,46 +106,46 @@
     "Adamawa": {
       "facilities": [
         {
-          "name": "Chikila Mch",
-          "lga": "Guyuk",
-          "ward": "Chikila",
-          "type": "MCH",
+          "name": "Bille Phcc",
+          "lga": "Demsa",
+          "ward": "Bille",
+          "type": "PHCC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Boshikiri Mch",
-          "lga": "Guyuk",
-          "ward": "Dumna Tsalbu",
-          "type": "MCH",
+          "name": "Chigari Hc",
+          "lga": "Fufore",
+          "ward": "Beti",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Guyuk Mch",
-          "lga": "Guyuk",
-          "ward": "Guyuk",
-          "type": "MCH",
+          "name": "Jaggu Phcc",
+          "lga": "Ganye",
+          "ward": "Jaggu",
+          "type": "PHCC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Kola Mch",
-          "lga": "Guyuk",
-          "ward": "Kola",
-          "type": "MCH",
+          "name": "Dakri Phcc",
+          "lga": "Girei",
+          "ward": "Dakri",
+          "type": "PHCC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Garaha Mch",
-          "lga": "Hong",
-          "ward": "Garaha",
-          "type": "MCH",
+          "name": "Boga Phcc",
+          "lga": "Gombi",
+          "ward": "Boga-Dingari",
+          "type": "PHCC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -154,6 +154,15 @@
     },
     "Akwa Ibom": {
       "facilities": [
+        {
+          "name": "Ibanang Ediene Health Centre",
+          "lga": "Abak",
+          "ward": "Nan",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
         {
           "name": "Phc Amadaka",
           "lga": "Eastern Obolo",
@@ -164,37 +173,28 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Amauka Phc",
-          "lga": "Eastern Obolo",
+          "name": "Afaha Atai Health Post",
+          "lga": "Eket",
           "ward": "Nan",
-          "type": "PHC",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Phc Okoroinyong",
-          "lga": "Eastern Obolo",
+          "name": "Iko Efak Health Post",
+          "lga": "Esit Eket",
           "ward": "Nan",
-          "type": "PHC",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Phc Iko",
-          "lga": "Eastern Obolo",
+          "name": "Adiasim Health Centre",
+          "lga": "Essien Udim",
           "ward": "Nan",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Phc Ikot Idaha",
-          "lga": "Ikono",
-          "ward": "Nan",
-          "type": "PHC",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -204,10 +204,37 @@
     "Anambra": {
       "facilities": [
         {
+          "name": "Oye Achina Phc",
+          "lga": "Aguata",
+          "ward": "Achina 1",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
           "name": "Mch Otuocha",
           "lga": "Anambra East",
           "ward": "Otuocha 1",
           "type": "MCH",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Umuonuorah Phc",
+          "lga": "Anambra West",
+          "ward": "Mmiata/Ifite Anam",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Adazi-Ani 1 Phc",
+          "lga": "Anaocha",
+          "ward": "Adazi-Ani 1",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -220,38 +247,29 @@
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
-        },
-        {
-          "name": "Mch Amawbia",
-          "lga": "Awka South",
-          "ward": "Amawbia 3",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Mch Ogidi",
-          "lga": "Idemili North",
-          "ward": "Ogidi 1",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Mch Abagan",
-          "lga": "Njikoka",
-          "ward": "Abagana 3",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
         }
       ]
     },
     "Bauchi": {
       "facilities": [
+        {
+          "name": "Bajama Phc",
+          "lga": "Alkaleri",
+          "ward": "Birim/Gigara",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Miri Phc",
+          "lga": "Bauchi",
+          "ward": "Birshi",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
         {
           "name": "Dantsang Mch",
           "lga": "Bogoro",
@@ -262,37 +280,19 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Mwari Mch",
-          "lga": "Bogoro",
-          "ward": "Bogoro B",
-          "type": "MCH",
+          "name": "Dagauda Mphcc",
+          "lga": "Dambam",
+          "ward": "Dagauda",
+          "type": "PHCC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Dabardak Mch",
-          "lga": "Dass",
-          "ward": "Bundot",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Wandi Mch",
-          "lga": "Dass",
-          "ward": "Wandi",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Zumbul Mch",
-          "lga": "Dass",
-          "ward": "Zumbul",
-          "type": "MCH",
+          "name": "Gabarin Phc",
+          "lga": "Darazo",
+          "ward": "Gabarin Phc",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -311,27 +311,9 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Oginibiri Phc",
-          "lga": "Brass",
-          "ward": "Oginibiri Ward",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
           "name": "Phc Aleibiri 2",
           "lga": "Ekeremor",
           "ward": "Oyiakiri 2",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Lalagbane Phc",
-          "lga": "Ekeremor",
-          "ward": "Oyiakiri Iii",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
@@ -345,43 +327,61 @@
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
+        },
+        {
+          "name": "Phc Sabagreia",
+          "lga": "Kolukoma/Opokuma",
+          "ward": "Sabagreia",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Phc Igbeta-Ewoama",
+          "lga": "Nembe",
+          "ward": "0",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
         }
       ]
     },
     "Benue": {
       "facilities": [
         {
-          "name": "Mch Jor",
-          "lga": "Gwer West",
-          "ward": "Avihijime",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Phc Mchia",
-          "lga": "Logo",
-          "ward": "Mbagber",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Mch Lessel",
-          "lga": "Ushongo",
-          "ward": "Township",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
           "name": "Phcc Apa",
           "lga": "Ado",
           "ward": "Apa",
           "type": "PHCC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Phc Aila",
+          "lga": "Agatu",
+          "ward": "Egba",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Ojantele Phc",
+          "lga": "Apa",
+          "ward": "Ojantele/Akpete",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Phc Agwabi",
+          "lga": "Buruku",
+          "ward": "Binev",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -400,6 +400,33 @@
     "Borno": {
       "facilities": [
         {
+          "name": "Mallam Fatori Primary Health Centre",
+          "lga": "Abadam",
+          "ward": "Kudo Kurgu",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Ngohi Phc",
+          "lga": "Askira Uba",
+          "ward": "Ngohi",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Ngulde Comprehensive Health Centre",
+          "lga": "Askira/Uba",
+          "ward": "Ngulde",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
           "name": "Mch Bama",
           "lga": "Bama",
           "ward": "Shehuri",
@@ -416,61 +443,25 @@
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
-        },
-        {
-          "name": "Miringa Mch",
-          "lga": "Biu",
-          "ward": "Miringa",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Biu Mch",
-          "lga": "Biu",
-          "ward": "Zarawuyaku",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Damboa Mch",
-          "lga": "Damboa",
-          "ward": "Damboa Central",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
         }
       ]
     },
     "Cross River": {
       "facilities": [
         {
-          "name": "Maternal And Child Health Center Sankwala",
-          "lga": "Obanliku",
+          "name": "Adadama Primary Health Centre",
+          "lga": "Abi",
           "ward": "Nan",
-          "type": "MCH",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Obubra Maternal And Child Health Care",
-          "lga": "Obubra",
+          "name": "Mma Efa Health Centre",
+          "lga": "Akamkpa Urban",
           "ward": "Nan",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Maternal And Child Health Ogoja",
-          "lga": "Ogoja",
-          "ward": "Nan",
-          "type": "MCH",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -485,8 +476,17 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Phc Akwa Ikot Effanga",
-          "lga": "Akpabuyo",
+          "name": "Esighi Phc",
+          "lga": "Bakassi",
+          "ward": "Nan",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Ibiaragidi Phc",
+          "lga": "Bekwarra",
           "ward": "Nan",
           "type": "PHC",
           "verified": true,
@@ -507,36 +507,36 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Idumuje Ugboko Phc",
-          "lga": "Aniocha North",
-          "ward": "Idumuje",
+          "name": "Phc Adonte",
+          "lga": "Aniocha South",
+          "ward": "Adonte",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Issele-Azagba Phc",
-          "lga": "Aniocha North",
-          "ward": "Issele Mkpitime",
+          "name": "Akugbene Phc",
+          "lga": "Bomadi",
+          "ward": "Akugbene",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Urban Phc Issele Uku 1",
-          "lga": "Aniocha North",
-          "ward": "Issele Uku I",
+          "name": "Ekogbene Phc",
+          "lga": "Burutu",
+          "ward": "Bolou Ndoro",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Issele-Uku Urban Phc",
-          "lga": "Aniocha North",
-          "ward": "Issele Uku 2",
+          "name": "Abraka Phc",
+          "lga": "Ethiope East",
+          "ward": "Abraka 1",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
@@ -551,6 +551,24 @@
           "lga": "Abakaliki",
           "ward": "Azuiyiokwu",
           "type": "MCH",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Amasiri Phc",
+          "lga": "Afikpo North",
+          "ward": "Ezeke Amasiri",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Amaoba Phc",
+          "lga": "Afikpo South",
+          "ward": "Amaigbo",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -572,24 +590,6 @@
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
-        },
-        {
-          "name": "Mch Onueke",
-          "lga": "Ezza South",
-          "ward": "Onueke Urban",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Nkwegu Model Phc",
-          "lga": "Abakaliki",
-          "ward": "Amagu Unuhu",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
         }
       ]
     },
@@ -605,19 +605,28 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Igarra Phc",
-          "lga": "Akoko Edo",
-          "ward": "Igarra 11",
-          "type": "PHC",
+          "name": "Primary Health Center Ogida",
+          "lga": "Egor",
+          "ward": "Ogida",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Lampese Phc",
-          "lga": "Akoko Edo",
-          "ward": "Imoga / Lampese / Bekuma / Ekpe",
-          "type": "PHC",
+          "name": "Health Center Eko-Ewu",
+          "lga": "Esan Central",
+          "ward": "Ehalen",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Primary Health Center Awo",
+          "lga": "Esan North East",
+          "ward": "Amedokhian",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -626,15 +635,6 @@
           "name": "Oria Phc 2",
           "lga": "Esan South East",
           "ward": "Oria",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Ujoelen Phc",
-          "lga": "Esan West",
-          "ward": "Emuhi",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
@@ -654,36 +654,36 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Basic Health Centre Opopo",
-          "lga": "Ado",
-          "ward": "Opopogbooro(Dallimore)",
+          "name": "Comprehensive Health Centre Erekesan",
+          "lga": "Efon",
+          "ward": "Erekesan-1(Efon I)",
           "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Bhc Odo",
-          "lga": "Ado",
-          "ward": "Odo",
+          "name": "Comprehensive Health Centre Igbara Odo",
+          "lga": "Ek South West",
+          "ward": "Oke-Ode (Igbara Odo I)",
           "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Basic Health Centre Idolofin",
-          "lga": "Ado",
-          "ward": "Ijigbo",
+          "name": "Basic Health Centre Oke Oja Aramoko",
+          "lga": "Ek West",
+          "ward": "Aramoko-I",
           "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Primary Health Clinic",
-          "lga": "Ado",
-          "ward": "Idolofin",
+          "name": "Basic Health Centre Araromi",
+          "lga": "Ekiti East",
+          "ward": "Araromi",
           "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
@@ -694,6 +694,15 @@
     "Enugu": {
       "facilities": [
         {
+          "name": "Comprehenive Health Centre Mpu",
+          "lga": "Aninri",
+          "ward": "Mpu",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
           "name": "Mch Awgu",
           "lga": "Awgu",
           "ward": "Awgu I",
@@ -703,37 +712,28 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Amabokwu Mphcc",
-          "lga": "Igbo Etiti",
-          "ward": "Aku Ii",
-          "type": "PHCC",
+          "name": "Abakpa H/C",
+          "lga": "Enugu East",
+          "ward": "Abakpa I",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Mphcc Ajuona Ovoko",
-          "lga": "Igbo Eze South",
-          "ward": "Ovoko Ajuona",
-          "type": "PHCC",
+          "name": "Asata H/C",
+          "lga": "Enugu North",
+          "ward": "Asata",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Mphcc Orba",
-          "lga": "Udenu",
-          "ward": "Orba Ii",
-          "type": "PHCC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Ngwo Uno Mphcc",
-          "lga": "Udi",
-          "ward": "Ngwo Uno",
-          "type": "PHCC",
+          "name": "Achara 1 H/P",
+          "lga": "Enugu South",
+          "ward": "Achara Layout East",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -752,36 +752,36 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Gawu Phc",
-          "lga": "Abaji",
-          "ward": "Gawu",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Gurdi Phc",
-          "lga": "Abaji",
-          "ward": "Gurdi",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Phc Yaba",
-          "lga": "Abaji",
-          "ward": "Yaba",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
           "name": "Apo Phc Zone B",
           "lga": "Amac",
           "ward": "Garki",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Kogo Phc",
+          "lga": "Bwari",
+          "ward": "Bwari Central",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Dobi Phc",
+          "lga": "Gwagwalada",
+          "ward": "Dobi",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Gaube Phc",
+          "lga": "Kuje",
+          "ward": "Gaube",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
@@ -792,37 +792,28 @@
     "Gombe": {
       "facilities": [
         {
+          "name": "Akko Primary Health Center",
+          "lga": "Akko",
+          "ward": "Akko Ward",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Bambam Primary Health Centre",
+          "lga": "Balanga",
+          "ward": "Bambam",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
           "name": "Kekkel Maternal And Child Health Clinic",
           "lga": "Billiri",
           "ward": "Billiri South",
           "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Wawa Maternal And Child Health Clinic",
-          "lga": "Funakaye",
-          "ward": "Wawa Wakaltu",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Sabonlayi Phcc",
-          "lga": "Billiri",
-          "ward": "Banganje North",
-          "type": "PHCC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Town Phcc",
-          "lga": "Gombe",
-          "ward": "Dawaki",
-          "type": "PHCC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -835,16 +826,52 @@
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
+        },
+        {
+          "name": "Wawa Maternal And Child Health Clinic",
+          "lga": "Funakaye",
+          "ward": "Wawa Wakaltu",
+          "type": "MCH",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
         }
       ]
     },
     "Imo": {
       "facilities": [
         {
+          "name": "Amuzu Phc",
+          "lga": "Aboh-Mbaise",
+          "ward": "Amuzu Ward",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
           "name": "Oru Mch",
           "lga": "Ahiazu-Mbaise",
           "ward": "Oru-/-Lude",
           "type": "MCH",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Agbaja Phc",
+          "lga": "Ehime-Mbano",
+          "ward": "Agbaja",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Ife Phc",
+          "lga": "Ezinihitte-Mbaise",
+          "ward": "Ife/Owutu",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -857,47 +884,11 @@
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
-        },
-        {
-          "name": "Dikenafai Mch Phc",
-          "lga": "Ideato-South",
-          "ward": "Dikenafai",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Mch",
-          "lga": "Isu",
-          "ward": "Umundugba-1",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Mch Nkwerre",
-          "lga": "Nkwerre",
-          "ward": "Nkwere-Vii",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
         }
       ]
     },
     "Jigawa": {
       "facilities": [
-        {
-          "name": "K/Arewa Mch Clinic",
-          "lga": "Hadejia",
-          "ward": "Gagulmari",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
         {
           "name": "Gamafoi Phcc",
           "lga": "Auyo",
@@ -908,28 +899,37 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Garbagal Phcc",
-          "lga": "Guri",
-          "ward": "Garbagal",
-          "type": "PHCC",
+          "name": "Jarmai Phc",
+          "lga": "Babura",
+          "ward": "Babura",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Sara Phcc",
-          "lga": "Gwaram",
-          "ward": "Sara",
-          "type": "PHCC",
+          "name": "Magajin Gari Phc",
+          "lga": "Birnin Kudu",
+          "ward": "Birnin Kudu",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Tsangarwa Phcc",
-          "lga": "Gwaram",
-          "ward": "Tsangarwa",
-          "type": "PHCC",
+          "name": "Kuka Inkiwa Phc",
+          "lga": "Birniwa",
+          "ward": "Batu",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Ahoto Phc",
+          "lga": "Buji",
+          "ward": "Ahoto",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -948,37 +948,37 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Mch Iburu",
-          "lga": "Kajuru",
+          "name": "Phc Gwagwada",
+          "lga": "Chikun",
           "ward": "Nan",
-          "type": "MCH",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Mch Buda",
-          "lga": "Kajuru",
+          "name": "Phc Danmahawayi",
+          "lga": "Giwa",
           "ward": "Nan",
-          "type": "MCH",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Mch Iri-Gari",
-          "lga": "Kajuru",
+          "name": "Phc Mando",
+          "lga": "Igabi",
           "ward": "Nan",
-          "type": "MCH",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Phcc Agunu",
-          "lga": "Kachia",
+          "name": "Phc Auchan",
+          "lga": "Ikara",
           "ward": "Nan",
-          "type": "PHCC",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -988,46 +988,46 @@
     "Kano": {
       "facilities": [
         {
-          "name": "Gwammaja Mch Clinic",
-          "lga": "Dala",
+          "name": "Sakaalawa Health Post",
+          "lga": "Ajingi",
           "ward": "Nan",
-          "type": "MCH",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Dala Maternal And Child Health Center",
-          "lga": "Dala",
+          "name": "Albasu Phc",
+          "lga": "Albasu",
           "ward": "Nan",
-          "type": "MCH",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Yalwa Mch /Madakingini Clinic",
-          "lga": "Dala",
+          "name": "Abbas Primary Health Centre",
+          "lga": "Bagwai",
           "ward": "Nan",
-          "type": "MCH",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Sabo Garba Maternal & Child Clinic",
-          "lga": "Fagge",
+          "name": "Phc Damau",
+          "lga": "Bebeji",
           "ward": "Nan",
-          "type": "MCH",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Rijiyar Lemo Mch",
-          "lga": "Fagge",
+          "name": "Badume Health Post",
+          "lga": "Bichi",
           "ward": "Nan",
-          "type": "MCH",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -1055,27 +1055,27 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Barawa Mchc",
-          "lga": "Batagarawa",
-          "ward": "Barawa",
+          "name": "Mchc Tsabawa",
+          "lga": "Batsari",
+          "ward": "Abadau",
           "type": "MCH",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Mchc Dabaibayawa",
-          "lga": "Batagarawa",
-          "ward": "Dabaibayawa",
-          "type": "MCH",
+          "name": "Phc Hui",
+          "lga": "Baure",
+          "ward": "Hui",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Mchc Dandagoro",
-          "lga": "Batagarawa",
-          "ward": "Dandagoro",
+          "name": "Mchc Makera",
+          "lga": "Bindawa",
+          "ward": "Gaiwa",
           "type": "MCH",
           "verified": true,
           "verified_date": "2026-07-02",
@@ -1086,6 +1086,24 @@
     "Kebbi": {
       "facilities": [
         {
+          "name": "Kofar Dangaladima",
+          "lga": "Aliero",
+          "ward": "Nan",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Bui",
+          "lga": "Arewa",
+          "ward": "Nan",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
           "name": "Mch Tudun Wada Argungu",
           "lga": "Argungu",
           "ward": "Nan",
@@ -1095,35 +1113,17 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Mch Bunza",
-          "lga": "Bunza",
+          "name": "Augie",
+          "lga": "Augie",
           "ward": "Nan",
-          "type": "MCH",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Phc Alwasa",
-          "lga": "Argungu",
-          "ward": "Nan",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Dikko Phc",
-          "lga": "Argungu",
-          "ward": "Nan",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Argungu Town Phc",
-          "lga": "Argungu",
+          "name": "Phc Makera",
+          "lga": "B/Kebbi",
           "ward": "Nan",
           "type": "PHC",
           "verified": true,
@@ -1135,6 +1135,15 @@
     "Kogi": {
       "facilities": [
         {
+          "name": "Phc Osoma",
+          "lga": "Adavi",
+          "ward": "Adavi Eba",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
           "name": "Mch Ebiya",
           "lga": "Ajaokuta",
           "ward": "Ebiya North",
@@ -1144,10 +1153,19 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Mch Geregu",
-          "lga": "Ajaokuta",
-          "ward": "Geregu",
-          "type": "MCH",
+          "name": "Phcc Ankpa",
+          "lga": "Ankpa",
+          "ward": "Township",
+          "type": "PHCC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Phc Oguma",
+          "lga": "Bassa",
+          "ward": "Akuba I",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -1160,56 +1178,11 @@
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
-        },
-        {
-          "name": "Mch Gegu Beki",
-          "lga": "Kogi",
-          "ward": "Gegu -Beki South",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Fsp/Mch Odole",
-          "lga": "Mopa Muro",
-          "ward": "Odole 1",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
         }
       ]
     },
     "Kwara": {
       "facilities": [
-        {
-          "name": "Maternal & Child Welfare Clinic, Kaiama",
-          "lga": "Kaiama",
-          "ward": "Nan",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Ajasse -Ipo Phc",
-          "lga": "Irepodun",
-          "ward": "Nan",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Aboki Phc",
-          "lga": "Kaiama",
-          "ward": "Nan",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
         {
           "name": "Model Primary Health Care Centre Awe",
           "lga": "Asa",
@@ -1220,8 +1193,35 @@
           "notes": "Government health facility"
         },
         {
-          "name": "District Health Unit, Afon",
-          "lga": "Asa",
+          "name": "Primary Health Care Centre Shiya",
+          "lga": "Baruten",
+          "ward": "Nan",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Health Post Bindofu Lafiagi",
+          "lga": "Edu",
+          "ward": "Nan",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Primary Health Care Centre Eruku",
+          "lga": "Ekiti",
+          "ward": "Nan",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Model Primary Health Care Centre Agunjin",
+          "lga": "Ifelodun",
           "ward": "Nan",
           "type": "Other",
           "verified": true,
@@ -1242,36 +1242,36 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Sango Phc",
-          "lga": "Agege",
-          "ward": "Keke",
+          "name": "Ajegunle Phc",
+          "lga": "Ajeromi Ifelodun",
+          "ward": "Ago Hausa",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Kwakwa Uku Phc",
-          "lga": "Agege",
-          "ward": "Oniwaya/ Papa-Uku",
+          "name": "Meiran Phc",
+          "lga": "Alimosho",
+          "ward": "Ajasa/Amikanle",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Powerline Phc",
-          "lga": "Agege",
-          "ward": "Orile Agege/ Oko Oba",
+          "name": "Agboju Phc",
+          "lga": "Amuwo Odofin",
+          "ward": "Agboju",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Soretire Phc",
-          "lga": "Agege",
-          "ward": "Orile Agege/ Oko Oba",
+          "name": "Oluwole Phc",
+          "lga": "Apapa",
+          "ward": "Apapa I",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
@@ -1282,24 +1282,6 @@
     "Nasarawa": {
       "facilities": [
         {
-          "name": "Mchc Shabu",
-          "lga": "Lafia",
-          "ward": "Nan",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Jigwada Phcc",
-          "lga": "Keffi",
-          "ward": "Nan",
-          "type": "PHCC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
           "name": "Phc Rinze",
           "lga": "Akwanga",
           "ward": "Nan",
@@ -1309,8 +1291,8 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Phc Wamba Road",
-          "lga": "Akwanga",
+          "name": "Phc Akiri",
+          "lga": "Awe",
           "ward": "Nan",
           "type": "PHC",
           "verified": true,
@@ -1318,8 +1300,26 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Township Phc Akwanga",
-          "lga": "Akwanga",
+          "name": "Phc Okpatta",
+          "lga": "Doma",
+          "ward": "Nan",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Phc Bagaji",
+          "lga": "Karu",
+          "ward": "Nan",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Phc Agaza",
+          "lga": "Keana",
           "ward": "Nan",
           "type": "PHC",
           "verified": true,
@@ -1331,44 +1331,44 @@
     "Niger": {
       "facilities": [
         {
+          "name": "Baro Phcc",
+          "lga": "Agaie",
+          "ward": "Nan",
+          "type": "PHCC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Phc Adahe",
+          "lga": "Agwara",
+          "ward": "Nan",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Phcc Kangi",
+          "lga": "Bida",
+          "ward": "Nan",
+          "type": "PHCC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Phcc Karabonde",
+          "lga": "Borgu",
+          "ward": "Nan",
+          "type": "PHCC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
           "name": "Maikunkele Maternal And Child Health Centre",
           "lga": "Bosso",
-          "ward": "Nan",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Gawu Babagida Mater & Mch Phcc",
-          "lga": "Gurara",
-          "ward": "Nan",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Gulu Phcc/Mch",
-          "lga": "Lapai",
-          "ward": "Nan",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Lapai Mch/Phcc",
-          "lga": "Lapai",
-          "ward": "Nan",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Mch Bangi",
-          "lga": "Mariga",
           "ward": "Nan",
           "type": "MCH",
           "verified": true,
@@ -1389,6 +1389,15 @@
           "notes": "Government health facility"
         },
         {
+          "name": "Laderin Health Centre",
+          "lga": "Abeokuta South",
+          "ward": "Ijeun Titun",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
           "name": "Atan Model Phc",
           "lga": "Ado Odo Ota",
           "ward": "Atan",
@@ -1398,19 +1407,10 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Iju Phc",
-          "lga": "Ado Odo Ota",
-          "ward": "Iju",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Ketu Adie Owe Phc",
-          "lga": "Ado Odo Ota",
-          "ward": "Ketu Adieu Owe",
-          "type": "PHC",
+          "name": "Ajegunle Health Clinic",
+          "lga": "Ewekoro",
+          "ward": "Abalabi",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -1429,10 +1429,10 @@
     "Ondo": {
       "facilities": [
         {
-          "name": "Phcc Akugba 2",
-          "lga": "Akoko South West",
-          "ward": "Akungba 2",
-          "type": "PHCC",
+          "name": "Comprehensive Health Centre Ishakumi",
+          "lga": "Akoko North East",
+          "ward": "Edo",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -1447,10 +1447,19 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Phc Odo Irun",
-          "lga": "Akoko North West",
-          "ward": "Irun/ Odo Irun",
+          "name": "Phc Isua Oke",
+          "lga": "Akoko South East",
+          "ward": "Isua Oke",
           "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Phcc Akugba 2",
+          "lga": "Akoko South West",
+          "ward": "Akungba 2",
+          "type": "PHCC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -1459,15 +1468,6 @@
           "name": "Okua Phc",
           "lga": "Akokok South East",
           "ward": "Isua 1",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Phc Isua Oke",
-          "lga": "Akoko South East",
-          "ward": "Isua Oke",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
@@ -1487,36 +1487,36 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Araromi Phc",
-          "lga": "Aiyedaade",
-          "ward": "Araromi Owu",
+          "name": "Phc Popo",
+          "lga": "Aiyedire",
+          "ward": "Popo(Ileogbo)",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Wakajaiye Junction Phc",
-          "lga": "Aiyedaade",
-          "ward": "Balogun",
+          "name": "Ayinrin Adedeji Phc",
+          "lga": "Atakunmosa East",
+          "ward": "Ajebandele",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Wakajaiye Town Phc",
-          "lga": "Aiyedaade",
-          "ward": "Gbongan Rural",
+          "name": "Iyere Phc",
+          "lga": "Atakunmosa West",
+          "ward": "Ibodi",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Ijugbe Phc",
-          "lga": "Aiyedaade",
-          "ward": "Ijugbe",
+          "name": "Eripa Phc",
+          "lga": "Boluwaduro",
+          "ward": "Eripa",
           "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
@@ -1536,8 +1536,8 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Awe Phc",
-          "lga": "Afijo",
+          "name": "Oy Aroro Phc",
+          "lga": "Akinyele",
           "ward": "Nan",
           "type": "PHC",
           "verified": true,
@@ -1545,8 +1545,8 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Okeboda Phc",
-          "lga": "Afijo",
+          "name": "Oke-Olola Phc",
+          "lga": "Atiba",
           "ward": "Nan",
           "type": "PHC",
           "verified": true,
@@ -1554,8 +1554,8 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Fiditi Phc",
-          "lga": "Afijo",
+          "name": "Agoare Phc",
+          "lga": "Atisbo",
           "ward": "Nan",
           "type": "PHC",
           "verified": true,
@@ -1563,8 +1563,8 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Okediji Phc",
-          "lga": "Afijo",
+          "name": "Kajerepo Phc",
+          "lga": "Egbeda",
           "ward": "Nan",
           "type": "PHC",
           "verified": true,
@@ -1585,8 +1585,17 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Phc Exland",
-          "lga": "Barkin Ladi",
+          "name": "Jebbu Bassa",
+          "lga": "Bassa",
+          "ward": "Nan",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Phc Bokkos",
+          "lga": "Bokkos",
           "ward": "Nan",
           "type": "PHC",
           "verified": true,
@@ -1594,8 +1603,8 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Phc Heipang",
-          "lga": "Barkin Ladi",
+          "name": "Phc Federe",
+          "lga": "Jos East",
           "ward": "Nan",
           "type": "PHC",
           "verified": true,
@@ -1603,17 +1612,8 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Phc Kapwis",
-          "lga": "Barkin Ladi",
-          "ward": "Nan",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Phc Kurrafalls",
-          "lga": "Barkin Ladi",
+          "name": "Phc Abba Na Shehu",
+          "lga": "Jos North",
           "ward": "Nan",
           "type": "PHC",
           "verified": true,
@@ -1625,46 +1625,46 @@
     "Rivers": {
       "facilities": [
         {
+          "name": "Ogbema",
+          "lga": "Abua / Odual",
+          "ward": "1",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Ahoada Model Primary Health Care Centre",
+          "lga": "Ahoada East",
+          "ward": "3",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Akinima",
+          "lga": "Ahoada West",
+          "ward": "1",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Abissa",
+          "lga": "Akuku Toru",
+          "ward": "17",
+          "type": "Other",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
           "name": "Ataba Mphcc",
           "lga": "Andoni",
           "ward": "Ataba 1",
           "type": "PHCC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Unyeada Mphcc",
-          "lga": "Andoni",
-          "ward": "Unyeada 1",
-          "type": "PHCC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Oyorokoto Phc",
-          "lga": "Andoni",
-          "ward": "Agwut-Obolo",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Asarama Phc",
-          "lga": "Andoni",
-          "ward": "Asarama",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Ekede Phc",
-          "lga": "Andoni",
-          "ward": "Ekede",
-          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -1692,19 +1692,10 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Danchadi Phc",
-          "lga": "Bodinga",
+          "name": "Bodai Sajo Health Clinic",
+          "lga": "Dange Shuni",
           "ward": "Nan",
-          "type": "PHC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Dingyadi Phc",
-          "lga": "Bodinga",
-          "ward": "Nan",
-          "type": "PHC",
+          "type": "Other",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -1717,43 +1708,25 @@
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
+        },
+        {
+          "name": "Birjingo Phc",
+          "lga": "Goronyo",
+          "ward": "Nan",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
         }
       ]
     },
     "Taraba": {
       "facilities": [
         {
-          "name": "Sabon Gida Maternal Child\nHealth Centre",
-          "lga": "Takum",
+          "name": "Alingora Phc",
+          "lga": "Ardo Kola",
           "ward": "Nan",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Lumbu Rikwenrika Maternal\nChild Health Hc",
-          "lga": "Ussa",
-          "ward": "Nan",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Maternal And Child Health\nWukari",
-          "lga": "Wukari",
-          "ward": "Nan",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Monkin Maternal And Child Hc",
-          "lga": "Zing",
-          "ward": "Nan",
-          "type": "MCH",
+          "type": "PHC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
@@ -1761,6 +1734,33 @@
         {
           "name": "Dakka Phcc",
           "lga": "Bali",
+          "ward": "Nan",
+          "type": "PHCC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Ananum Phcc",
+          "lga": "Donga",
+          "ward": "Nan",
+          "type": "PHCC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Gangumi Phcc",
+          "lga": "Gashaka",
+          "ward": "Nan",
+          "type": "PHCC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Gassol Phcc",
+          "lga": "Gassol",
           "ward": "Nan",
           "type": "PHCC",
           "verified": true,
@@ -1781,36 +1781,36 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Gwio Kura Phcc",
-          "lga": "Bade",
-          "ward": "Gwio Kura",
+          "name": "Bayamari Phcc",
+          "lga": "Bursari",
+          "ward": "Bayamari",
           "type": "PHCC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Katuzu Phcc",
-          "lga": "Bade",
-          "ward": "Katuzu",
+          "name": "Forestry Phcc",
+          "lga": "Damaturu",
+          "ward": "Bindigari/Pawari",
           "type": "PHCC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Garin Lamido Phcc",
-          "lga": "Bade",
-          "ward": "Sabon Gari",
+          "name": "Kukar Gadu Phcc",
+          "lga": "Fika",
+          "ward": "Garu",
           "type": "PHCC",
           "verified": true,
           "verified_date": "2026-07-02",
           "notes": "Government health facility"
         },
         {
-          "name": "Babuje Phcc",
-          "lga": "Bade",
-          "ward": "Lawan Fannami",
+          "name": "Ngelshengele Phcc",
+          "lga": "Fune",
+          "ward": "Ngelzarma ‘B’",
           "type": "PHCC",
           "verified": true,
           "verified_date": "2026-07-02",
@@ -1821,15 +1821,6 @@
     "Zamfara": {
       "facilities": [
         {
-          "name": "Maru Mch",
-          "lga": "Maru",
-          "ward": "Nan",
-          "type": "MCH",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
           "name": "Magaji Phcc",
           "lga": "Anka",
           "ward": "Nan",
@@ -1839,17 +1830,8 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Phcc Gidan Goga",
-          "lga": "Maradun",
-          "ward": "Nan",
-          "type": "PHCC",
-          "verified": true,
-          "verified_date": "2026-07-02",
-          "notes": "Government health facility"
-        },
-        {
-          "name": "Phc Ung Bawa",
-          "lga": "Anka",
+          "name": "Dambo Phc",
+          "lga": "Bakura",
           "ward": "Nan",
           "type": "PHC",
           "verified": true,
@@ -1857,8 +1839,26 @@
           "notes": "Government health facility"
         },
         {
-          "name": "Phc Rafin Gero",
-          "lga": "Anka",
+          "name": "Wcwc Phc",
+          "lga": "Birnin Magaji",
+          "ward": "Nan",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Adabka Phc",
+          "lga": "Bukkuyum",
+          "ward": "Nan",
+          "type": "PHC",
+          "verified": true,
+          "verified_date": "2026-07-02",
+          "notes": "Government health facility"
+        },
+        {
+          "name": "Kekun Waje Phc",
+          "lga": "Bungudu",
           "ward": "Nan",
           "type": "PHC",
           "verified": true,
