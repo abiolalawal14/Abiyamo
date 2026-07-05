@@ -260,6 +260,15 @@ DIAGNOSTIC_PHRASES = [
     "which hospital",
     "find a clinic",
     "health facility near",
+    # personal medical follow-up -- distinct from a generic "follow up
+    # on <topic>" request for information (see SAFE_EDUCATIONAL_TERMS
+    # below), these name an ongoing personal relationship with a real
+    # health worker/facility about the user's own condition.
+    "following up with my doctor",
+    "follow up with my doctor",
+    "following up with the doctor",
+    "following up with a doctor",
+    "follow up with the hospital",
 ]
 
 
@@ -272,8 +281,20 @@ DIAGNOSTIC_PHRASES = [
 # that: a bare mention of "masturbation" is a normal, common
 # educational SRH topic on its own and should never need the
 # classifier's judgment call.
+#
+# "follow up"/"follow-up": live testing showed "I need follow up on
+# STI" being misclassified as diagnostic by the classifier (0.531,
+# right at the usual ~0.5 boundary -- see abortion/masturbation notes
+# above for the recurring pattern). "Follow up on <topic>" is commonly
+# just "give me more information", not a personal health concern.
+# Genuinely personal follow-up ("following up with my doctor about my
+# discharge") is caught by the more specific DIAGNOSTIC_PHRASES entries
+# above FIRST, so those still escalate -- this bare-term fallback only
+# fires when no such phrase already matched.
 SAFE_EDUCATIONAL_TERMS = [
     "masturbation",
+    "follow up",
+    "follow-up",
 ]
 
 CLASSIFIER_DIR = "models/intent_classifier"
@@ -637,6 +658,10 @@ if __name__ == "__main__":
         # Facility-seeking: personal request for a nearby facility must
         # escalate (real facility names) rather than go through RAG.
         ("Which primary health center can I visit",            "diagnostic"),
+        # Follow-up: generic "give me more info" must stay educational;
+        # a genuinely personal follow-up must still escalate.
+        ("I need follow up on STI",                             None),
+        ("I have been following up with my doctor about my discharge", "diagnostic"),
     ]
 
     print("=== TEST 1: Detection accuracy ===\n")

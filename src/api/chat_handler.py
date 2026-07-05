@@ -202,8 +202,9 @@ _FOLLOW_UP_PHRASES = [
 _FOLLOW_UP_REDIRECT_MESSAGE = (
     "Could you ask me a more specific question about the topic? "
     "For example:\n"
-    "'What are the risks of masturbation?' or\n"
-    "'Is masturbation normal for teenagers?'\n\n"
+    "'What are the signs of an STI?' or\n"
+    "'How does contraception work?' or\n"
+    "'What happens during puberty?'\n"
     "I work best with specific questions. 🌿"
 )
 
