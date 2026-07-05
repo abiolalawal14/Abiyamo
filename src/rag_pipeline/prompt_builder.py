@@ -77,7 +77,9 @@ SYSTEM_PROMPT = (
 # Public interface
 # ---------------------------------------------------------------------------
 
-def build_prompt(question: str, chunks: list, include_sources: bool = False) -> str:
+def build_prompt(
+    question: str, chunks: list, include_sources: bool = False, last_messages: list | None = None
+) -> str:
     """
     Assembles the full prompt string to send to the Gemini LLM.
 
@@ -99,11 +101,23 @@ def build_prompt(question: str, chunks: list, include_sources: bool = False) -> 
                           index next to each context block. Useful during
                           development and evaluation; not needed for
                           end-user responses.
+        last_messages   : Optional list of the last 1-2 exchanges from
+                          chat_handler.py's session store, each a dict
+                          {"role": "user"|"assistant", "content": str}.
+                          When provided and non-empty, prepended as a
+                          "Previous conversation" block so Gemini has
+                          enough context to resolve a short follow-up
+                          reply ("yes", "tell me more") on its own,
+                          instead of the fixed keyword-based redirect
+                          this replaced. None/empty (the common case —
+                          most questions are standalone) leaves the
+                          prompt exactly as before.
 
     Returns:
         A single prompt string structured as:
             [system instructions]
             ---
+            [Previous conversation block, if last_messages given]
             CONTEXT FROM KNOWLEDGE BASE:
             [numbered chunks, or a "no context" notice]
             ---
@@ -119,10 +133,12 @@ def build_prompt(question: str, chunks: list, include_sources: bool = False) -> 
         question = "(no question provided)"
 
     context_block = _build_context_block(chunks, include_sources)
+    history_block = _build_history_block(last_messages, question)
 
     prompt = (
         f"{SYSTEM_PROMPT}\n\n"
         "---\n\n"
+        f"{history_block}"
         "CONTEXT FROM KNOWLEDGE BASE:\n"
         f"{context_block}\n\n"
         "---\n\n"
@@ -152,6 +168,32 @@ def get_system_prompt() -> str:
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
+
+def _build_history_block(last_messages: list | None, question: str) -> str:
+    """
+    Formats the last 1-2 exchanges into a "Previous conversation" block
+    prepended before the retrieved context. Returns "" when there's no
+    history -- the common case, since most questions are standalone,
+    not follow-ups -- so build_prompt()'s output is byte-for-byte
+    unchanged for every existing caller that doesn't pass last_messages.
+
+    Rendered here, not left to the caller, because this is a prompt
+    formatting concern (same reasoning as _build_context_block()).
+    """
+    if not last_messages:
+        return ""
+
+    lines = [
+        f"{'User' if msg.get('role') == 'user' else 'Assistant'}: {msg.get('content', '')}"
+        for msg in last_messages
+    ]
+
+    return (
+        "Previous conversation:\n"
+        + "\n".join(lines)
+        + f"\n\nNow answer this follow-up: {question.strip()}\n\n---\n\n"
+    )
+
 
 def _build_context_block(chunks: list, include_sources: bool) -> str:
     """
@@ -248,3 +290,24 @@ if __name__ == "__main__":
     print("TEST 4: System prompt only (for generator.py system instruction field)")
     print("=" * 60)
     print(get_system_prompt())
+
+    print("\n" + "=" * 60)
+    print("TEST 5: With conversation history (follow-up)")
+    print("=" * 60)
+    mock_history = [
+        {"role": "user", "content": "What is an STI?"},
+        {"role": "assistant", "content": "An STI is an infection passed between people during sexual contact."},
+    ]
+    follow_up_prompt = build_prompt("Tell me more", mock_chunks, last_messages=mock_history)
+    print(follow_up_prompt)
+    print(f"\nContains 'Previous conversation:': {'Previous conversation:' in follow_up_prompt}")
+    print(f"Contains prior user turn: {'What is an STI?' in follow_up_prompt}")
+    print(f"Contains prior assistant turn: {'infection passed between people' in follow_up_prompt}")
+
+    print("\n" + "=" * 60)
+    print("TEST 6: No history -> output identical to TEST 1 (backward compatible)")
+    print("=" * 60)
+    no_history_prompt = build_prompt(test_question, mock_chunks)
+    empty_list_prompt = build_prompt(test_question, mock_chunks, last_messages=[])
+    print(f"last_messages=None matches no-param call : {no_history_prompt == build_prompt(test_question, mock_chunks, last_messages=None)}")
+    print(f"last_messages=[] also produces no history : {'Previous conversation:' not in empty_list_prompt}")

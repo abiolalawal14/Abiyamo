@@ -179,19 +179,25 @@ def generate_answer(
 # Convenience wrapper: full pipeline from question + chunks to answer
 # ---------------------------------------------------------------------------
 
-def answer_from_chunks(question: str, chunks: list) -> str:
+def answer_from_chunks(question: str, chunks: list, last_messages: list | None = None) -> str:
     """
     Convenience function that combines prompt_builder and generator into
     one call. Used by chat_handler.py to keep its own code simple.
 
     Parameters:
-        question : The user's question in English.
-        chunks   : Retrieved chunks from retriever.retrieve_relevant_chunks().
+        question      : The user's question in English.
+        chunks        : Retrieved chunks from retriever.retrieve_relevant_chunks().
+        last_messages : Optional conversation history (see
+                        prompt_builder.build_prompt()'s last_messages
+                        parameter) so a short follow-up reply ("yes",
+                        "tell me more") has enough context to answer.
+                        Defaults to None — existing callers are
+                        unaffected.
 
     Returns:
         The generated answer string, or FALLBACK_RESPONSE on failure.
     """
-    prompt = build_prompt(question, chunks)
+    prompt = build_prompt(question, chunks, last_messages=last_messages)
     return generate_answer(prompt)
 
 

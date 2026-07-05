@@ -43,7 +43,7 @@ import re
 from pathlib import Path
 
 from src.rag_pipeline.retriever import retrieve_relevant_chunks
-from src.rag_pipeline.generator import answer_from_chunks
+from src.rag_pipeline.generator import answer_from_chunks, FALLBACK_RESPONSE
 from src.rag_pipeline.translator import from_english, to_english
 from src.safety.escalation import should_escalate, get_escalation_response
 
@@ -182,33 +182,6 @@ _LANGUAGE_SWITCH_CONFIRMATIONS = {
     "igbo": "Asụsụ agbanwela na Igbo. 🌿",
 }
 
-# ---------------------------------------------------------------------------
-# Follow-up replies — this chatbot has NO conversation memory (each
-# message is handled independently, with no history of what was said
-# before). A short reply like "yes" or "continue" only makes sense in
-# reference to a PREVIOUS bot message we have no record of, so guessing
-# what the user wants to continue risks confidently answering the wrong
-# thing. Redirecting to a specific question is safer than guessing, and
-# mirrors how prompt_builder.py's system prompt already handles vague
-# queries the RAG pipeline can't ground an answer in.
-# ---------------------------------------------------------------------------
-
-_FOLLOW_UP_PHRASES = [
-    "yes", "ok", "okay", "continue", "go on", "more",
-    "tell me more", "please continue", "and then",
-    "what else", "keep going", "go ahead",
-]
-
-_FOLLOW_UP_REDIRECT_MESSAGE = (
-    "Could you ask me a more specific question about the topic? "
-    "For example:\n"
-    "'What are the signs of an STI?' or\n"
-    "'How does contraception work?' or\n"
-    "'What happens during puberty?'\n"
-    "I work best with specific questions. 🌿"
-)
-
-
 def _normalize_for_trigger_match(text: str) -> str:
     """
     Lowercases and strips punctuation so a trigger phrase matches
@@ -248,21 +221,6 @@ def _detect_direct_language_switch(message: str) -> str | None:
         if phrase in normalized:
             return lang
     return None
-
-
-_FOLLOW_UP_PHRASES_NORMALIZED = {_normalize_for_trigger_match(p) for p in _FOLLOW_UP_PHRASES}
-
-
-def _is_follow_up_reply(message: str) -> bool:
-    """
-    True if the WHOLE message (after normalizing) is one of the known
-    follow-up phrases. Exact match, NOT substring -- unlike the other
-    triggers in this module, these are common short words that would
-    false-positive constantly as substrings (e.g. "more" appears inside
-    "Is it normal to have more discharge before my period?", a real,
-    unrelated SRH question that must not be redirected).
-    """
-    return _normalize_for_trigger_match(message) in _FOLLOW_UP_PHRASES_NORMALIZED
 
 
 def _hash_user_id(raw_id: str) -> str:
@@ -345,7 +303,9 @@ def _handle_onboarding(
         # Brand-new user — record a pending session so their next
         # message is treated as a language reply, not another "new
         # user" welcome, then send the welcome message.
-        sessions[phone_hash] = {"language": None, "state": None, "lga": None, "onboarded": False}
+        sessions[phone_hash] = {
+            "language": None, "state": None, "lga": None, "last_messages": [], "onboarded": False,
+        }
         _save_sessions(sessions)
         return _onboarding_reply(_WELCOME_MESSAGE, language)
 
@@ -405,7 +365,9 @@ def _handle_reset(phone_hash: str, sessions: dict, language: str) -> dict:
     "send welcome" outcome without needing to special-case it.
     """
     sessions.pop(phone_hash, None)
-    sessions[phone_hash] = {"language": None, "state": None, "lga": None, "onboarded": False}
+    sessions[phone_hash] = {
+        "language": None, "state": None, "lga": None, "last_messages": [], "onboarded": False,
+    }
     if _save_sessions(sessions):
         return _onboarding_reply(_RESET_CONFIRMATION_MESSAGE, language)
     # _save_sessions() already logs the underlying OSError — this is
@@ -477,6 +439,39 @@ def _handle_language_switch(
     return None
 
 
+# ---------------------------------------------------------------------------
+# Conversation memory — last 1-2 exchanges, fed back into prompt_builder.py
+# so Gemini itself can resolve short follow-up replies ("yes", "tell me
+# more") instead of the fixed keyword-based redirect this replaced.
+# ---------------------------------------------------------------------------
+
+def _update_conversation_history(
+    phone_hash: str, sessions: dict, session: dict, user_content: str, assistant_content: str
+) -> None:
+    """
+    Appends one exchange and truncates to the most recent 2 exchanges
+    (4 messages) -- enough context for a follow-up without the prompt
+    growing unbounded over a long conversation.
+
+    Stores the ENGLISH text (user_content/assistant_content), not the
+    user's original-language message or translated reply, since this
+    history is fed straight back into an English-instructed Gemini
+    prompt on the next turn (see prompt_builder.build_prompt()).
+
+    Only ever called from the RAG success path in handle_message() --
+    never for escalation responses (scripted safety text, not a real
+    educational exchange) or a failed generation (FALLBACK_RESPONSE is
+    filtered out by the caller) -- so those never get replayed back to
+    Gemini as if they were useful context.
+    """
+    history = session.get("last_messages") or []
+    history.append({"role": "user", "content": user_content})
+    history.append({"role": "assistant", "content": assistant_content})
+    session["last_messages"] = history[-4:]
+    sessions[phone_hash] = session
+    _save_sessions(sessions)
+
+
 def handle_message(message: str, language: str = "en", user_id: str | None = None) -> dict:
     """
     Processes a single user message through the full pipeline.
@@ -514,6 +509,7 @@ def handle_message(message: str, language: str = "en", user_id: str | None = Non
     # ever touching whether they're onboarded or what state they saved.
     session_state = None
     session_lga = None
+    session_last_messages = None
     if user_id is not None:
         phone_hash = _hash_user_id(user_id)
         sessions = _load_sessions()
@@ -541,6 +537,7 @@ def handle_message(message: str, language: str = "en", user_id: str | None = Non
             language = _PLAIN_TO_BCP47[plain_lang]
         session_state = session.get("state")
         session_lga = session.get("lga")
+        session_last_messages = session.get("last_messages")
 
     if not message or not message.strip():
         return {
@@ -561,25 +558,6 @@ def handle_message(message: str, language: str = "en", user_id: str | None = Non
     # RAG path, after the escalation check had already run on raw text.
     english_message = to_english(message, source_lang=language)
 
-    # Follow-up replies ("yes", "continue", "more"...) only make sense
-    # as a reference to a PREVIOUS bot message. This chatbot has no
-    # conversation history, so a bare "yes" cannot be understood as
-    # "yes, keep explaining X" -- without this check, such replies were
-    # falling through to intent classification and getting misread as
-    # diagnostic (short, context-free text gives the classifier little
-    # to go on). Redirecting to a specific question is safer than
-    # silently guessing what the user wants continued.
-    if _is_follow_up_reply(english_message):
-        answer = _FOLLOW_UP_REDIRECT_MESSAGE
-        if language != "en":
-            answer = from_english(answer, target_lang=language)
-        return {
-            "answer": answer,
-            "language": language,
-            "escalated": False,
-            "chunks_used": 0,
-        }
-
     # Escalation check — MUST run before any retrieval or generation.
     # Diagnostic and crisis queries return scripted text + helplines and
     # never reach the LLM. This is a hard safety rule, not a soft preference.
@@ -596,9 +574,11 @@ def handle_message(message: str, language: str = "en", user_id: str | None = Non
 
     try:
         chunks = retrieve_relevant_chunks(english_message)
-        answer = answer_from_chunks(english_message, chunks)
-        if language != "en":
-            answer = from_english(answer, target_lang=language)
+        # last_messages gives Gemini enough context to answer a short
+        # follow-up ("yes", "tell me more") on its own -- this replaced
+        # the old fixed-keyword redirect, which couldn't distinguish a
+        # real follow-up from an unrelated short message anyway.
+        english_answer = answer_from_chunks(english_message, chunks, last_messages=session_last_messages)
     except Exception as e:
         print(f"[chat_handler] Pipeline error: {e}")
         return {
@@ -607,6 +587,18 @@ def handle_message(message: str, language: str = "en", user_id: str | None = Non
             "escalated": False,
             "chunks_used": 0,
         }
+
+    answer = english_answer
+    if language != "en":
+        answer = from_english(answer, target_lang=language)
+
+    # Conversation memory only for genuine educational exchanges -- never
+    # for escalation (handled above, returns before reaching here) and
+    # never for a failed generation (FALLBACK_RESPONSE), which would
+    # otherwise get replayed back to Gemini next turn as if it were
+    # useful context.
+    if user_id is not None and english_answer != FALLBACK_RESPONSE:
+        _update_conversation_history(phone_hash, sessions, session, english_message, english_answer)
 
     return {
         "answer": answer,
@@ -803,21 +795,49 @@ if __name__ == "__main__":
     print(f"  Onboarded after skip: {'You are all set' in result['answer']}")
     print(f"  Session: {skip_session}  (expected: state=Abuja, lga=None, onboarded=True)")
 
-    print("\n=== TEST 15: Follow-up reply ('yes') gets redirected, not escalated ===")
-    result = handle_message("yes")
-    print(f"  Escalated: {result['escalated']}  (expected: False)")
-    print(f"  Chunks used: {result['chunks_used']}  (expected: 0 -- never reached RAG or escalation)")
-    print(f"  Answer: {_safe(result['answer'])}")
-    print(f"  Is the follow-up redirect: {result['answer'] == _FOLLOW_UP_REDIRECT_MESSAGE}")
+    print("\n=== TEST 15: Conversation memory captures an educational exchange ===")
+    memory_number = "whatsapp:+2348010101010"
+    handle_message("hi", user_id=memory_number)
+    handle_message("1", user_id=memory_number)                # English
+    handle_message("Oyo", user_id=memory_number)               # state
+    handle_message("Ibadan North", user_id=memory_number)      # LGA, completes onboarding
 
-    print("\n=== TEST 16: Oyo facilities span at least 3 different LGAs ===")
+    result = handle_message("What is an STI?", user_id=memory_number)
+    print(f"  First question escalated: {result['escalated']}  (expected: False)")
+    sessions = _load_sessions()
+    session_after_q1 = sessions[_hash_user_id(memory_number)]
+    history = session_after_q1.get("last_messages", [])
+    print(f"  last_messages length after 1 exchange: {len(history)}  (expected: 2)")
+    print(f"  Roles stored: {[m['role'] for m in history]}  (expected: ['user', 'assistant'])")
+    print(f"  Stored user content: {history[0]['content'] if history else None}  (expected: 'What is an STI?')")
+
+    result2 = handle_message("Tell me more", user_id=memory_number)
+    print(f"  Follow-up 'Tell me more' escalated: {result2['escalated']}  "
+          f"(expected: False -- no keyword redirect anymore, reaches RAG with history)")
+    sessions = _load_sessions()
+    session_after_q2 = sessions[_hash_user_id(memory_number)]
+    history2 = session_after_q2.get("last_messages", [])
+    print(f"  last_messages length after 2 exchanges: {len(history2)}  (expected: 4, capped at 2 exchanges)")
+    print(f"  Oldest exchange dropped -- first stored message now: {history2[0]['content'] if history2 else None}  "
+          f"(expected: 'What is an STI?' still present since only 2 exchanges exist)")
+
+    print("\n=== TEST 16: Escalation responses are never stored in conversation memory ===")
+    result3 = handle_message("I was assaulted", user_id=memory_number)
+    print(f"  Escalated: {result3['escalated']}  (expected: True)")
+    sessions = _load_sessions()
+    session_after_escalation = sessions[_hash_user_id(memory_number)]
+    history3 = session_after_escalation.get("last_messages", [])
+    print(f"  last_messages unchanged by escalation: "
+          f"{[m['content'] for m in history3] == [m['content'] for m in history2]}  (expected: True)")
+
+    print("\n=== TEST 17: Oyo facilities span at least 3 different LGAs ===")
     from src.safety.escalation import get_helplines_for_state
     oyo_facilities = get_helplines_for_state("Oyo")
     distinct_lgas = {f["lga"] for f in oyo_facilities}
     print(f"  Facilities returned: {len(oyo_facilities)}")
     print(f"  Distinct LGAs      : {len(distinct_lgas)}  (expected: >= 3)  {distinct_lgas}")
 
-    print("\n=== TEST 17: 'Kini Atosi' with Yoruba session -> educational, not escalation ===")
+    print("\n=== TEST 18: 'Kini Atosi' with Yoruba session -> educational, not escalation ===")
     atosi_number = "whatsapp:+2348099999999"
     sessions = _load_sessions()
     sessions[_hash_user_id(atosi_number)] = {

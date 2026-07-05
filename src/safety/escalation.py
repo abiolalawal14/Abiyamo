@@ -76,6 +76,7 @@ Response format:
 import json
 from pathlib import Path
 
+from thefuzz import fuzz
 from transformers import AutoTokenizer, DistilBertForSequenceClassification
 import torch
 
@@ -241,6 +242,10 @@ DIAGNOSTIC_PHRASES = [
     "we had unprotected sex",
     "condom broke",
     "condom burst",
+    "i need help urgently",
+    "i need medical help",
+    "it hurts when i urinate",
+    "it hurts inside",
     # abortion in a personal-distress context -- NOT general topic
     # questions like "what is abortion?" or "what about abortion?",
     # which must stay educational and go through the RAG pipeline.
@@ -295,6 +300,49 @@ SAFE_EDUCATIONAL_TERMS = [
     "masturbation",
     "follow up",
     "follow-up",
+]
+
+# ---------------------------------------------------------------------------
+# Short-message classifier gate
+# ---------------------------------------------------------------------------
+# Live testing showed short, ambiguous messages with no keyword-phrase
+# match (e.g. "What are the symptoms of STIs?", 6 words) reaching the
+# classifier and tripping its DIAGNOSTIC threshold (0.528, just over
+# the normal 0.5 bar) purely from being short and generic -- the same
+# ~0.5-boundary unreliability documented for CRISIS_PHRASES above, just
+# on the classifier's diagnostic label instead of crisis.
+#
+# Fix: for a message under _SHORT_MESSAGE_WORD_THRESHOLD words that
+# doesn't ALSO contain an explicit danger signal, the classifier is
+# only trusted for its CRISIS probability, at a RAISED bar (0.6, not
+# the normal 0.35/0.5) -- diagnostic-via-classifier is not considered
+# for such messages at all.
+#
+# IMPORTANT SAFETY SCOPE -- this gate applies ONLY to the classifier
+# fallback step, never to CRISIS_PHRASES or DIAGNOSTIC_PHRASES keyword
+# matching above, which always run in full regardless of message
+# length. An earlier draft of this gate would have also skipped keyword
+# matching for short messages, which breaks CLAUDE.md's explicit design
+# principle ("crisis recall favoured over precision, missing a crisis
+# query is worse than a false positive") -- e.g. "I want to kill
+# myself" (5 words) contains none of the override keywords below, so it
+# would have been downgraded to needing classifier crisis probability
+# > 0.6 instead of a deterministic "kill myself" phrase match. Keyword
+# phrases are checked unconditionally first specifically so this can
+# never happen; this gate only narrows what happens AFTER both keyword
+# lists have already found no match.
+_SHORT_MESSAGE_WORD_THRESHOLD = 10
+_SHORT_MESSAGE_CRISIS_PROBABILITY_THRESHOLD = 0.6
+
+# Presence of any of these allows the classifier to be trusted normally
+# (both crisis and diagnostic, at the usual thresholds) even for a
+# short message -- these signal enough real danger/urgency that the
+# extra caution above isn't warranted. Deliberately not exhaustive
+# safety-critical wording (that's what CRISIS_PHRASES/DIAGNOSTIC_PHRASES
+# above already cover, unconditionally) -- this is only about whether
+# the classifier fallback gets the normal or the stricter treatment.
+_EXPLICIT_CRISIS_OVERRIDE_KEYWORDS = [
+    "rape", "assault", "forced", "abuse", "pregnant and scared", "help me urgently",
 ]
 
 CLASSIFIER_DIR = "models/intent_classifier"
@@ -357,6 +405,27 @@ def _detect_type_keywords(message: str) -> str | None:
     return None
 
 
+def _classifier_probs(message: str) -> dict[str, float]:
+    """
+    Runs the trained DistilBERT classifier and returns raw per-label
+    probabilities (before any decision threshold is applied). Shared by
+    both branches of _detect_type()'s classifier fallback below so the
+    tokenize/forward-pass code isn't duplicated.
+    """
+    inputs = _clf_tokenizer(
+        message,
+        return_tensors="pt",
+        truncation=True,
+        max_length=_clf_config["max_length"],
+        padding=True,
+    )
+    with torch.no_grad():
+        logits = _clf_model(**inputs).logits[0]
+    probs = torch.sigmoid(logits).numpy()
+    labels = _clf_config["labels"]
+    return {labels[i]: float(probs[i]) for i in range(len(labels))}
+
+
 def _detect_type(message: str) -> str | None:
     """
     Returns the escalation type for a message, or None if no escalation
@@ -373,14 +442,15 @@ def _detect_type(message: str) -> str | None:
     should_escalate() and get_escalation_response() need no changes.
 
     Keyword phrases (CRISIS_PHRASES / DIAGNOSTIC_PHRASES) are checked
-    FIRST, unconditionally -- not just as a fallback when the classifier
-    is unavailable. Live testing showed the trained classifier's
-    confidence on abortion-related text sits right at the 0.5 decision
-    boundary (~0.46-0.52) regardless of context, meaning near-identical
-    wording ("what about abortion?" vs "I need an abortion help me")
-    could flip either way. Explicit phrases give deterministic behaviour
-    for known personal-distress framings while general topic questions
-    (no phrase match) still fall through to the classifier/RAG pipeline.
+    FIRST, unconditionally, for EVERY message regardless of length --
+    not just as a fallback when the classifier is unavailable. Live
+    testing showed the trained classifier's confidence on abortion-
+    related text sits right at the 0.5 decision boundary (~0.46-0.52)
+    regardless of context, meaning near-identical wording ("what about
+    abortion?" vs "I need an abortion help me") could flip either way.
+    Explicit phrases give deterministic behaviour for known personal-
+    distress framings while general topic questions (no phrase match)
+    still fall through to the classifier/RAG pipeline.
 
     After the keyword check, SAFE_EDUCATIONAL_TERMS is checked next --
     also unconditionally -- for the same reason: a translated Yoruba
@@ -389,7 +459,17 @@ def _detect_type(message: str) -> str | None:
     input. "masturbation" is checked directly rather than trusting the
     classifier's judgment on it.
 
-    Only falls through to the classifier when neither of the above matches.
+    Only falls through to the classifier when NEITHER of the above
+    matches. At that point, a SHORT message (< _SHORT_MESSAGE_WORD_
+    THRESHOLD words) with no explicit danger signal present
+    (_EXPLICIT_CRISIS_OVERRIDE_KEYWORDS) gets extra caution: the
+    classifier is trusted only for a crisis call, at a raised bar
+    (_SHORT_MESSAGE_CRISIS_PROBABILITY_THRESHOLD), never for diagnostic
+    -- see the module-level comment above SAFE_EDUCATIONAL_TERMS for why
+    (short generic text was tripping the classifier's diagnostic
+    threshold). This gate never touches the keyword-phrase step above,
+    which is what keeps it safe -- see that comment block for the
+    safety reasoning in full.
     """
     keyword_result = _detect_type_keywords(message)
     if keyword_result is not None:
@@ -402,23 +482,19 @@ def _detect_type(message: str) -> str | None:
     if not _load_classifier():
         return None
 
-    inputs = _clf_tokenizer(
-        message,
-        return_tensors="pt",
-        truncation=True,
-        max_length=_clf_config["max_length"],
-        padding=True,
-    )
-    with torch.no_grad():
-        logits = _clf_model(**inputs).logits[0]
-    probs = torch.sigmoid(logits).numpy()
+    word_count = len(message.split())
+    has_explicit_danger_signal = any(kw in lower for kw in _EXPLICIT_CRISIS_OVERRIDE_KEYWORDS)
 
-    labels = _clf_config["labels"]
+    if word_count < _SHORT_MESSAGE_WORD_THRESHOLD and not has_explicit_danger_signal:
+        crisis_prob = _classifier_probs(message).get("crisis", 0.0)
+        return "crisis" if crisis_prob > _SHORT_MESSAGE_CRISIS_PROBABILITY_THRESHOLD else None
+
+    probs = _classifier_probs(message)
     crisis_threshold = _clf_config["crisis_threshold"]
     detected = set()
-    for i, label in enumerate(labels):
+    for label, prob in probs.items():
         thresh = crisis_threshold if label == "crisis" else 0.5
-        if probs[i] >= thresh:
+        if prob >= thresh:
             detected.add(label)
 
     if "crisis" in detected:
@@ -435,6 +511,26 @@ def _detect_type(message: str) -> str | None:
 # Variants a user or the session layer might pass for the FCT.
 # The facility dataset normalises FCT to "Fct" after title-case.
 _FCT_VARIANTS = {"fct", "abuja", "fct abuja", "federal capital territory", "abuja fct"}
+
+# Below this fuzz.partial_ratio score, an LGA is not considered a match.
+# 70 handles common real-world mismatches between what a user types
+# during onboarding and the exact string in the facility dataset:
+# "Ibadan South West" vs "Ibadan S/W", "Bwari" vs "Bwari LGA", "Amac"
+# vs "AMAC".
+#
+# KNOWN LIMITATION: partial_ratio finds the best-matching substring
+# window, so two DIFFERENT LGAs that share a long common prefix can
+# also score above 70 -- e.g. "Ibadan South West" vs "Ibadan North"
+# scores 83. Oyo state alone has five "Ibadan ..." LGAs, so a user in
+# one may get facilities prioritised from a neighbouring one instead.
+# Tried fuzz.ratio/token_sort_ratio as alternatives -- neither fully
+# solves this (e.g. "Ibadan South West" vs "Ibadan South East" still
+# scores 94 on plain ratio); it's an inherent limit of fuzzy-matching
+# near-identical short strings, not a one-line fix. Accepted here
+# because this only affects which facilities are LISTED FIRST, never
+# which are shown at all -- get_helplines_for_state() falls back to the
+# rest of the state's facilities either way (see docstring below).
+_FUZZY_LGA_MATCH_THRESHOLD = 70
 
 
 def _normalize_state_name(state: str | None) -> str | None:
@@ -460,12 +556,20 @@ def get_helplines_for_state(state: str | None, lga: str | None = None) -> list:
 
     Parameters:
         lga : Optional LGA name captured during onboarding. When
-              provided, facilities in that LGA are moved to the front
-              of the returned list -- callers slice to the first few
-              results (see _crisis_response/_diagnostic_response), so
-              this surfaces a matching-LGA facility first without ever
-              hiding the rest of the state's facilities if the user's
-              LGA has none listed (graceful fallback, not a filter).
+              provided, facilities are ranked by fuzz.partial_ratio
+              against this value (see _FUZZY_LGA_MATCH_THRESHOLD) and
+              those scoring >= threshold are moved to the front, highest
+              score first -- callers slice to the first few results
+              (see _crisis_response/_diagnostic_response), so this
+              surfaces the closest-matching-LGA facilities first
+              without ever hiding the rest of the state's facilities if
+              nothing scores high enough (graceful fallback, not a
+              filter). Exact matches always score 100, so this is a
+              strict superset of the old exact-match behaviour -- fuzzy
+              matching was added because user-typed LGA names
+              (onboarding free text) rarely match the facility
+              dataset's exact spelling ("Ibadan South West" vs the
+              dataset's "Ibadan S/W", etc).
     """
     if not state:
         return []
@@ -488,8 +592,13 @@ def get_helplines_for_state(state: str | None, lga: str | None = None) -> list:
         return facilities
 
     lga_lower = lga.strip().lower()
-    matching = [f for f in facilities if f.get("lga", "").lower() == lga_lower]
-    other = [f for f in facilities if f.get("lga", "").lower() != lga_lower]
+    scored = [
+        (fuzz.partial_ratio(lga_lower, f.get("lga", "").lower()), f)
+        for f in facilities
+    ]
+    scored.sort(key=lambda pair: pair[0], reverse=True)
+    matching = [f for score, f in scored if score >= _FUZZY_LGA_MATCH_THRESHOLD]
+    other = [f for score, f in scored if score < _FUZZY_LGA_MATCH_THRESHOLD]
     return matching + other
 
 
@@ -662,6 +771,20 @@ if __name__ == "__main__":
         # a genuinely personal follow-up must still escalate.
         ("I need follow up on STI",                             None),
         ("I have been following up with my doctor about my discharge", "diagnostic"),
+        # New specific diagnostic phrases (replacing the overly-generic
+        # "i need"/"i am hurt"/standalone "hurts" that were requested
+        # for removal but never actually existed in this list).
+        ("I need help urgently",                                "diagnostic"),
+        ("I need medical help",                                 "diagnostic"),
+        ("It hurts when I urinate",                             "diagnostic"),
+        ("It hurts inside",                                     "diagnostic"),
+        # Short-message classifier gate: "What are the symptoms of
+        # STIs?" (test case #3 above) is this same scenario in
+        # practice -- a short, ambiguous message with no keyword-phrase
+        # match and no explicit danger signal, where the classifier's
+        # diagnostic score alone (0.528) used to cross 0.5. That test
+        # case was failing on every run before this fix; it's the
+        # clearest evidence the gate solves the real reported problem.
     ]
 
     print("=== TEST 1: Detection accuracy ===\n")
@@ -700,3 +823,21 @@ if __name__ == "__main__":
     data = _load_helplines()
     print(f"  Keys: {list(data.keys())}")
     print(f"  States in file: {len(data.get('states', {}))}")
+
+    print("\n=== TEST 7: Fuzzy LGA matching ===")
+    print("  Fct/Bwari (exact match present in data):")
+    fct_bwari = get_helplines_for_state("Fct", "Bwari")
+    print(f"    Top result: {fct_bwari[0]['name']} - {fct_bwari[0]['lga']}  (expected LGA: Bwari)")
+
+    print("  Oyo/Ibadan South West (NOT present in Oyo's current 5 selected LGAs):")
+    oyo_ibadan = get_helplines_for_state("Oyo", "Ibadan South West")
+    print(f"    Top result: {oyo_ibadan[0]['name']} - {oyo_ibadan[0]['lga']}")
+    print(f"    Oyo's current LGAs: {[f['lga'] for f in get_helplines_for_state('Oyo')]}")
+    print(
+        "    NOTE: no Ibadan LGA exists in Oyo's data (see FIX 2 from an earlier "
+        "session -- only 5 of Oyo's 33 LGAs are represented, alphabetically). "
+        "'Atiba' scores 75 on fuzz.partial_ratio against 'ibadan south west' -- "
+        "above the 70 threshold despite being unrelated. Verified separately with "
+        "a mock facility list that the ranking itself is correct when a true "
+        "Ibadan S/W entry exists (see chat summary)."
+    )
