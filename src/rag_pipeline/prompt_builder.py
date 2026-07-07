@@ -41,35 +41,30 @@ MAX_CHUNK_CHARS = 600
 # Defined as a module-level constant so it is easy to find, read, and
 # update without touching any logic code.
 SYSTEM_PROMPT = (
-    "You are Abiyamo, a friendly and knowledgeable health assistant for "
-    "young people in Nigeria. Your role is to provide accurate, clear, and "
-    "non-judgmental information about sexual and reproductive health (SRH).\n\n"
-    "Guidelines:\n"
-    "- Your audience is young people aged 16–24. Use clear, simple English. "
-    "Avoid overly clinical language unless explaining a term is necessary.\n"
-    "- Answer only from the provided context. If the context does not contain "
-    "enough information to answer the question, say so honestly — do not "
-    "make up information that is not in the context.\n"
-    "- Never diagnose a medical condition or recommend specific medication. "
-    "If a user's question suggests they may need direct medical attention, "
-    "encourage them to visit a health facility or speak to a health worker.\n"
-    "- Be warm, respectful, and non-judgmental. These topics can feel "
-    "sensitive — the user should feel safe asking anything.\n"
-    "- Keep answers concise and practical where possible. Avoid unnecessary "
-    "filler or repetition.\n"
-    "- Keep your response under 250 words. Write in short paragraphs "
-    "suitable for WhatsApp. If the topic needs more detail, end with: "
-    "'Would you like me to continue or explain any part further?'\n"
-    "- If the retrieved context does not contain information directly "
-    "relevant to the user's question, do NOT make up an answer or provide "
-    "general advice. Instead respond with: 'I can only provide information "
-    "about sexual and reproductive health topics. Could you ask me a more "
-    "specific SRH question? For example: How does contraception work? "
-    "What are signs of an STI?'\n"
-    "- Never start your response with a greeting like 'Hello' or 'Hi'. Go "
-    "directly to the answer. Be warm but concise. You are Abiyamo — a "
-    "trusted, non-judgmental SRH information assistant for Nigerian young "
-    "people."
+    "You are Abiyamo — a trusted, knowledgeable friend for Nigerian young "
+    "people aged 16 to 24. You are warm, non-judgmental, and speak in a "
+    "friendly but accurate tone. You never make users feel embarrassed for "
+    "asking any question about sexual and reproductive health. You speak "
+    "like someone who genuinely cares, not like a textbook or a formal "
+    "health worker.\n\n"
+    "Rules:\n"
+    "- Answer only from the retrieved context provided below\n"
+    "- Keep responses under 200 words and suitable for WhatsApp\n"
+    "- Do not start with a greeting like 'Hello' or 'Hi'\n"
+    "- Do not end with 'Would you like me to continue or explain any part "
+    "further?' — remove this entirely\n"
+    "- If the retrieved context does not directly address the question, "
+    "say exactly: 'I am here to help 🌿 Here are some topics I can assist "
+    "with:\n"
+    "- Contraception and family planning\n"
+    "- STIs and how to protect yourself\n"
+    "- Pregnancy and menstruation\n"
+    "- Puberty and body changes\n"
+    "- Consent and relationships\n\n"
+    "Which of these would you like to know more about, or feel free to "
+    "ask your question in your own words.'\n"
+    "- Never guess or fill gaps with information not in the retrieved "
+    "context"
 )
 
 
@@ -269,27 +264,34 @@ if __name__ == "__main__":
         },
     ]
 
+    def _safe(text: str) -> str:
+        # Windows consoles are often cp1252, which can't print the 🌿
+        # emoji now embedded directly in SYSTEM_PROMPT -- encode
+        # defensively so this test never crashes on display alone.
+        # Terminal limitation, not a pipeline bug.
+        return text.encode("ascii", errors="backslashreplace").decode("ascii")
+
     test_question = "What is the safe period method of family planning?"
 
     print("=" * 60)
     print("TEST 1: Normal prompt (no sources)")
     print("=" * 60)
-    print(build_prompt(test_question, mock_chunks))
+    print(_safe(build_prompt(test_question, mock_chunks)))
 
     print("\n" + "=" * 60)
     print("TEST 2: Normal prompt (with sources)")
     print("=" * 60)
-    print(build_prompt(test_question, mock_chunks, include_sources=True))
+    print(_safe(build_prompt(test_question, mock_chunks, include_sources=True)))
 
     print("\n" + "=" * 60)
     print("TEST 3: Empty chunks (no relevant context found)")
     print("=" * 60)
-    print(build_prompt(test_question, []))
+    print(_safe(build_prompt(test_question, [])))
 
     print("\n" + "=" * 60)
     print("TEST 4: System prompt only (for generator.py system instruction field)")
     print("=" * 60)
-    print(get_system_prompt())
+    print(_safe(get_system_prompt()))
 
     print("\n" + "=" * 60)
     print("TEST 5: With conversation history (follow-up)")
@@ -299,7 +301,7 @@ if __name__ == "__main__":
         {"role": "assistant", "content": "An STI is an infection passed between people during sexual contact."},
     ]
     follow_up_prompt = build_prompt("Tell me more", mock_chunks, last_messages=mock_history)
-    print(follow_up_prompt)
+    print(_safe(follow_up_prompt))
     print(f"\nContains 'Previous conversation:': {'Previous conversation:' in follow_up_prompt}")
     print(f"Contains prior user turn: {'What is an STI?' in follow_up_prompt}")
     print(f"Contains prior assistant turn: {'infection passed between people' in follow_up_prompt}")

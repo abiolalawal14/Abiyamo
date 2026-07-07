@@ -88,14 +88,17 @@ _PLAIN_TO_BCP47 = {
 }
 
 _WELCOME_MESSAGE = (
-    "Welcome to Abiyamo — your safe space for sexual "
-    "and reproductive health information. 🌿\n\n"
+    "Hi there! I am Abiyamo 🌿\n\n"
+    "I am your trusted companion for sexual and "
+    "reproductive health questions. No question is "
+    "too embarrassing here — I am here for you, "
+    "not to judge you.\n\n"
     "Before we begin, what language do you prefer?\n"
     "Reply with:\n"
     "1 for English\n"
-    "2 for Hausa (Hausa)\n"
-    "3 for Yoruba (Yoruba)\n"
-    "4 for Igbo (Igbo)"
+    "2 for Hausa\n"
+    "3 for Yoruba\n"
+    "4 for Igbo"
 )
 
 _STATE_PROMPT = (
