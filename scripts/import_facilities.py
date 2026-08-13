@@ -26,7 +26,7 @@ import pandas as pd
 FACILITIES_PATH = "data/raw_queries/facilities.csv"
 HELPLINES_PATH = "data/helplines.json"
 
-MAX_FACILITIES_PER_STATE = 5
+MAX_FACILITIES_PER_STATE = 50  # comfortably above Kano's 44 LGAs -- effectively "one per LGA, every LGA"
 VERIFIED_DATE = "2026-07-02"
 
 
@@ -199,34 +199,43 @@ def build_helplines(facilities_by_state: dict) -> dict:
                 "notes": "National emergency number, always active",
             },
             {
+                # Found on SURPIN's own site (surpinng.com). NOT phone-verified.
                 "name": "Suicide Research and Prevention Initiative (SURPIN)",
-                "number": "PLACEHOLDER_NOT_VERIFIED",
+                "number": "0800 078 7746",
                 "type": "phone",
                 "available": "UNKNOWN — verify before deploying",
                 "verified": False,
+                "notes": "Found via web search, not phone-verified -- confirm before deploying.",
             },
             {
+                # Found via secondary sources; official site could not be fetched
+                # to cross-check. NOT phone-verified.
                 "name": "Mentally Aware Nigeria Initiative (MANI)",
-                "number": "PLACEHOLDER_NOT_VERIFIED",
+                "number": "0809 111 6264",
                 "type": "phone",
                 "available": "UNKNOWN — verify before deploying",
                 "verified": False,
+                "notes": "Found via web search, not phone-verified -- confirm before deploying.",
             },
             {
+                # Found on NAPTIP's own official site (naptip.gov.ng). NOT phone-verified.
                 "name": "NAPTIP Toll-Free Hotline",
-                "number": "PLACEHOLDER_NOT_VERIFIED",
+                "number": "0703 000 0203",
                 "type": "phone",
                 "available": "UNKNOWN — verify before deploying",
                 "verified": False,
-                "notes": "Trafficking, sexual exploitation, gender-based violence",
+                "notes": "Trafficking, sexual exploitation, gender-based violence. Found via web search, not phone-verified -- confirm before deploying.",
             },
             {
+                # Corroborated by two independent press sources (Guardian Nigeria,
+                # BellaNaija); WARIF's own site could not be fetched to confirm
+                # directly. NOT phone-verified.
                 "name": "WARIF Rape Crisis Helpline",
-                "number": "PLACEHOLDER_NOT_VERIFIED",
+                "number": "0800 921 0009",
                 "type": "phone",
                 "available": "UNKNOWN — verify before deploying",
                 "verified": False,
-                "notes": "Women at Risk International Foundation",
+                "notes": "Women at Risk International Foundation. Found via web search, not phone-verified -- confirm before deploying.",
             },
         ],
         "states": {

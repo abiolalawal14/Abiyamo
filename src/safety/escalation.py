@@ -606,16 +606,63 @@ def get_helplines_for_state(state: str | None, lga: str | None = None) -> list:
 # Response builders
 # ---------------------------------------------------------------------------
 
+def is_placeholder(entry: dict) -> bool:
+    """
+    Returns True if a helpline entry must NOT be shown to a real user --
+    either it has no number at all, its number is still the literal
+    "PLACEHOLDER_NOT_VERIFIED" sentinel written by
+    scripts/import_facilities.py, or it has not been marked
+    verified: true. This is the gate CLAUDE.md has always described as
+    existing; it previously did not, and crisis_fallback in
+    helplines.json was written but never actually read anywhere in
+    src/ -- this function and _get_verified_crisis_hotlines() below are
+    what closes that gap. A number only reaches a user once someone has
+    personally called it, confirmed it is live, and flipped "verified"
+    to true in helplines.json.
+    """
+    number = (entry.get("number") or "").strip()
+    if not number or number.upper() == "PLACEHOLDER_NOT_VERIFIED":
+        return True
+    return entry.get("verified") is not True
+
+
+def _get_verified_crisis_hotlines() -> list[dict]:
+    """
+    Returns the crisis_fallback entries from helplines.json that have
+    passed is_placeholder() -- i.e. genuinely phone-verified numbers --
+    excluding the national emergency line (112), which is already
+    always included in the response text separately below.
+    """
+    data = _load_helplines()
+    entries = data.get("crisis_fallback", [])
+    return [
+        e for e in entries
+        if not is_placeholder(e) and e.get("name") != "Nigeria Emergency Services"
+    ]
+
+
+def _format_verified_hotlines_block(hotlines: list[dict]) -> str:
+    """Renders verified crisis_fallback entries as extra reference lines, or "" if none."""
+    if not hotlines:
+        return ""
+    lines = "\n".join(f"- {h['name']}: {h['number']}" for h in hotlines)
+    return f"\n\nYou can also reach these support lines:\n{lines}"
+
+
 def _crisis_response(state: str | None = None, lga: str | None = None) -> str:
     """
     Scripted crisis response. When a state is known, names real local
-    facilities so the user has a concrete place to go. Always adds 112.
+    facilities so the user has a concrete place to go. Always adds 112,
+    plus any other crisis_fallback hotlines that have cleared
+    is_placeholder() (see above) -- currently none, until each one is
+    personally called and confirmed.
 
     Follows safe messaging: acknowledge warmth, validate, give resources,
     encourage action. Short by design -- WhatsApp users disengage with
     long messages.
     """
     facilities = get_helplines_for_state(state, lga)
+    extra_hotlines = _format_verified_hotlines_block(_get_verified_crisis_hotlines())
 
     if facilities:
         state_display = _normalize_state_name(state) or state
@@ -630,6 +677,7 @@ def _crisis_response(state: str | None = None, lga: str | None = None) -> str:
             "they provide confidential support:\n\n"
             f"{lines}\n\n"
             "You can also call Nigeria's emergency line: 112 (available 24/7)"
+            f"{extra_hotlines}"
         )
 
     # No state info or state not yet in the dataset -- fall back to
@@ -645,7 +693,8 @@ def _crisis_response(state: str | None = None, lga: str | None = None) -> str:
         "What you are going through sounds very difficult, and you deserve "
         "real support from a person who can help - not just a chatbot.\n\n"
         f"{fallback_note}\n\n"
-        "You can also call Nigeria's emergency line: 112 (available 24/7)\n\n"
+        "You can also call Nigeria's emergency line: 112 (available 24/7)"
+        f"{extra_hotlines}\n\n"
         "You are important, and help is available."
     )
 
@@ -829,15 +878,13 @@ if __name__ == "__main__":
     fct_bwari = get_helplines_for_state("Fct", "Bwari")
     print(f"    Top result: {fct_bwari[0]['name']} - {fct_bwari[0]['lga']}  (expected LGA: Bwari)")
 
-    print("  Oyo/Ibadan South West (NOT present in Oyo's current 5 selected LGAs):")
+    print("  Oyo/Ibadan South West (all 33 of Oyo's LGAs are now represented):")
     oyo_ibadan = get_helplines_for_state("Oyo", "Ibadan South West")
-    print(f"    Top result: {oyo_ibadan[0]['name']} - {oyo_ibadan[0]['lga']}")
-    print(f"    Oyo's current LGAs: {[f['lga'] for f in get_helplines_for_state('Oyo')]}")
+    print(f"    Top result: {oyo_ibadan[0]['name']} - {oyo_ibadan[0]['lga']}  (expected LGA: Ibadan South West)")
     print(
-        "    NOTE: no Ibadan LGA exists in Oyo's data (see FIX 2 from an earlier "
-        "session -- only 5 of Oyo's 33 LGAs are represented, alphabetically). "
-        "'Atiba' scores 75 on fuzz.partial_ratio against 'ibadan south west' -- "
-        "above the 70 threshold despite being unrelated. Verified separately with "
-        "a mock facility list that the ranking itself is correct when a true "
-        "Ibadan S/W entry exists (see chat summary)."
+        "    NOTE: MAX_FACILITIES_PER_STATE was raised from 5 to 50 in "
+        "scripts/import_facilities.py so every state's LGAs are covered, not "
+        "just an alphabetical first few. A real Ibadan South West entry now "
+        "exists and scores 100 on fuzz.partial_ratio, so it is always ranked "
+        "ahead of any coincidental false-positive match like 'Atiba'."
     )
