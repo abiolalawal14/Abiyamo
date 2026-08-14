@@ -625,13 +625,17 @@ Two git remotes, kept in sync manually (no CI):
   `HF_TOKEN` (already present, also used for the log-persistence
   feature), and `HF_LOGS_DATASET_REPO` (NOT yet confirmed added — see
   evaluation/logger.py above).
-- **Last deploy: 2026-08-13** — data/helplines.json,
+- **Last deploy: 2026-08-14** — data/helplines.json, src/safety/
+  escalation.py, scripts/enrich_facility_contacts.py (new — per-facility
+  officer_contact from api.nphcda.gov.ng, 722/783 matched). Pushed to
+  GitHub master (0b6164c) and the HF Space main (0a4beb8). Space will
+  rebuild ChromaDB from data/raw_pdfs/ on restart per the ephemeral-
+  filesystem behaviour described above — check `/health` after a
+  deploy before assuming the knowledge base is ready.
+  (Previous deploy: 2026-08-13 — data/helplines.json,
   scripts/import_facilities.py, src/safety/escalation.py (LGA coverage
-  fix + is_placeholder()/crisis_fallback wiring). Pushed to GitHub
-  master (d5b8f1d) and the HF Space main (d40318d). Space will rebuild
-  ChromaDB from data/raw_pdfs/ on restart per the ephemeral-filesystem
-  behaviour described above — check `/health` after a deploy before
-  assuming the knowledge base is ready.
+  fix + is_placeholder()/crisis_fallback wiring). GitHub master
+  (d5b8f1d), HF Space main (d40318d).)
 
 ---
 
