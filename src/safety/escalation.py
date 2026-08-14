@@ -626,6 +626,32 @@ def is_placeholder(entry: dict) -> bool:
     return entry.get("verified") is not True
 
 
+def _format_officer_contact(facility: dict) -> str:
+    """
+    Renders a facility's officer_contact block (see
+    scripts/enrich_facility_contacts.py) as an extra indented line under
+    that facility's listing, or "" if the facility has none.
+
+    Deliberately NOT gated behind an is_placeholder()-style verified
+    check like crisis_fallback numbers are. Those numbers are presented
+    as an organisation's official line, so an unverified one risks being
+    trusted as if it were confirmed. This is different: it is always
+    labelled in the text itself as the facility's self-reported,
+    unverified personal contact -- the label IS the safety mechanism
+    here, not a gate that would otherwise hide it from ever being useful
+    (personally phone-verifying ~789 individual survey respondents,
+    unlike 4 institutional hotlines, is not practical for this project).
+    Do not remove the "self-reported, not verified" wording below.
+    """
+    contact = facility.get("officer_contact")
+    if not contact or not contact.get("phone"):
+        return ""
+    who = contact.get("officer_name") or "Officer in charge"
+    as_of = contact.get("as_of")
+    age_note = f", as of {as_of}" if as_of else ""
+    return f"\n  Contact: {who} - {contact['phone']} (facility contact, self-reported{age_note}, not verified)"
+
+
 def _get_verified_crisis_hotlines() -> list[dict]:
     """
     Returns the crisis_fallback entries from helplines.json that have
@@ -667,7 +693,7 @@ def _crisis_response(state: str | None = None, lga: str | None = None) -> str:
     if facilities:
         state_display = _normalize_state_name(state) or state
         lines = "\n".join(
-            f"- {f['name']} - {f['lga']} LGA"
+            f"- {f['name']} - {f['lga']} LGA{_format_officer_contact(f)}"
             for f in facilities[:3]
         )
         return (
@@ -710,7 +736,7 @@ def _diagnostic_response(state: str | None = None, lga: str | None = None) -> st
     if facilities:
         state_display = _normalize_state_name(state) or state
         lines = "\n".join(
-            f"- {f['name']} - {f['lga']} LGA"
+            f"- {f['name']} - {f['lga']} LGA{_format_officer_contact(f)}"
             for f in facilities[:3]
         )
         return (

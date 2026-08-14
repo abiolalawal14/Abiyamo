@@ -1,0 +1,307 @@
+[
+  {
+    "state": "Abia",
+    "facility": "Ohuru Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Akwa Ibom",
+    "facility": "Health Post Afaha Ubium",
+    "status": "no_match"
+  },
+  {
+    "state": "Anambra",
+    "facility": "Mch Abagan",
+    "status": "no_match"
+  },
+  {
+    "state": "Anambra",
+    "facility": "Mch Umunze",
+    "status": "no_phone"
+  },
+  {
+    "state": "Bauchi",
+    "facility": "Gabarin Phc",
+    "status": "no_phone"
+  },
+  {
+    "state": "Bauchi",
+    "facility": "Beli Mch",
+    "status": "no_match"
+  },
+  {
+    "state": "Borno",
+    "facility": "Mallam Fatori Primary Health Centre",
+    "status": "no_match"
+  },
+  {
+    "state": "Borno",
+    "facility": "Ngulde Comprehensive Health Centre",
+    "status": "no_phone"
+  },
+  {
+    "state": "Borno",
+    "facility": "Damboa Mch",
+    "status": "no_phone"
+  },
+  {
+    "state": "Borno",
+    "facility": "Dikwa Maternal And Child Health Clinic.",
+    "status": "no_phone"
+  },
+  {
+    "state": "Borno",
+    "facility": "Gwoza  Wakane Phcc",
+    "status": "no_phone"
+  },
+  {
+    "state": "Borno",
+    "facility": "Gussi Phcc",
+    "status": "no_match"
+  },
+  {
+    "state": "Borno",
+    "facility": "Gamboru Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Borno",
+    "facility": "Rann Primary Health Centre",
+    "status": "no_match"
+  },
+  {
+    "state": "Borno",
+    "facility": "Baga Health Clinic",
+    "status": "no_phone"
+  },
+  {
+    "state": "Borno",
+    "facility": "Kwaya Kusar Mch",
+    "status": "no_phone"
+  },
+  {
+    "state": "Borno",
+    "facility": "Wulari Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Borno",
+    "facility": "New Marte Maternal And Child  Health Clinic",
+    "status": "no_phone"
+  },
+  {
+    "state": "Borno",
+    "facility": "Gajiram Maternal And Child Health Centre",
+    "status": "no_phone"
+  },
+  {
+    "state": "Delta",
+    "facility": "Akugbene Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Delta",
+    "facility": "Inam Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Delta",
+    "facility": "Olota Phc",
+    "status": "no_phone"
+  },
+  {
+    "state": "Ebonyi",
+    "facility": "Ndinwangba Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Ebonyi",
+    "facility": "Akparata Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Edo",
+    "facility": "Enwan I Phc",
+    "status": "no_phone"
+  },
+  {
+    "state": "Edo",
+    "facility": "Primary Health Center Ogida",
+    "status": "no_match"
+  },
+  {
+    "state": "Edo",
+    "facility": "Oria Phc 2",
+    "status": "no_phone"
+  },
+  {
+    "state": "Edo",
+    "facility": "Phc Auchi",
+    "status": "no_match"
+  },
+  {
+    "state": "Ekiti",
+    "facility": "Igieghudu Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Ekiti",
+    "facility": "Basic Health Centre Ipole Agbado",
+    "status": "no_match"
+  },
+  {
+    "state": "Ekiti",
+    "facility": "Comprehensive Health Centre Afao",
+    "status": "no_match"
+  },
+  {
+    "state": "Enugu",
+    "facility": "Model Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Enugu",
+    "facility": "Ikpakpara H/P",
+    "status": "no_phone"
+  },
+  {
+    "state": "Enugu",
+    "facility": "Model Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Imo",
+    "facility": "Mch",
+    "status": "no_match"
+  },
+  {
+    "state": "Imo",
+    "facility": "Umuanya-Mch",
+    "status": "no_match"
+  },
+  {
+    "state": "Imo",
+    "facility": "Akatta 1 Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Imo",
+    "facility": "Umuihua Health Centre",
+    "status": "no_match"
+  },
+  {
+    "state": "Kano",
+    "facility": "Phc Dawaki",
+    "status": "no_match"
+  },
+  {
+    "state": "Kano",
+    "facility": "Phc Kwa",
+    "status": "no_match"
+  },
+  {
+    "state": "Kano",
+    "facility": "Butu Butu Model Primary Health Center",
+    "status": "no_match"
+  },
+  {
+    "state": "Katsina",
+    "facility": "Mchc Kwado",
+    "status": "no_match"
+  },
+  {
+    "state": "Kogi",
+    "facility": "Fsp/Mch Odole",
+    "status": "no_phone"
+  },
+  {
+    "state": "Kogi",
+    "facility": "Phcc Eika",
+    "status": "no_phone"
+  },
+  {
+    "state": "Lagos",
+    "facility": "Ajara Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Lagos",
+    "facility": "Agbowa Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Lagos",
+    "facility": "Agbele Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Lagos",
+    "facility": "Alapere Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Niger",
+    "facility": "Mch Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Ogun",
+    "facility": "Odogbolu Ultra Modern Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Ogun",
+    "facility": "Isa Ope Health Centre",
+    "status": "no_match"
+  },
+  {
+    "state": "Ondo",
+    "facility": "Comprehensive Health Centre Ishakumi",
+    "status": "no_phone"
+  },
+  {
+    "state": "Ondo",
+    "facility": "Ikaram Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Ondo",
+    "facility": "Okua Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Ondo",
+    "facility": "Oja Idiomo Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Osun",
+    "facility": "Ajaba Mdg",
+    "status": "no_match"
+  },
+  {
+    "state": "Osun",
+    "facility": "Odeyinka Model Phc",
+    "status": "no_phone"
+  },
+  {
+    "state": "Osun",
+    "facility": "Araromi Phc",
+    "status": "no_match"
+  },
+  {
+    "state": "Rivers",
+    "facility": "Abissa",
+    "status": "no_match"
+  },
+  {
+    "state": "Rivers",
+    "facility": "Mphc (Model Phc)",
+    "status": "no_match"
+  },
+  {
+    "state": "Zamfara",
+    "facility": "Kekun Waje Phc",
+    "status": "no_phone"
+  }
+]

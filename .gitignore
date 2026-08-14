@@ -28,3 +28,7 @@ uvicorn.log
 # OS
 .DS_Store
 Thumbs.db
+.aider*
+
+# Resumability cache for scripts/enrich_facility_contacts.py — regenerable
+data/.facility_contact_cache.json

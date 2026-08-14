@@ -6,12 +6,65 @@ health (SRH) information in Nigeria. Target users: ages 16-24.
 Languages: English, Hausa, Yoruba, Igbo.
 MSc AI/ML dissertation project — Miva Open University.
 
-**Status: deployed and live-tested.** The pipeline is fully wired
+**Status: deployed and live-tested, ethical clearance obtained,
+actively prepping for the real pilot.** The pipeline is fully wired
 (translation, escalation, RAG, onboarding, conversation memory) and
-running on Hugging Face Spaces. Most of the work since the last major
-CLAUDE.md rewrite has been live-WhatsApp-testing bug fixes, not new
-features — see "Known Issues / Limitations" below for what's still
-rough.
+running on Hugging Face Spaces. A real end-to-end WhatsApp test
+(2026-08-13, via Twilio sandbox) confirmed onboarding, RAG answers,
+and crisis escalation all work through an actual phone — but also
+surfaced two real issues, both still OPEN, see "Live WhatsApp Pilot
+Test Findings (2026-08-13)" under Phase 3 below:
+1. A knowledge-base content gap — no chunk directly defines "what is
+   pregnancy" as a basic question.
+2. A safety gap — once should_escalate() fires, the very next message
+   in that same conversation is evaluated with zero awareness a crisis
+   was just disclosed, and can fall straight through to the ordinary
+   RAG/generation pipeline. Needs a design decision (time-boxed vs.
+   turn-count vs. sticky crisis mode) before it's fixed — not yet
+   decided.
+
+See "Pilot Readiness Checklist" below for the full punch list being
+worked through before real participants are messaged.
+
+---
+
+## Pilot Readiness Checklist (as of 2026-08-13)
+
+Six things identified as needed before real participants are messaged,
+tracked here so progress survives across sessions:
+
+1. **Facility/helpline data** — ✅ MOSTLY DONE. Full LGA coverage fixed
+   (see Phase 3 below); candidate numbers for the four crisis_fallback
+   hotlines (SURPIN, MANI, NAPTIP, WARIF) found via web research and
+   wired in behind a real is_placeholder() gate. **Still open: none of
+   the four numbers have been phone-verified** — call each one,
+   confirm it's live, then flip `"verified": true` in
+   data/helplines.json (or ask Claude to do the flip once you've
+   confirmed which numbers are correct).
+2. **Twilio number** — ✅ DECIDED: sandbox, not production (Meta
+   business verification isn't worth it for a short academic pilot).
+   Webhook already configured by the user pointing at the deployed
+   Space's `/whatsapp/incoming`.
+3. **Gemini quota** — 🔲 OPEN. Free tier (20 req/day) not yet moved to
+   a paid tier. Will not survive real pilot traffic.
+4. **Real end-to-end WhatsApp test** — ✅ DONE 2026-08-13 via Twilio
+   sandbox. Onboarding, RAG answers, and crisis escalation all
+   confirmed working through an actual phone. Surfaced the two new
+   findings above (see Phase 3 → "Live WhatsApp Pilot Test Findings").
+5. **HF_LOGS_DATASET_REPO secret** — 🔲 OPEN, not yet confirmed set.
+   Check: Space Settings → Variables and secrets for the key, or
+   trigger one real interaction and check the Space's Logs tab for a
+   `[logger]`-prefixed line (its absence means the secret isn't set
+   and logs won't survive a restart).
+6. **Consent/monitoring plan** — ✅ Consent form and participant
+   invitation already exist from the ethics application (outside this
+   codebase, not something this project needs to build). **Still
+   open**: whether the consent/data-use statement needs to also appear
+   inside the WhatsApp chat itself (onboarding currently doesn't
+   mention that messages are logged and reviewed — see
+   evaluation/logger.py's own docstring), and who is actually watching
+   for live crisis disclosures during the pilot window and how
+   promptly — not yet confirmed by the user.
 
 ---
 
@@ -217,39 +270,171 @@ Detection order (each step only runs if the previous one found nothing):
   by closeness to the user's onboarding-captured LGA rather than
   requiring an exact string match (users rarely type the facility
   dataset's exact spelling — "Ibadan South West" vs "Ibadan S/W").
-  - **Known limitation**: `partial_ratio` can score unrelated LGAs
-    highly if they share characters/prefixes — e.g. "Atiba" scores 75
-    against "Ibadan South West" (above the 70 threshold) purely from
-    coincidental character overlap. `fuzz.ratio`/`token_sort_ratio`
-    don't fully fix this either (Ibadan-variant LGAs score 90+ against
-    each other on those too). Accepted because it only affects which
-    facility is listed FIRST, never which are hidden.
-  - **Related data-coverage gap**: only 5 of each state's LGAs are
-    represented in helplines.json (see scripts/import_facilities.py
-    below) — a real user's LGA is very often simply not in the data at
-    all, in which case fuzzy matching just falls back to ranking
-    whatever unrelated LGAs ARE present.
-- data/helplines.json ✅ BUILT
+  - **FIXED 2026-08-13**: `partial_ratio` can still theoretically score
+    an unrelated LGA highly on shared characters (e.g. "Atiba" scored
+    75 against "Ibadan South West"), but this stopped mattering in
+    practice once every state's real LGAs were imported (see
+    scripts/import_facilities.py below) — an exact/near-exact LGA match
+    now always scores 100 and is ranked first, so a coincidental
+    false-positive like "Atiba" only surfaces when the user's real LGA
+    genuinely isn't in the dataset at all (now rare, not the norm).
+  - **Data-coverage gap RESOLVED 2026-08-13**: was "only 5 of each
+    state's LGAs represented"; MAX_FACILITIES_PER_STATE raised from 5
+    to 50 in scripts/import_facilities.py, all 37 states now have every
+    real LGA covered (783 facilities total, up from 185). Root cause
+    of a live-pilot bug report ("facility shows a different
+    state/LGA than expected") — confirmed fixed by re-testing the
+    exact Oyo/"Ibadan South West" case that used to fail.
+- `is_placeholder(entry)` ✅ BUILT 2026-08-13 — the gate this doc has
+  described since early Phase 3 but which did NOT actually exist in
+  code until now. Returns True if an entry has no number, the number
+  is still the literal "PLACEHOLDER_NOT_VERIFIED" sentinel, or
+  `verified` is not `True`. `_get_verified_crisis_hotlines()` filters
+  `crisis_fallback` entries through it and `_crisis_response()` appends
+  any that pass as extra lines after the always-present 112 line.
+  Currently returns nothing extra for any real user, since nothing in
+  crisis_fallback is verified yet (see helplines.json bullet below) —
+  confirmed via a real crisis response before/after check, and via an
+  in-memory simulated "verified: true" flip that correctly caused a
+  hotline to appear.
+- `_format_officer_contact(facility)` ✅ BUILT 2026-08-14 — renders a
+  facility's `officer_contact` block (see scripts/
+  enrich_facility_contacts.py below) as an extra indented line under
+  that facility's name/LGA in `_crisis_response()` and
+  `_diagnostic_response()`. Deliberately NOT gated behind an
+  `is_placeholder()`-style `verified: true` check the way
+  `crisis_fallback` numbers are — see Critical Design Decision #14
+  below for why that's a considered choice, not an oversight.
+- data/helplines.json ✅ BUILT, coverage fixed 2026-08-13, per-facility
+  officer contacts added 2026-08-14 (see below)
   - Placeholder structure: national crisis, sexual_abuse, general_health categories
-  - All numbers marked PLACEHOLDER_NOT_VERIFIED except 112 (Nigeria emergency)
-  - **DO NOT deploy to real users until every number is personally verified active**
+  - `crisis_fallback` (SURPIN, MANI, NAPTIP, WARIF) now holds real
+    candidate numbers found via web research (previously literal
+    "PLACEHOLDER_NOT_VERIFIED" text) — but all four are still
+    `"verified": false`. **This directory of numbers was ALSO
+    previously dead code** — crisis_fallback was written into the JSON
+    by import_facilities.py but nothing in src/ ever read it, so even
+    a fully verified number would never have reached a user. Both the
+    data AND the missing wiring were fixed together 2026-08-13 (see
+    is_placeholder() bullet above).
+  - 112 (Nigeria emergency) remains the only genuinely verified number.
+  - **DO NOT flip any of the four hotlines' `verified` field to `true`
+    until it has been personally called and confirmed active** — see
+    Pilot Readiness Checklist item 1 above.
+
+#### Live WhatsApp Pilot Test Findings (2026-08-13)
+A real end-to-end WhatsApp conversation via Twilio sandbox (onboarding
+→ RAG questions → crisis disclosure → follow-ups) surfaced two issues,
+both still OPEN:
+
+1. **Knowledge-base content gap — "what is pregnancy" has no good
+   answer.** Retrieval for "what is pregnancy" returns chunks about
+   abortion and teen-pregnancy statistics (distance 0.43–0.51) — no
+   chunk in the source PDFs actually defines pregnancy in basic terms.
+   Gemini correctly (per its own SYSTEM_PROMPT anti-hallucination
+   instruction in prompt_builder.py) refuses to answer and returns the
+   scripted "here are some topics" fallback instead. Confirmed by
+   contrast: "Pregnancy and menstruation" (the menu-option wording)
+   retrieves genuinely on-topic chunks (distance 0.38–0.43) and answers
+   correctly. **Fix is content, not code** — add a basic pregnancy
+   definitional passage to the knowledge base source PDFs.
+2. **Safety gap — escalation does not persist across a conversation.**
+   After "i was raped" correctly escalates, the very next message
+   ("who can i call?") does NOT escalate — should_escalate() evaluates
+   every message in complete isolation, with no session-level memory
+   that this user is mid-crisis. It fell through to the ordinary RAG
+   pipeline and Gemini generated an answer from a weakly-matched chunk
+   (distance 0.56), with no crisis framing. A second follow-up ("what
+   about Naptif") also missed escalation and got the generic "topics"
+   menu — the exact wrong response to send someone right after a rape
+   disclosure. Root cause is structural: escalation responses are
+   deliberately excluded from conversation memory (Critical Design
+   Decision #12 below), so there's no signal anywhere that a crisis is
+   in progress once the first scripted reply goes out.
+   **NOT YET FIXED — needs a design decision first**: should
+   heightened-caution mode after an escalation be time-boxed (next N
+   minutes), turn-count-boxed (next N messages), or sticky until the
+   user clearly asks something unrelated/educational? Discussed with
+   the user 2026-08-13, not yet decided.
 
 #### scripts/import_facilities.py ✅
 - Reads data/raw_queries/facilities.csv (~8,464 rows), writes
-  data/helplines.json's "states" section (37 states, 5 facilities each).
+  data/helplines.json's "states" section (37 states, up to
+  MAX_FACILITIES_PER_STATE facilities each).
 - Selection algorithm: **one facility per LGA** (the highest-priority
   facility present in that LGA — MCH > PHCC > PHC > Other), LGAs
-  visited alphabetically, capped at 5 per state.
+  visited alphabetically.
   - Originally filled the 5-per-state quota tier-by-tier across the
     WHOLE state with no regard for LGA, which meant a state's raw data
     being sorted/grouped by LGA could put all 5 selected facilities in
     a single LGA (e.g. every Oyo facility was from Afijo LGA only).
     Fixed to the one-per-LGA algorithm above.
-  - **Side effect**: since LGAs are visited alphabetically and capped
-    at 5, states with LGAs that sort late alphabetically (e.g. Oyo's
-    five "Ibadan..." LGAs) may have NO representation at all — this is
-    the data-coverage gap referenced above, not yet resolved.
-  - Re-run with: `python scripts/import_facilities.py`
+  - **MAX_FACILITIES_PER_STATE raised from 5 to 50 (2026-08-13)** — the
+    old cap of 5 meant most states only got their first 5 LGAs
+    alphabetically (every state in the raw dataset has MORE than 5
+    distinct LGAs — smallest is FCT with 6, largest is Kano with 44),
+    so a real user's LGA was very often simply absent, forcing the
+    fuzzy-match fallback to rank unrelated LGAs. 50 is comfortably
+    above Kano's 44, so this is now effectively "one facility per LGA,
+    every LGA" for all 37 states — 783 facilities total (was 185).
+    Confirmed via re-run: all 17 of the module's own escalation tests
+    still pass, and the previously-failing Oyo/"Ibadan South West"
+    case now returns a genuine Ibadan South West facility.
+  - `crisis_fallback`'s four hotline entries (SURPIN, MANI, NAPTIP,
+    WARIF) are also defined in this script's `build_helplines()` —
+    edit them HERE, not just in the generated JSON, or the next re-run
+    will silently overwrite any manual edit back to placeholder text.
+  - Re-run with: `.venv/Scripts/python.exe scripts/import_facilities.py`
+    (must use the project venv — the system/base Python interpreter
+    does not have thefuzz installed and the script's own test suite
+    will fail on import).
+
+#### scripts/enrich_facility_contacts.py ✅ BUILT 2026-08-14
+- Adds an `officer_contact` block (officer_name, phone, email, as_of,
+  source, verified, notes) to facilities already in `data/
+  helplines.json`, pulled from `api.nphcda.gov.ng` — an **undocumented**
+  API discovered by reading phc.nphcda.gov.ng's own JS bundle's network
+  calls, not an official published API. Could change or start requiring
+  auth without notice.
+- **The phone number is the individual facility officer-in-charge's
+  personal mobile from an NPHCDA facility survey, NOT an official
+  facility hotline.** Self-reported, not independently phone-verified,
+  and can go stale as staff transfer — `as_of` (the survey's own
+  `updated_at` date) is carried through specifically so the response
+  text can show the user how old the contact is.
+- Resolution path per facility: state → LGA → ward → facility record
+  (state/LGA/ward IDs resolved via `boundary/states|lgas|wards/`,
+  fuzzy-matched with `thefuzz` since the API's admin-name spelling
+  doesn't always match ours) → `boundary/facility/<id>/` for the detail
+  record. ~37% of facilities in helplines.json have no ward name (blank
+  in the source CSV for several states) — for those, all of the LGA's
+  wards are scanned (closest-named first, stopping early on a strong
+  match) rather than skipped, so coverage isn't limited to states with
+  clean ward data.
+- Facility-name matching strips generic descriptor words (PHC, MCH,
+  Primary, Health, Centre, etc.) from both sides before comparing —
+  our dataset abbreviates ("Umunne-Ato Phc"), the API spells out
+  ("Umunne-Ato Primary Health Centre"), so comparing raw strings scores
+  low even for the same facility. Smoke-tested on Abia (14/15 matched)
+  and Akwa Ibom's missing-ward fallback (5/5 matched) before the full
+  run — spot-checked matches by hand, not just by score.
+- Additive only — never modifies name/lga/ward/type/verified/notes on
+  existing facility entries, and `get_helplines_for_state()`/
+  `escalation.py`'s existing keys (`f['name']`, `f['lga']`) are
+  untouched, so this cannot break anything that was already working.
+- Resumable: progress cached to `data/.facility_contact_cache.json`
+  (flushed every 10 facilities), keyed by state|lga|name — a re-run
+  after an interruption skips facilities already resolved (match or
+  confirmed no-match) instead of re-querying the API. An unmatched/
+  no-phone report is written to `data/
+  facility_contact_enrichment_report.json` for follow-up.
+- Rate-limited (`--delay`, default 0.2s between requests) out of
+  courtesy to a government server not built for bulk access — a full
+  789-facility run is a few thousand requests and takes roughly
+  15-35 minutes. `--states`/`--limit` flags exist for testing on a
+  subset before a full run.
+- Run: `.venv/Scripts/python.exe scripts/enrich_facility_contacts.py`
+  (same venv requirement as import_facilities.py — httpx/thefuzz).
 
 #### src/rag_pipeline/
 - retriever.py ✅ BUILT — queries ChromaDB, returns top 3 chunks
@@ -317,9 +502,11 @@ Detection order (each step only runs if the previous one found nothing):
   - Sends reply via sender.py AFTER pipeline completes
   - Mounted in main.py at prefix /whatsapp
   - BackgroundTasks used specifically to avoid Twilio's 15-second timeout
-  - **Not confirmed tested end-to-end with a real Twilio number/phone**
-    — all live testing this far has driven `handle_message()` directly
-    in Python, not through an actual WhatsApp message round-trip.
+  - **Confirmed tested end-to-end 2026-08-13** via Twilio sandbox with a
+    real phone — onboarding, RAG answers, and crisis escalation all
+    worked through an actual WhatsApp round-trip. See "Live WhatsApp
+    Pilot Test Findings" above for the two issues that transcript
+    surfaced.
 
 #### src/api/chat_handler.py ✅ — the single pipeline entry point, substantially rebuilt
 `handle_message(message, language="en", user_id=None)` — routing order:
@@ -438,35 +625,62 @@ Two git remotes, kept in sync manually (no CI):
   `HF_TOKEN` (already present, also used for the log-persistence
   feature), and `HF_LOGS_DATASET_REPO` (NOT yet confirmed added — see
   evaluation/logger.py above).
+- **Last deploy: 2026-08-13** — data/helplines.json,
+  scripts/import_facilities.py, src/safety/escalation.py (LGA coverage
+  fix + is_placeholder()/crisis_fallback wiring). Pushed to GitHub
+  master (d5b8f1d) and the HF Space main (d40318d). Space will rebuild
+  ChromaDB from data/raw_pdfs/ on restart per the ephemeral-filesystem
+  behaviour described above — check `/health` after a deploy before
+  assuming the knowledge base is ready.
 
 ---
 
 ## What To Build Next (in order)
 
-1. **Confirm `HF_LOGS_DATASET_REPO` is set as a Space secret** — the
+1. **Decide and implement the crisis-follow-up fix** (see "Live
+   WhatsApp Pilot Test Findings" above) — this is the highest-priority
+   open item, found via real pilot testing, not theoretical. Needs the
+   user to decide: time-boxed, turn-count-boxed, or sticky
+   heightened-caution window after should_escalate() fires.
+2. **Add a basic "what is pregnancy" (and similarly basic) definitional
+   passage to the knowledge base** — content fix, not code; also found
+   via real pilot testing.
+3. **Phone-verify the four crisis_fallback hotlines** (SURPIN, MANI,
+   NAPTIP, WARIF) — candidate numbers are in data/helplines.json and
+   scripts/import_facilities.py, all still `verified: false`. Call
+   each, confirm, then flip to `true`.
+4. **Confirm `HF_LOGS_DATASET_REPO` is set as a Space secret** — the
    log-persistence code is built and live-tested, but won't activate
-   in production until this secret exists on the Space.
-2. **Retry/backoff logic in generator.py** — still returns
+   in production until this secret exists on the Space. Check via
+   Space Settings, or trigger a real interaction and check the Logs
+   tab for a `[logger]`-prefixed line.
+5. **Retry/backoff logic in generator.py** — still returns
    FALLBACK_RESPONSE immediately on any Gemini error, including 429
    rate limits. The free tier's 20/day cap was hit repeatedly during
-   dev testing; a real pilot will hit it too.
-3. **Test the Twilio WhatsApp webhook end-to-end** with a real phone
-   number — every fix this far has been verified by calling
-   `handle_message()` directly, not through an actual inbound WhatsApp
-   message via Twilio's webhook.
-4. **Personally verify every helplines.json phone number/facility**
-   before real users see them (placeholder safety check already
-   prevents deploying unverified numbers, but the data itself still
-   needs manual verification).
-5. **Improve LGA coverage in helplines.json** — currently only 5 of
-   each state's (up to 33+) LGAs are represented; consider raising
-   `MAX_FACILITIES_PER_STATE` or accepting more per state to reduce how
-   often a user's real LGA has zero facilities to fuzzy-match against.
+   dev testing; a real pilot will hit it too. Move to a paid tier
+   before real pilot traffic regardless.
 6. **Native-speaker review** of the Hausa/Igbo language-switch
    confirmation messages, and expansion of translator.py's
    `_KNOWN_TRANSLATION_OVERRIDES` glossary for other slang terms NLLB
    mistranslates.
-7. **Phase 4 pilot evaluation** — once the above are addressed.
+7. **Decide whether the in-chat onboarding needs its own consent/data-
+   use disclosure**, and confirm who is actually monitoring for live
+   crisis disclosures during the pilot window (see Pilot Readiness
+   Checklist item 6) — process questions, not code, but need answers
+   before real participants start.
+8. **Phase 4 pilot evaluation** — once the above are addressed.
+
+### DONE this session (2026-08-13)
+- ~~Test the Twilio WhatsApp webhook end-to-end with a real phone
+  number~~ — done via Twilio sandbox; see "Live WhatsApp Pilot Test
+  Findings" above for what it found.
+- ~~Improve LGA coverage in helplines.json~~ — MAX_FACILITIES_PER_STATE
+  raised 5→50, full coverage across all 37 states.
+- Built the is_placeholder() gate and wired crisis_fallback into
+  _crisis_response() — previously documented as existing but wasn't.
+- Committed and pushed to both remotes (GitHub `master` and the HF
+  Space `main`) — commit covers data/helplines.json,
+  scripts/import_facilities.py, src/safety/escalation.py.
 
 ---
 
@@ -482,8 +696,12 @@ Two git remotes, kept in sync manually (no CI):
   pilot-log persistence (evaluation/logger.py).
 - HF_LOGS_DATASET_REPO — new, NOT yet confirmed set as a Space secret.
   Without it, logs work locally but are lost on every Space restart.
-- data/helplines.json — ALL numbers are PLACEHOLDER_NOT_VERIFIED.
-  Must be personally verified before any real user receives them.
+- data/helplines.json — the four crisis_fallback hotlines (SURPIN,
+  MANI, NAPTIP, WARIF) hold researched candidate numbers but are all
+  `verified: false`; 112 is the only genuinely verified number. Must
+  be personally called and confirmed before any real user sees them —
+  is_placeholder() structurally blocks this already, so nothing reaches
+  a user until the flip to `verified: true` happens.
 
 ## Environment / Dependencies
 
@@ -544,7 +762,11 @@ Two git remotes, kept in sync manually (no CI):
    reply sent after pipeline. Avoids Twilio's 15-second response timeout.
 
 9. **helplines.json placeholder safety**: is_placeholder() check in
-   escalation.py prevents deploying unverified numbers. DO NOT remove this check.
+   escalation.py prevents deploying unverified numbers. DO NOT remove
+   this check. (Built for real 2026-08-13 — earlier versions of this
+   doc described it as already existing, but it did not; crisis_fallback
+   was written into helplines.json but never read anywhere in src/
+   until this was implemented.)
 
 10. **Escalation keyword phrases run unconditionally, BEFORE the
     classifier, for every message** — not just as a classifier-
@@ -573,6 +795,26 @@ Two git remotes, kept in sync manually (no CI):
     LFS-pushed to the HF Space only, not GitHub (100MB GitHub non-LFS
     limit). Don't assume either is present just because the other is.
 
+14. **Facility `officer_contact` numbers are labelled, not gated —
+    deliberately different from crisis_fallback's `is_placeholder()`
+    gate (#9).** `is_placeholder()` exists because a crisis_fallback
+    entry is presented AS an organisation's official hotline — showing
+    one that turns out to be dead or wrong reads as an official line
+    failing, so it's hidden entirely until personally phone-verified.
+    `officer_contact` is a different kind of number: an individual
+    facility survey respondent's personal mobile, always rendered with
+    an explicit "self-reported... not verified" clause in the response
+    text itself (`_format_officer_contact()` in escalation.py). The
+    honesty is in the label, not in withholding the number — phone-
+    verifying ~789 individuals (vs. 4 institutional hotlines) isn't
+    practical for this project, and gating it the same way as #9 would
+    make it permanently invisible, defeating the reason it was built
+    (the user explicitly wanted these numbers reachable for better
+    navigation, with NAPTIP-style institutional numbers shown alongside
+    once THEY clear #9's gate). Do not "fix consistency" by applying
+    `is_placeholder()` here — that would silently undo a considered
+    tradeoff, not correct a bug.
+
 ---
 
 ## Folder Structure
@@ -589,7 +831,13 @@ srh-chatbot/
 │   ├── chroma_db/              (ChromaDB persistent storage — NOT
 │   │                           committed, rebuilt at startup if empty)
 │   ├── helplines.json          (PLACEHOLDER — verify all numbers before use;
-│   │                           regenerated by scripts/import_facilities.py)
+│   │                           regenerated by scripts/import_facilities.py;
+│   │                           per-facility officer_contact added by
+│   │                           scripts/enrich_facility_contacts.py)
+│   ├── .facility_contact_cache.json   (resumability cache for
+│   │                           enrich_facility_contacts.py, NOT committed)
+│   ├── facility_contact_enrichment_report.json  (unmatched/no-phone
+│   │                           facilities from the last enrichment run)
 │   ├── user_sessions.json      (onboarding/language/state/LGA/conversation
 │   │                           memory per user, hashed phone number keys —
 │   │                           NOT committed, runtime state)
@@ -597,7 +845,9 @@ srh-chatbot/
 │   └── pilot_logs.jsonl        (anonymised interaction logs — mirrored to
 │                                a private HF Dataset repo, see logger.py)
 ├── scripts/
-│   └── import_facilities.py    (rebuilds helplines.json from facilities.csv)
+│   ├── import_facilities.py    (rebuilds helplines.json from facilities.csv)
+│   └── enrich_facility_contacts.py  (adds officer_contact per facility
+│                                from api.nphcda.gov.ng, resumable)
 ├── src/
 │   ├── knowledge_base/         (Phase 1 Track A — all built ✅)
 │   ├── annotation/             (Phase 1 Track B — COMPLETE ✅)
