@@ -225,7 +225,13 @@ Detection order (each step only runs if the previous one found nothing):
    detection layer, with the classifier as backup.
    - CRISIS_PHRASES covers: self-harm, rape/sexual assault, coercion/
      non-consent, physical abuse, trafficking/exploitation, vague
-     first-disclosures ("something happened to me").
+     first-disclosures ("something happened to me"). **Extended
+     2026-08-15** with "forced himself/herself on me" and "i didn't
+     consent"/"didn't consent to what happened" — found via an honest
+     unseen-phrasing test probe (not asserted against invented
+     expectations, see escalation.py TEST 8) that showed these common,
+     real disclosure constructions matched no existing phrase (only
+     "forcing himself" present-continuous and "didn't agree to" did).
    - DIAGNOSTIC_PHRASES covers: pregnancy concerns, personal STI/genital
      symptoms, HIV/STI personal concern, post-exposure/emergency
      contraception, abortion **in personal-distress framing only**
@@ -238,6 +244,25 @@ Detection order (each step only runs if the previous one found nothing):
      distinct from generic "follow up on <topic>", see below), and a
      handful of newly-added specific phrases ("i need help urgently",
      "i need medical help", "it hurts when i urinate", "it hurts inside").
+   - **Extended 2026-08-15** with definitive (non-hedged) pregnancy
+     disclosure phrases ("i am pregnant", "i'm pregnant", "just found
+     out i'm pregnant", "i tested positive for pregnancy", etc.) — live
+     testing found "I am pregnant, what can I do?" matched NONE of the
+     existing phrases (all hedged: "i think i'm pregnant", "i might be
+     pregnant"), fell through to the classifier, got excluded by the
+     short-message gate (below), and reached RAG untouched, where a
+     known KB content gap ("what is pregnancy" has no defining chunk —
+     see "What To Build Next" below) produced the generic "Here are
+     some topics" fallback baked into prompt_builder.py's SYSTEM_PROMPT.
+     **Accepted tradeoff, documented in-code**: the bare "i am
+     pregnant"/"i'm pregnant" phrases also match inside hypothetical
+     framing ("What should I do IF I'm pregnant?") — the same
+     false-positive class already excluded for abortion above, but with
+     no exclusion mechanism available here. Kept per this file's own
+     "false positive is far less harmful than false negative" principle
+     (Critical Design Decision #10) — see escalation.py's
+     DIAGNOSTIC_PHRASES comment and the explicit "if I'm pregnant" test
+     case documenting this as a visible, intentional choice.
 2. **SAFE_EDUCATIONAL_TERMS** — checked next, unconditionally. Terms
    that force educational (None) UNLESS a crisis/diagnostic phrase
    already matched in step 1. Currently: "masturbation" (classifier
@@ -257,6 +282,27 @@ Detection order (each step only runs if the previous one found nothing):
      a real, previously-failing case ("What are the symptoms of STIs?"
      scoring diagnostic=0.528) with zero regressions, because it never
      touches the keyword-phrase step above.
+   - **CONSIDERED AND REJECTED 2026-08-15, with real evidence, not just
+     left alone**: raising this gate to also permit diagnostic-via-
+     classifier for short messages (at a stricter bar), to generalize
+     detection beyond DIAGNOSTIC_PHRASES for unseen short phrasings.
+     Probed the live trained model directly before deciding: diagnostic
+     scores for a mix of genuine and false-positive short messages all
+     clustered in a ~0.46-0.55 band with no separating threshold —
+     e.g. "I have vaginal discharge" (genuine) scored 0.541, "My
+     breasts feel sore and tender" (genuine) scored 0.548, but the
+     known false positive "What are the symptoms of STIs?" scored 0.528
+     — BETWEEN the two genuine cases. No threshold excludes the false
+     positive without also excluding real diagnostic disclosures. This
+     confirms the classifier genuinely does not discriminate in the
+     short-message regime (matches the ~0.5-boundary unreliability
+     documented in Phase 2 above), not that 0.65 (the originally
+     proposed number) was simply untuned. See the comment block above
+     `_SHORT_MESSAGE_CRISIS_PROBABILITY_THRESHOLD` in escalation.py for
+     the full probe data. Real generalization for short diagnostic
+     messages, if ever pursued, needs a different approach entirely
+     (e.g. an LLM-based intent check, or retraining on more short-text
+     examples) — not a threshold tweak.
    - **This gate is deliberately scoped to the classifier fallback
      ONLY, never to keyword-phrase matching.** An earlier draft would
      have also skipped keyword phrases for short messages, which would
@@ -265,26 +311,57 @@ Detection order (each step only runs if the previous one found nothing):
      words) — DO NOT extend this gate to cover keyword matching.
 - BYPASSES LLM entirely regardless of detection path — returns
   scripted text + helpline numbers only.
-- `get_helplines_for_state(state, lga=None)` — **fuzzy LGA matching**
-  via `thefuzz.fuzz.partial_ratio` (threshold 70), ranking facilities
-  by closeness to the user's onboarding-captured LGA rather than
-  requiring an exact string match (users rarely type the facility
-  dataset's exact spelling — "Ibadan South West" vs "Ibadan S/W").
-  - **FIXED 2026-08-13**: `partial_ratio` can still theoretically score
-    an unrelated LGA highly on shared characters (e.g. "Atiba" scored
-    75 against "Ibadan South West"), but this stopped mattering in
-    practice once every state's real LGAs were imported (see
-    scripts/import_facilities.py below) — an exact/near-exact LGA match
-    now always scores 100 and is ranked first, so a coincidental
-    false-positive like "Atiba" only surfaces when the user's real LGA
-    genuinely isn't in the dataset at all (now rare, not the norm).
+- `get_helplines_for_state(state, lga=None)` — thin wrapper around
+  `_resolve_lga_scope()` (below), kept for backward compatibility with
+  scripts/import_facilities.py and this module's own tests, which only
+  need the bare facility list.
+- `_resolve_lga_scope(state, lga)` ✅ BUILT 2026-08-15 — returns
+  `(facilities, matched_lga)`. **HARD LGA FILTER, replacing the old
+  fuzzy-rank-then-pad behaviour**, fixed after live user testing
+  reported a Bwari/FCT crisis disclosure returning Bwari + Abaji +
+  Kwali facilities together.
+  - **Root cause**: the old `get_helplines_for_state()` returned
+    `matching + other` — ALL of a state's facilities, just re-sorted so
+    LGA matches came first. `_crisis_response()`/`_diagnostic_response()`
+    then sliced `facilities[:3]`. Since scripts/import_facilities.py
+    deliberately selects exactly ONE facility per LGA, every LGA has
+    exactly 1 facility — so ANY time an LGA matched, the `[:3]` slice
+    was **guaranteed** to pad with 2 facilities from unrelated LGAs.
+    100% reproducible on every escalation response with a resolved LGA,
+    not a fuzzy-matching edge case.
+  - **Fix**: exact match (case-insensitive, stripped) short-circuits
+    fuzzy scoring entirely — this isn't just an optimisation.
+    `fuzz.partial_ratio` scores a pure substring match as 100, so a
+    query of "Ibadan North" scores 100 against BOTH the exact LGA
+    "Ibadan North" AND the two real, distinct LGAs "Ibadan North East"/
+    "Ibadan North West" (Oyo has all three) — without checking for an
+    exact match first, which one wins depends on incidental list order,
+    not correctness. When no exact match exists, fuzzy-score every
+    facility and take ONLY the facilities sharing the single
+    best-scoring LGA's exact name (never a second, different LGA that
+    also happened to clear `_FUZZY_LGA_MATCH_THRESHOLD`, e.g. "Ibadan
+    South West" (83) blending in alongside a genuine top match). Falls
+    back to the full state list (`matched_lga=None`) only when nothing
+    clears the threshold at all.
+  - `_crisis_response()`/`_diagnostic_response()` now vary their intro
+    sentence based on `matched_lga`: "Please visit this health facility
+    in {LGA} LGA, {state}..." (singular, since the hard filter almost
+    always yields exactly 1 facility) vs. the old "one of these health
+    facilities in {state}..." wording for the genuine state-wide
+    fallback case. This also fixes a related complaint (sexual-violence
+    responses "overwhelming" the user with multiple facilities) as a
+    side effect — no separate crisis-specific logic needed.
+  - Confirmed via 12 new LGA-isolation tests (escalation.py `__main__`
+    TEST 7): 5 states' exact matches, capitalization/suffix/misspelling
+    variants, the Ibadan-collision case specifically, a near-miss
+    misspelling correctly falling back rather than guessing wrong, an
+    LGA absent from the dataset, and the no-lga-provided case (protects
+    chat_handler.py TEST 17's "Oyo spans >= 3 distinct LGAs" invariant,
+    confirmed still passing — that path is untouched by this fix).
   - **Data-coverage gap RESOLVED 2026-08-13**: was "only 5 of each
     state's LGAs represented"; MAX_FACILITIES_PER_STATE raised from 5
     to 50 in scripts/import_facilities.py, all 37 states now have every
-    real LGA covered (783 facilities total, up from 185). Root cause
-    of a live-pilot bug report ("facility shows a different
-    state/LGA than expected") — confirmed fixed by re-testing the
-    exact Oyo/"Ibadan South West" case that used to fail.
+    real LGA covered (783 facilities total, up from 185).
 - `is_placeholder(entry)` ✅ BUILT 2026-08-13 — the gate this doc has
   described since early Phase 3 but which did NOT actually exist in
   code until now. Returns True if an entry has no number, the number
@@ -646,6 +723,14 @@ Two git remotes, kept in sync manually (no CI):
    open item, found via real pilot testing, not theoretical. Needs the
    user to decide: time-boxed, turn-count-boxed, or sticky
    heightened-caution window after should_escalate() fires.
+   **Closely related, same open decision, found 2026-08-15**:
+   mid-conversation LOCATION capture is equally missing — "I'm in
+   Bwari" said in one message, then "I was raped" in the next, does NOT
+   currently use Bwari for facility referral, since state/lga only ever
+   come from the explicit onboarding prompts, never inferred from a
+   later free-text message. Deliberately NOT bolted onto the
+   safety-critical escalation path without the same deliberate design
+   decision as the crisis-persistence question above.
 2. **Add a basic "what is pregnancy" (and similarly basic) definitional
    passage to the knowledge base** — content fix, not code; also found
    via real pilot testing.
